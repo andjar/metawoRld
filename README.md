@@ -24,23 +24,23 @@ remotes::install_github("andjar/metawoRld")
 ## Example: Creating a Project
 
 ```r
-library(metawoRld)
-
-proj_path <- file.path(tempdir(), "my_living_review")
-
-# Clean up previous run if needed
-if(dir.exists(proj_path)) unlink(proj_path, recursive = TRUE)
-
-create_metawoRld(
-  path = proj_path,
-  project_name = "Cytokines in Pregnancy",
-  project_description = "A test living review project.",
-  # Define criteria and schema details here or rely on defaults
-  inclusion_criteria = c("Human", "Pregnancy", "Serum/Plasma", "Cytokine"),
-  exclusion_criteria = c("Animal", "Review", "Non-English")
-)
-
-list.files(proj_path)
+# library(metawoRld)
+# 
+# proj_path <- file.path(tempdir(), "my_living_review")
+# 
+# # Clean up previous run if needed
+# if(dir.exists(proj_path)) unlink(proj_path, recursive = TRUE)
+# 
+# create_metawoRld(
+#   path = proj_path,
+#   project_name = "Cytokines in Pregnancy",
+#   project_description = "A test living review project.",
+#   # Define criteria and schema details here or rely on defaults
+#   inclusion_criteria = c("Human", "Pregnancy", "Serum/Plasma", "Cytokine"),
+#   exclusion_criteria = c("Animal", "Review", "Non-English")
+# )
+# 
+# list.files(proj_path)
 
 # Clean up
 # unlink(proj_path, recursive = TRUE)

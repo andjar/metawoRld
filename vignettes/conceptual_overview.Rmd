@@ -60,28 +60,28 @@ The typical workflow using these packages looks like this:
 ```{r echo=FALSE}
 # Requires the DiagrammeR package to be available when building the vignette
 if (requireNamespace("DiagrammeR", quietly = TRUE)) {
-  DiagrammeR::mermaid("
+DiagrammeR::mermaid("
   graph TD
-      A[Start: Define Review in metawoRld Project (create_metawoRld)] --> B(DataFindR: Input DOIs/PMIDs);
-      B --> C{Fetch Abstract (df_fetch_metadata)};
-      C --> D{LLM Assessment (df_assess_relevance uses metawoRld criteria)};
-      D -- Relevant --> E{Input Full Text PDF/TXT};
-      D -- Not Relevant/Manual --> F[Manual Review / Exclude / Use df_shiny_assess];
-      E --> G{LLM Extraction (uses metawoRld schema)};
-      G --> H{Parse JSON & Validate};
-      H --> I(metawoRld: Add Study Data (add_study_data));
-      I --> J(metawoRld: Render Quarto Website);
-      A --> J;
-
+      A[\"Start: Define Review in metawoRld Project (create_metawoRld)\"] --> B(\"DataFindR: Input DOIs/PMIDs\")
+      B --> C{\"Fetch Abstract (df_fetch_metadata)\"}
+      C --> D{\"LLM Assessment (df_assess_relevance uses metawoRld criteria)\"}
+      D -- Relevant --> E{\"Input Full Text PDF/TXT\"}
+      D -- \"Not Relevant/Manual\" --> F[\"Manual Review / Exclude / Use df_shiny_assess\"]
+      E --> G{\"LLM Extraction (uses metawoRld schema)\"}
+      G --> H{\"Parse JSON & Validate\"}
+      H --> I(\"metawoRld: Add Study Data (add_study_data)\")
+      I --> J(\"metawoRld: Render Quarto Website\")
+      A --> J
+    
       subgraph Cache
         direction LR
-         C --> K{Metadata Cache};
-         D --> L{Assessment Cache};
-         G --> M{Extraction Cache};
+        C --> K{\"Metadata Cache\"}
+        D --> L{\"Assessment Cache\"}
+        G --> M{\"Extraction Cache\"}
       end
-
-  style F fill:#eee,stroke:#333,stroke-width:1px,color:#333
-  ")
+    
+      style F fill:#eee,stroke:#333,stroke-width:1px,color:#333
+")
 } else {
   cat("Install DiagrammeR to see the workflow diagram.")
 }
