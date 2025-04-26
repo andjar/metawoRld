@@ -1,0 +1,104 @@
+---
+title: "Conceptual Overview: The Living Review Pipeline"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Conceptual Overview: The Living Review Pipeline}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction: Towards Living Reviews
+
+Systematic reviews and meta-analyses are crucial for synthesizing evidence, but they are time-consuming to create and quickly become outdated. A "living review" aims to continuously incorporate new evidence as it becomes available. This project provides a framework and tools to build an AI-assisted pipeline for creating such living reviews, focusing initially on serum cytokine data during human pregnancy.
+
+The pipeline consists of two core R packages:
+
+1.  **`metawoRld`**: The foundation for storing, managing, and presenting the structured review data.
+2.  **`DataFindR`**: The AI-powered engine for finding, assessing, and extracting data from scientific literature to populate the `metawoRld` project.
+
+## The `metawoRld` Package: Structure and Presentation
+
+`metawoRld` provides the structured environment for the living review. Its key roles are:
+
+-   **Project Initialization**: Creates a standardized project directory structure (`create_metawoRld`).
+-   **Schema Definition**: Defines the precise data structure expected for metadata and quantitative results in `_metawoRld.yml`. This includes fields, required/optional status, and expected formats (e.g., for outcome groups, measurement methods).
+-   **Data Storage**: Stores data for each included study in a dedicated subdirectory (`data/study_id/`) using human-readable and version-control-friendly files:
+    -   `metadata.yml`: Study design, population, methods, group definitions.
+    -   `data.csv`: Quantitative cytokine measurements, linked back to metadata.
+-   **Data Validation**: Includes functions to validate incoming data against the project schema (`add_study_data`, `validate_study`, `validate_world`).
+-   **Data Loading**: Provides functions to load the structured data back into R for analysis (`load_metawoRld`).
+-   **Presentation**: Includes templates and functions to generate a Quarto website, providing a browsable overview of the included studies and their key findings.
+
+Essentially, `metawoRld` ensures the data is consistently structured, validated, and accessible for both analysis and presentation.
+
+## The `DataFindR` Package: AI-Assisted Data Collection
+
+`DataFindR` leverages Large Language Models (LLMs) to automate parts of the literature screening and data extraction process. It interacts closely with a `metawoRld` project:
+
+-   **Input Acquisition**: Takes study identifiers (DOIs, PMIDs) as input.
+-   **Metadata Fetching**: Retrieves abstracts and bibliographic details from online sources (`df_fetch_metadata`).
+-   **Relevance Assessment**: Uses an LLM, guided by the inclusion/exclusion criteria defined in the `metawoRld` project's `_metawoRld.yml`, to assess the relevance of a study based on its title and abstract (`df_assess_relevance`). Provides a score and rationale. Includes an interactive Shiny app (`df_shiny_assess`) for this step.
+-   **Data Extraction**: For relevant papers, uses an LLM, guided by the detailed data `schema` from `_metawoRld.yml`, to extract specific data points (cytokine levels, group sizes, methods, etc.) from the full text (PDF or text).
+-   **Prompt Generation**: Creates detailed prompts for the LLM based on the `metawoRld` schema (`df_generate_assessment_prompt`, `df_generate_extraction_prompt`).
+-   **Output Formatting**: Aims to receive structured JSON output from the LLM.
+-   **Caching**: Caches results from metadata fetching and LLM calls within the `metawoRld` project (`.metawoRld_cache/datafindr/`) to avoid redundant work and API costs, facilitating collaboration.
+-   **Integration**: Parses the extracted data and uses `metawoRld::add_study_data()` to save it into the structured project.
+
+`DataFindR` acts as the intelligent agent feeding validated, structured data into the `metawoRld` repository.
+
+## Overall Workflow
+
+The typical workflow using these packages looks like this:
+
+```{r echo=FALSE}
+# Requires the DiagrammeR package to be available when building the vignette
+if (requireNamespace("DiagrammeR", quietly = TRUE)) {
+  DiagrammeR::mermaid("
+  graph TD
+      A[Start: Define Review in metawoRld Project (create_metawoRld)] --> B(DataFindR: Input DOIs/PMIDs);
+      B --> C{Fetch Abstract (df_fetch_metadata)};
+      C --> D{LLM Assessment (df_assess_relevance uses metawoRld criteria)};
+      D -- Relevant --> E{Input Full Text PDF/TXT};
+      D -- Not Relevant/Manual --> F[Manual Review / Exclude / Use df_shiny_assess];
+      E --> G{LLM Extraction (uses metawoRld schema)};
+      G --> H{Parse JSON & Validate};
+      H --> I(metawoRld: Add Study Data (add_study_data));
+      I --> J(metawoRld: Render Quarto Website);
+      A --> J;
+
+      subgraph Cache
+        direction LR
+         C --> K{Metadata Cache};
+         D --> L{Assessment Cache};
+         G --> M{Extraction Cache};
+      end
+
+  style F fill:#eee,stroke:#333,stroke-width:1px,color:#333
+  ")
+} else {
+  cat("Install DiagrammeR to see the workflow diagram.")
+}
+```
+
+1.  **Setup**: Create a `metawoRld` project, defining the scope, criteria, and desired data schema in `_metawoRld.yml`.
+2.  **Screening**: Use `DataFindR` (`df_assess_relevance` or `df_shiny_assess`) to process a list of DOIs/PMIDs, leveraging LLMs and project criteria to identify potentially relevant papers.
+3.  **Extraction**: For relevant papers, obtain the full text and use `DataFindR`'s extraction capabilities (future function, e.g., `df_extract_from_file`) to pull out data according to the `metawoRld` schema.
+4.  **Saving**: The extracted and validated data is saved into the `metawoRld` project structure using `metawoRld::add_study_data`.
+5.  **Presentation**: Re-render the `metawoRld` Quarto website (`quarto::quarto_render()`) to include the latest studies.
+6.  **Analysis**: Use `metawoRld::load_metawoRld()` to load all data for custom analysis or meta-analysis.
+
+## Interaction Between Packages
+
+-   **Schema**: `metawoRld` defines the schema; `DataFindR` reads it to generate prompts and structure its output.
+-   **Criteria**: `metawoRld` stores inclusion/exclusion criteria; `DataFindR` reads them for the assessment prompt.
+-   **Data Flow**: `DataFindR` extracts data; `metawoRld` validates and stores it.
+-   **Caching**: `DataFindR` writes its cache *within* the active `metawoRld` project directory for persistence and collaboration.
+
+This interconnected design allows for a modular yet integrated approach to building and maintaining a living review dataset.
