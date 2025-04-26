@@ -19,7 +19,8 @@ Imports:
     fs,
     git2r,
     readr,
-    rlang
+    rlang,
+    purrr
 Suggests: 
     knitr,
     rmarkdown
