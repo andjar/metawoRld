@@ -528,79 +528,79 @@ load_metawoRld <- function(path = ".", verbose = TRUE) {
   }
 
   # Combine all data.frames, filling missing columns with NA
-  combined_data <- dplyr::bind_rows(all_data_list)
+  combined_data <- data.table::rbindlist(all_data_list, fill = TRUE)
 
   # --- Attempt to Join Key Metadata ---
-  # This part can get complex depending on metadata consistency.
-  # We'll extract 'unit' from measurement_methods and 'name' from outcome_groups.
-
   # 1. Create lookup tables from metadata
-  # method_unit_lookup <- purrr::map_dfr(names(all_metadata), ~{
-  #   meta <- all_metadata[[.x]]
-  #   methods <- meta$measurement_methods %||% list()
-  #   if (!is.list(methods) || length(methods) == 0) return(NULL)
-  #   purrr::map_dfr(names(methods), ~{
-  #     # Ensure names() exist before indexing
-  #     method_details <- methods[[.y]] %||% list()
-  #     dplyr::tibble(
-  #       study_id = .x,
-  #       method_ref_id = .y,
-  #       unit = as.character(method_details$unit %||% NA_character_),
-  #       analysis_type = as.character(method_details$analysis_type %||% NA_character_)
-  #     )
-  #   }, .id = NULL) # Pass .y explicitly if needed, depends on map_dfr version/behavior
-  # }, .id = NULL) # Pass .x explicitly if needed
-  #
-  #
-  # group_name_lookup <- purrr::map_dfr(names(all_metadata), ~{
-  #   meta <- all_metadata[[.x]]
-  #   groups <- meta$outcome_groups %||% list()
-  #   if (!is.list(groups) || length(groups) == 0) return(NULL)
-  #   purrr::map_dfr(names(groups), ~{
-  #     group_details <- groups[[.y]] %||% list()
-  #     dplyr::tibble(
-  #       study_id = .x,
-  #       group_label = .y, # The key used in data.csv
-  #       group_name = as.character(group_details$name %||% .y), # Use label if name missing
-  #       group_definition = as.character(group_details$definition %||% NA_character_)
-  #     )
-  #   }, .id = NULL)
-  # }, .id = NULL)
-  #
-  #
-  # # 2. Perform joins
-  # if (nrow(method_unit_lookup) > 0 && "method_ref_id" %in% names(combined_data)) {
-  #   # Ensure join columns are compatible types (especially if read as factors initially)
-  #   combined_data <- combined_data %>%
-  #     dplyr::mutate(across(dplyr::all_of(intersect(c("study_id", "method_ref_id"), names(.))), as.character))
-  #   method_unit_lookup <- method_unit_lookup %>%
-  #     dplyr::mutate(across(dplyr::all_of(intersect(c("study_id", "method_ref_id"), names(.))), as.character))
-  #
-  #   combined_data <- dplyr::left_join(combined_data, method_unit_lookup, by = c("study_id", "method_ref_id"))
-  # } else {
-  #   if(verbose && "method_ref_id" %in% names(combined_data)) rlang::inform("Could not create method lookup table; skipping unit/analysis_type join.")
-  # }
-  #
-  # if (nrow(group_name_lookup) > 0 && "group_label" %in% names(combined_data)) {
-  #   combined_data <- combined_data %>%
-  #     dplyr::mutate(across(dplyr::all_of(intersect(c("study_id", "group_label"), names(.))), as.character))
-  #   group_name_lookup <- group_name_lookup %>%
-  #     dplyr::mutate(across(dplyr::all_of(intersect(c("study_id", "group_label"), names(.))), as.character))
-  #
-  #   combined_data <- dplyr::left_join(combined_data, group_name_lookup, by = c("study_id", "group_label"))
-  # } else {
-  #   if(verbose && "group_label" %in% names(combined_data)) rlang::inform("Could not create group lookup table; skipping group_name/definition join.")
-  # }
-  #
-  # # --- Final Formatting ---
-  # # Optionally reorder columns
-  # combined_data <- combined_data %>%
-  #   dplyr::relocate(dplyr::starts_with("study_id"), .before = 1) %>%
-  #   dplyr::relocate(dplyr::any_of(c("unit", "analysis_type")), .after = dplyr::any_of("cytokine_name")) %>%
-  #   dplyr::relocate(dplyr::any_of(c("group_name", "group_definition")), .after = dplyr::any_of("group_label"))
-  #
-  # # --- Return Results ---
-  # if (verbose) rlang::inform(glue::glue("Successfully loaded and combined data for {length(all_data_list)} studies."))
+  method_unit_lookup <- purrr::map_dfr(names(all_metadata), function(s_id) {
+    meta <- all_metadata[[s_id]]
+    methods <- meta$measurement_methods %||% list()
+    if (!is.list(methods) || length(methods) == 0) return(NULL)
+
+    methods_df <- purrr::map_dfr(names(methods), function(method_id) {
+      method_details <- methods[[method_id]] %||% list()
+      dplyr::tibble(
+        study_id = s_id,
+        method_ref_id = method_id,
+        unit = as.character(method_details$unit %||% NA_character_),
+        analysis_type = as.character(method_details$analysis_type %||% NA_character_)
+      )
+    })
+    return(methods_df)
+  })
+
+  group_name_lookup <- purrr::map_dfr(names(all_metadata), function(s_id) {
+    meta <- all_metadata[[s_id]]
+    groups <- meta$outcome_groups %||% list()
+    if (!is.list(groups) || length(groups) == 0) return(NULL)
+
+    groups_df <- purrr::map_dfr(names(groups), function(group_id) {
+      group_details <- groups[[group_id]] %||% list()
+      dplyr::tibble(
+        study_id = s_id,
+        group_label = group_id, # The key used in data.csv
+        group_name = as.character(group_details$name %||% group_id), # Use label if name missing
+        group_definition = as.character(group_details$def %||% NA_character_)
+      )
+    })
+    return(groups_df)
+  })
+
+  # 2. Perform joins
+  if (nrow(method_unit_lookup) > 0 && "method_ref_id" %in% names(combined_data)) {
+    # Ensure join columns are compatible types
+    combined_data <- combined_data %>%
+      dplyr::mutate(dplyr::across(dplyr::all_of(intersect(c("study_id", "method_ref_id"), names(.))), as.character))
+
+    combined_data <- dplyr::left_join(
+      combined_data,
+      method_unit_lookup,
+      by = c("study_id", "method_ref_id")
+    )
+  } else if (verbose && "method_ref_id" %in% names(combined_data)) {
+    rlang::inform("Could not create method lookup table; skipping unit/analysis_type join.")
+  }
+
+  if (nrow(group_name_lookup) > 0 && "group_label" %in% names(combined_data)) {
+    combined_data <- combined_data %>%
+      dplyr::mutate(dplyr::across(dplyr::all_of(intersect(c("study_id", "group_label"), names(.))), as.character))
+
+    combined_data <- dplyr::left_join(
+      combined_data,
+      group_name_lookup,
+      by = c("study_id", "group_label")
+    )
+  } else if (verbose && "group_label" %in% names(combined_data)) {
+    rlang::inform("Could not create group lookup table; skipping group_name/definition join.")
+  }
+
+  # 3. Final Formatting
+  combined_data <- combined_data %>%
+    dplyr::relocate(dplyr::starts_with("study_id"), .before = 1) %>%
+    dplyr::relocate(dplyr::any_of(c("unit", "analysis_type")), .after = dplyr::any_of("cytokine_name")) %>%
+    dplyr::relocate(dplyr::any_of(c("group_name", "group_definition")), .after = dplyr::any_of("group_label"))
+
+  if (verbose) rlang::inform(glue::glue("Successfully loaded and combined data for {length(all_data_list)} studies."))
 
   return(list(
     studies_data = combined_data,

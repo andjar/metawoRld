@@ -35,7 +35,9 @@
 #' @keywords internal
 #' @export
 .desanitize_id <- function(sanitized_id) {
-  if (is.null(sanitized_id) || sanitized_id == "") return("")
+
+  if (is.null(sanitized_id)) return("")
+
   id <- sanitized_id
   # Reverse substitutions in reverse order of application if dependencies exist (none here)
   id <- gsub("_quote_", "\"", id, fixed = TRUE)

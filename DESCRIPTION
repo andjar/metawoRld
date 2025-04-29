@@ -15,12 +15,12 @@ Depends:
   yaml
 Imports:
     data.table,
-    dplyr,
     fs,
     git2r,
     readr,
     rlang,
-    purrr
+    purrr,
+    dplyr
 Suggests: 
     knitr,
     rmarkdown

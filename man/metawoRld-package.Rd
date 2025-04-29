@@ -9,7 +9,7 @@
 What the package does (one paragraph).
 }
 \author{
-\strong{Maintainer}: Anders Hagen Jarmund \email{anders.h.jarmund@ntnu.no} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Anders Hagen Jarmund \email{anders.h.jarmund@ntnu.no} (\href{https://orcid.org/0000-0002-3923-1637}{ORCID})
 
 }
 \keyword{internal}
