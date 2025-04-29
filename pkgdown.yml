@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   conceptual_overview: conceptual_overview.html
-last_built: 2025-04-26T02:41Z
+last_built: 2025-04-29T03:15Z
 urls:
   reference: https://andjar.github.io/metawoRld/reference
   article: https://andjar.github.io/metawoRld/articles
