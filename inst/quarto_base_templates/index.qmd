@@ -1,0 +1,17 @@
+---
+title: "{{project_name}}"
+---
+
+## {{project_name}}
+
+::: {.callout-note}
+{{project_description}}
+:::
+
+This Quarto website provides a browsable interface to the data collected for this living review.
+
+*   Navigate to the **Studies** page to see a list of included studies and their key details.
+*   The data is stored in a structured format within the `data/` directory of this project.
+*   This website can be updated by rendering the Quarto project after adding new studies.
+
+*To render the website, open this project in RStudio and click the "Render Website" button, or run `quarto::quarto_render(".")` in the R console from the project root directory.*

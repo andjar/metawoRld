@@ -12,16 +12,18 @@ RoxygenNote: 7.3.2
 Depends:
   here,
   rcrossref,
-  yaml
+  yaml,
+  dplyr
 Imports:
     data.table,
     fs,
     git2r,
     readr,
     rlang,
-    purrr,
-    dplyr
+    purrr
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    quarto,
+    DT
 VignetteBuilder: knitr

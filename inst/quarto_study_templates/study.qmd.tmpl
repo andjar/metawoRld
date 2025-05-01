@@ -1,0 +1,27 @@
+---
+title: "{{title}}"
+---
+
+::: {.callout-note}
+{{sample_type}}
+:::
+
+By: {{authors}}
+
+### Abstract
+
+{{abstract}}
+
+### Study groups
+
+{{study_group_formatted}}
+
+### Methods
+
+{{methods_formatted}}
+
+### Data
+
+```{r}
+DT::datatable(data.table::fread("{{data_path}}"))
+```

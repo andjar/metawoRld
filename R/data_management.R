@@ -367,6 +367,7 @@ add_study_data <- function(path = ".",
 #' @importFrom rlang warn inform abort is_list %||% set_names
 #' @importFrom tidyselect everything
 #' @importFrom glue glue
+#' @importFrom magrittr %>%
 #'
 #' @examples
 #' \dontrun{

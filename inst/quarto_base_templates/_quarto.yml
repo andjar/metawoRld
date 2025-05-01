@@ -1,0 +1,29 @@
+project:
+  type: website
+  output-dir: docs # Standard output directory
+  render:
+    - index.qmd
+    - studies.qmd
+    - study/*.qmd
+
+website:
+  title: "{{project_name}}"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: studies.qmd
+        text: Studies
+  page-footer:
+    right: "Built with Quarto and metawoRld"
+    left: "&copy; Copyright {{ current_year }}" # Add year dynamically
+
+format:
+  html:
+    theme: cosmo # A clean default theme
+    css: styles.css
+    toc: true
+
+# Optional: Add knitr options if needed globally
+# execute:
+#   freeze: auto # Re-render only when code changes

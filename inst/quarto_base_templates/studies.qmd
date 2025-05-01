@@ -1,0 +1,33 @@
+---
+title: Studies
+---
+
+## Study overview
+
+```{r, echo=FALSE, message=FALSE}
+library("data.table")
+library("dplyr")
+
+df <- metawoRld::load_metawoRld()
+study_list <- rbindlist(lapply(names(df$studies_metadata), function(x) {
+  data.table(
+    Title = paste0("<a href='./study/", metawoRld::.sanitize_id(x),".html'>", df$studies_metadata[[x]][["title"]], "</a>"),
+    Authors = paste(unlist(df$studies_metadata[[x]][["authors"]]), collapse = ", "),
+    Year = df$studies_metadata[[x]][["year"]],
+    Journal = df$studies_metadata[[x]][["journal"]],
+    Country = df$studies_metadata[[x]][["country"]]
+  )
+}))
+```
+
+The database currently contains `r nrow(study_list)` studies. The table below lists the studies included in the review, along with their key details. Click on the study title to view the study page.
+
+```{r}
+DT::datatable(study_list,
+              options = list(pageLength = 5, autoWidth = TRUE),
+              rownames = FALSE,
+              filter = "top",
+              escape = FALSE) %>%
+  DT::formatStyle(columns = c("Title", "Authors", "Year", "Journal", "Country"),
+              backgroundColor = DT::styleEqual(c("N/A"), c("#FFDDDD")))
+```
