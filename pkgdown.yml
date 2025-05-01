@@ -1,9 +1,9 @@
 pandoc: 3.1.11
-pkgdown: 2.1.1
+pkgdown: 2.1.2
 pkgdown_sha: ~
 articles:
   conceptual_overview: conceptual_overview.html
-last_built: 2025-04-29T03:15Z
+last_built: 2025-05-01T05:31Z
 urls:
   reference: https://andjar.github.io/metawoRld/reference
   article: https://andjar.github.io/metawoRld/articles
