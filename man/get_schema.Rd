@@ -4,11 +4,13 @@
 \alias{get_schema}
 \title{Get the Schema from a metawoRld Project}
 \usage{
-get_schema(path = ".")
+get_schema(path = ".", schema = c("extraction", "assessment"))
 }
 \arguments{
 \item{path}{Character string. The path to the root directory of the
 metawoRld project. Defaults to the current working directory (\code{.}).}
+
+\item{schema}{Character string. Either \code{extraction} (default) or \code{assessment}.}
 }
 \value{
 A list representing the schema defined in the project's
@@ -19,26 +21,4 @@ a warning if the schema cannot be retrieved.
 \description{
 Reads the \verb{_metawoRld.yml} configuration file from a project
 directory and returns the defined schema.
-}
-\examples{
-\dontrun{
-# --- Setup: Create a temporary project ---
-proj_path <- file.path(tempdir(), "get_schema_test")
-create_metawoRld(
-  path = proj_path,
-  project_name = "Schema Test",
-  project_description = "Testing get_schema()"
-)
-
-# --- Example Usage ---
-# Get the schema from the created project
-project_schema <- get_schema(proj_path)
-print(project_schema)
-
-# Check specific parts of the schema
-print(project_schema$metadata_fields$required)
-
-# --- Clean up ---
-unlink(proj_path, recursive = TRUE)
-}
 }

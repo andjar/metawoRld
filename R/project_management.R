@@ -92,32 +92,11 @@ create_metawoRld <- function(path,
   rlang::inform(paste("Created project directory:", proj_path))
   rlang::inform(paste("Created data subdirectory:", fs::path(proj_path, "data")))
 
-  # --- Define Default Schema (if none provided) ---
-  default_schema <- list(
-    metadata_fields = list(
-      required = c("study_id", "title", "authors", "year", "journal", "study_design",
-                   "country", "sample_type", "outcome_groups", "measurement_methods"),
-      optional = c("doi", "abstract", "keywords_paper", "funding_source",
-                   "ethics_approval", "inclusion_summary", "exclusion_summary",
-                   "datafindr_assessment")
-    ),
-    data_fields = list(
-      required = c("measurement_id", "method_ref_id", "cytokine_name", "group_label",
-                   "gestational_age_timing", "n", "statistic_type", "value1"),
-      # value2 is not strictly required if statistic_type is e.g. 'count' or 'mean' only
-      optional = c("value2", "unit", # Unit often comes from method_ref now, but can override
-                   "gestational_age_weeks_mean", "gestational_age_weeks_sd",
-                   "comparison_group_label", "comparison_p_value", "notes")
-    ),
-    # Suggest structure for complex fields within metadata.yml
-    complex_field_structures = list(
-      outcome_groups = "Should be a list/map where keys are group IDs (e.g., 'grp1', 'grp2') and values are lists containing 'name', 'definition', etc.",
-      measurement_methods = "Should be a list/map where keys are method reference IDs (e.g., 'elisa_il6') and values are lists containing 'analysis_type', 'target_cytokine', 'unit', 'kit_manufacturer', etc.",
-      datafindr_assessment = "Should be a list/map containing fields like 'relevance_score', 'rationale', 'model_used', 'extraction_date'."
-    )
+  # --- Copy DataFindR files ---
+  DataFindR::copy_datafindr_files(
+    path = proj_path,
+    overwrite = FALSE
   )
-
-  active_schema <- schema %||% default_schema # Use provided schema or default
 
   # --- Create _metawoRld.yml ---
   config_list <- rlang::list2(
@@ -125,7 +104,6 @@ create_metawoRld <- function(path,
     project_description = project_description,
     creation_date = as.character(Sys.Date()),
     metawoRld_version = as.character(utils::packageVersion("metawoRld")), # Add package name dynamically if possible
-    schema = active_schema,
     ... # Include any additional arguments passed
   )
 
@@ -231,6 +209,7 @@ create_metawoRld <- function(path,
 #'
 #' @param path Character string. The path to the root directory of the
 #'   metawoRld project. Defaults to the current working directory (`.`).
+#' @param schema Character string. Either `extraction` (default) or `assessment`.
 #'
 #' @return A list representing the schema defined in the project's
 #'   `_metawoRld.yml` file. This typically includes definitions for
@@ -242,29 +221,9 @@ create_metawoRld <- function(path,
 #' @importFrom fs path dir_exists file_exists
 #' @importFrom yaml read_yaml yaml.load_file
 #' @importFrom rlang warn abort is_list
-#'
-#' @examples
-#' \dontrun{
-#' # --- Setup: Create a temporary project ---
-#' proj_path <- file.path(tempdir(), "get_schema_test")
-#' create_metawoRld(
-#'   path = proj_path,
-#'   project_name = "Schema Test",
-#'   project_description = "Testing get_schema()"
-#' )
-#'
-#' # --- Example Usage ---
-#' # Get the schema from the created project
-#' project_schema <- get_schema(proj_path)
-#' print(project_schema)
-#'
-#' # Check specific parts of the schema
-#' print(project_schema$metadata_fields$required)
-#'
-#' # --- Clean up ---
-#' unlink(proj_path, recursive = TRUE)
-#' }
-get_schema <- function(path = ".") {
+get_schema <- function(path = ".", schema = c("extraction", "assessment")) {
+
+  schema <- match.arg(schema)
 
   # --- Input Validation and Path Handling ---
   if (!is.character(path) || length(path) != 1 || path == "") {
@@ -275,33 +234,25 @@ get_schema <- function(path = ".") {
     rlang::abort(paste("Project path does not exist or is not a directory:", proj_path))
   }
 
-  config_path <- fs::path(proj_path, "_metawoRld.yml")
+  schema_paths = list("extraction" = "_extraction_schema.yml",
+                      "assessment" = "_assessment_schema.yml"
+  )
+
+  config_path <- fs::path(proj_path, schema_paths[[schema]])
   if (!fs::file_exists(config_path)) {
     rlang::abort(paste("Configuration file not found:", config_path))
   }
 
   # --- Read YAML and Extract Schema ---
-  config_list <- tryCatch({
+  schema_content <- tryCatch({
     # Use yaml.load_file for potentially better error messages on malformed YAML
     yaml::yaml.load_file(config_path)
   }, error = function(e) {
     rlang::abort(paste("Failed to read or parse YAML file:", config_path, "\nOriginal error:", e$message))
   })
 
-  if (!rlang::is_list(config_list)) {
-    rlang::abort(paste("Content of", config_path, "is not a valid YAML list/map."))
-  }
-
-  if (!"schema" %in% names(config_list)) {
-    rlang::warn(paste("'_metawoRld.yml' does not contain a 'schema' key in:", proj_path))
-    return(invisible(NULL))
-  }
-
-  schema_content <- config_list$schema
-
   if (!rlang::is_list(schema_content)) {
-    rlang::warn(paste("'schema' key in '_metawoRld.yml' does not contain a list structure in:", proj_path))
-    return(invisible(NULL))
+    rlang::abort(paste("Content of", config_path, "is not a valid YAML list/map."))
   }
 
   # --- Return Schema ---

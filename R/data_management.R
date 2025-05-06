@@ -1,134 +1,169 @@
-# --- Internal Helper Functions for Validation ---
-
-#' Validate study metadata against schema
+#' Validate study metadata against the schema definition.
+#' (Leverages the general validate_extracted_data function)
 #' @noRd
 #' @keywords internal
-.validate_metadata <- function(metadata_list, schema, study_id) {
+.validate_metadata <- function(metadata_list, full_schema, study_id) {
+  # 1. Basic List Check (as before)
   if (!rlang::is_list(metadata_list)) {
-    rlang::abort(glue::glue("Metadata for study '{study_id}' must be provided as a list."))
-  }
-  if (!"metadata_fields" %in% names(schema)) {
-    rlang::abort("Schema is missing the 'metadata_fields' definition.")
-  }
-  fields_def <- schema$metadata_fields
-  required <- fields_def$required %||% character() # Use %||% for safety if NULL
-  optional <- fields_def$optional %||% character()
-  all_defined <- c(required, optional)
-  provided <- names(metadata_list)
-
-  # Check required fields
-  missing_req <- setdiff(required, provided)
-  if (length(missing_req) > 0) {
-    rlang::abort(glue::glue("Metadata for study '{study_id}' is missing required fields: {paste(missing_req, collapse=', ')}"))
+    rlang::abort(glue("Metadata for study '{study_id}' must be provided as a list."))
   }
 
-  # Check for unexpected fields (optional, could be a warning)
-  unexpected <- setdiff(provided, all_defined)
-  if (length(unexpected) > 0) {
-    rlang::warn(glue::glue("Metadata for study '{study_id}' contains fields not defined in schema: {paste(unexpected, collapse=', ')}"))
+  # 2. Check if metadata schema exists
+  if (!"metadata" %in% names(full_schema)) {
+    rlang::abort("Schema definition is missing the top-level 'metadata' key.")
   }
+  metadata_schema <- full_schema$metadata # Extract the sub-schema for metadata
 
-  # Basic check for required complex structures if defined
-  if ("measurement_methods" %in% required && (!"measurement_methods" %in% provided || !rlang::is_list(metadata_list$measurement_methods))) {
-    rlang::abort(glue::glue("Required field 'measurement_methods' for study '{study_id}' is missing or not a list."))
-  }
-  if ("outcome_groups" %in% required && (!"outcome_groups" %in% provided || !rlang::is_list(metadata_list$outcome_groups))) {
-    rlang::abort(glue::glue("Required field 'outcome_groups' for study '{study_id}' is missing or not a list."))
-  }
+  # 3. Perform detailed validation using the general function
+  # The path reported will start from 'root' as validate_extracted_data is called on the sub-tree
+  errors <- DataFindR::.validate_extracted_data(metadata_list, metadata_schema)
 
-  # Could add more checks here (e.g., types) later if needed
+  # 4. Report errors, adding context
+  if (length(errors) > 0) {
+    error_messages <- paste(errors, collapse = "\n  - ")
+    rlang::abort(glue(
+      "Metadata validation failed for study '{study_id}':\n  - {error_messages}"
+    ))
+  }
 
   invisible(TRUE) # Return TRUE on success
 }
 
-#' Validate study data.frame against schema
+
+#' Validate study data points (data frame) against the schema definition.
+#' (Leverages the general validate_extracted_data function)
 #' @noRd
 #' @keywords internal
-.validate_data_df <- function(data_df, schema, study_id) {
+.validate_data_df <- function(data_df, full_schema, study_id) {
+  # 1. Basic Data Frame Check (as before)
   if (!is.data.frame(data_df)) {
-    rlang::abort(glue::glue("Data for study '{study_id}' must be provided as a data frame."))
-  }
-  if (!"data_fields" %in% names(schema)) {
-    rlang::abort("Schema is missing the 'data_fields' definition.")
-  }
-  fields_def <- schema$data_fields
-  required <- fields_def$required %||% character()
-  optional <- fields_def$optional %||% character()
-  all_defined <- c(required, optional)
-  provided_cols <- names(data_df)
-
-  # Check required columns
-  missing_req <- setdiff(required, provided_cols)
-  if (length(missing_req) > 0) {
-    rlang::abort(glue::glue("Data frame for study '{study_id}' is missing required columns: {paste(missing_req, collapse=', ')}"))
+    # Allow an empty list as potentially valid if 0 data points were extracted
+    if (rlang::is_list(data_df) && length(data_df) == 0) {
+      return(invisible(TRUE)) # Empty list is okay if no data points
+    }
+    rlang::abort(glue("Data points for study '{study_id}' must be provided as a data frame (or an empty list)."))
   }
 
-  # Check for unexpected columns (optional, could be a warning)
-  unexpected <- setdiff(provided_cols, all_defined)
-  if (length(unexpected) > 0) {
-    rlang::warn(glue::glue("Data frame for study '{study_id}' contains columns not defined in schema: {paste(unexpected, collapse=', ')}"))
+  # 2. Check if data_points schema exists
+  if (!"data_points" %in% names(full_schema)) {
+    rlang::abort("Schema definition is missing the top-level 'data_points' key.")
+  }
+  data_points_schema <- full_schema$data_points # Extract the sub-schema (should be type: array)
+
+  if (is.null(data_points_schema$`_type`) || data_points_schema$`_type` != "array") {
+    rlang::abort("Schema definition for 'data_points' is missing or not of '_type: array'.")
   }
 
-  # Could add column type checks here later
+  # 3. Perform detailed validation using the general function
+  # validate_extracted_data handles data frames when schema expects an array
+  errors <- DataFindR::.validate_extracted_data(data_df, data_points_schema)
+
+  # 4. Report errors, adding context
+  if (length(errors) > 0) {
+    error_messages <- paste(errors, collapse = "\n  - ")
+    rlang::abort(glue(
+      "Data points validation failed for study '{study_id}':\n  - {error_messages}"
+    ))
+  }
 
   invisible(TRUE) # Return TRUE on success
 }
 
-#' Validate linkage between data.df and metadata list
+
+#' Validate linkage between data points (data.df) and metadata definitions.
+#' Checks if IDs used in data points exist in corresponding metadata arrays.
 #' @noRd
 #' @keywords internal
-.validate_linkages <- function(data_df, metadata_list, schema, study_id) {
-  # Check if required linking columns/structures exist
-  if (!"method_ref_id" %in% names(data_df)) {
-    rlang::warn(glue::glue("Data frame for study '{study_id}' is missing 'method_ref_id' column needed for linkage. Skipping linkage validation."))
-    return(invisible(TRUE)) # Can't validate if column missing
-  }
-  if (!"measurement_methods" %in% names(metadata_list) || !rlang::is_list(metadata_list$measurement_methods)) {
-    rlang::warn(glue::glue("Metadata for study '{study_id}' is missing 'measurement_methods' list needed for linkage. Skipping linkage validation."))
-    return(invisible(TRUE)) # Can't validate if structure missing
-  }
-  if (!"group_label" %in% names(data_df)) {
-    rlang::warn(glue::glue("Data frame for study '{study_id}' is missing 'group_label' column needed for linkage. Skipping linkage validation."))
-    return(invisible(TRUE))
-  }
-  if (!"outcome_groups" %in% names(metadata_list) || !rlang::is_list(metadata_list$outcome_groups)) {
-    rlang::warn(glue::glue("Metadata for study '{study_id}' is missing 'outcome_groups' list needed for linkage. Skipping linkage validation."))
-    return(invisible(TRUE))
+.validate_linkages <- function(data_df, metadata_list, full_schema, study_id) {
+
+  # --- Define expected ID field names (based on our YAML) ---
+  # These could potentially be read from schema if needed, but likely stable
+  method_id_col_data <- "measurement_method_ref_id"
+  group_id_col_data <- "outcome_group_ref_id" # Updated from 'group_label'
+
+  method_id_field_meta <- "measurement_method_ref_id"
+  group_id_field_meta <- "outcome_group_ref_id"
+
+  # --- Helper to safely extract IDs from metadata list/df ---
+  extract_defined_ids <- function(meta_component_name, id_field_name) {
+    if (!meta_component_name %in% names(metadata_list)) {
+      rlang::warn(glue("Metadata for study '{study_id}' is missing '{meta_component_name}' needed for linkage. Skipping linkage validation for it."))
+      return(NULL) # Signal skip
+    }
+    component_data <- metadata_list[[meta_component_name]]
+
+    if (is.data.frame(component_data)) {
+      if (!id_field_name %in% names(component_data)) {
+        rlang::warn(glue("Metadata component '{meta_component_name}' for study '{study_id}' is missing the expected ID column '{id_field_name}'. Skipping linkage validation."))
+        return(NULL)
+      }
+      defined_ids <- component_data[[id_field_name]]
+    } else if (rlang::is_list(component_data)) {
+      # Handle list of lists/objects
+      defined_ids <- tryCatch({
+        vapply(component_data, function(item) {
+          if (rlang::is_list(item) && id_field_name %in% names(item)) {
+            item[[id_field_name]] %||% NA_character_ # Use %||% for NULL safety
+          } else {
+            NA_character_
+          }
+        }, character(1))
+      }, error = function(e) {
+        rlang::warn(glue("Error extracting ID '{id_field_name}' from list structure '{meta_component_name}' for study '{study_id}'. Skipping linkage validation. Error: {e$message}"))
+        return(NULL)
+      })
+      if(is.null(defined_ids)) return(NULL) # Exit if extraction failed
+
+    } else {
+      rlang::warn(glue("Metadata component '{meta_component_name}' for study '{study_id}' is not a list or data frame. Skipping linkage validation."))
+      return(NULL)
+    }
+    # Return unique, non-NA IDs
+    return(unique(stats::na.omit(defined_ids)))
   }
 
+  # --- Get defined IDs ---
+  valid_method_ids <- extract_defined_ids("measurement_methods", method_id_field_meta)
+  valid_group_ids <- extract_defined_ids("outcome_groups", group_id_field_meta)
+
+  valid_method_ids <- c(valid_method_ids, "POP_CHAR")
 
   # --- Validate method_ref_id ---
-  valid_method_ids <- names(metadata_list$measurement_methods)
-  used_method_ids <- unique(stats::na.omit(data_df$method_ref_id)) # Ignore NAs for check
-  invalid_methods <- setdiff(used_method_ids, valid_method_ids)
+  if (!is.null(valid_method_ids)) { # Only proceed if IDs were extracted
+    if (!method_id_col_data %in% names(data_df)) {
+      rlang::warn(glue("Data points for study '{study_id}' is missing '{method_id_col_data}' column. Cannot validate method linkage."))
+    } else {
+      used_method_ids <- unique(stats::na.omit(data_df[[method_id_col_data]]))
+      invalid_methods <- setdiff(used_method_ids, valid_method_ids)
 
-  if (length(invalid_methods) > 0) {
-    rlang::abort(glue::glue(
-      "Data for study '{study_id}' contains 'method_ref_id' values not found ",
-      "as keys in metadata$measurement_methods: {paste(invalid_methods, collapse=', ')}"
-    ))
-  }
+      if (length(invalid_methods) > 0) {
+        rlang::abort(glue(
+          "Data points for study '{study_id}' contains '{method_id_col_data}' values not found ",
+          "in metadata$measurement_methods -> {method_id_field_meta}: {paste(invalid_methods, collapse=', ')}"
+        ))
+      }
+    }
+  } # End method linkage validation
 
-  # --- Validate group_label ---
-  valid_group_labels <- names(metadata_list$outcome_groups)
-  # Alternative: If outcome_groups is a list of lists, each with a 'name' field?
-  # valid_group_labels <- vapply(metadata_list$outcome_groups, function(g) g$name %||% NA_character_, character(1))
-  # Adapt based on the *actual* structure defined in your schema/usage
-  if(is.null(valid_group_labels)){
-    rlang::abort(glue::glue("Could not extract valid group labels (keys) from metadata$outcome_groups for study '{study_id}'. Ensure it's a named list."))
-  }
+  # --- Validate outcome_group_ref_id ---
+  if (!is.null(valid_group_ids)) { # Only proceed if IDs were extracted
+    if (!group_id_col_data %in% names(data_df)) {
+      rlang::warn(glue("Data points for study '{study_id}' is missing '{group_id_col_data}' column. Cannot validate group linkage."))
+    } else {
+      used_group_ids <- unique(stats::na.omit(data_df[[group_id_col_data]]))
+      invalid_groups <- setdiff(used_group_ids, valid_group_ids)
 
-  used_group_labels <- unique(stats::na.omit(data_df$group_label))
-  invalid_groups <- setdiff(used_group_labels, valid_group_labels)
+      if (length(invalid_groups) > 0) {
+        rlang::abort(glue(
+          "Data points for study '{study_id}' contains '{group_id_col_data}' values not found ",
+          "in metadata$outcome_groups -> {group_id_field_meta}: {paste(invalid_groups, collapse=', ')}"
+        ))
+      }
+    }
+  } # End group linkage validation
 
-  if (length(invalid_groups) > 0) {
-    rlang::abort(glue::glue(
-      "Data for study '{study_id}' contains 'group_label' values not found ",
-      "as keys in metadata$outcome_groups: {paste(invalid_groups, collapse=', ')}"
-    ))
-  }
 
-  invisible(TRUE)
+  invisible(TRUE) # Return TRUE if all checks passed or were skipped due to warnings
 }
 
 #' @title Add Study Data to a metawoRld Project
@@ -163,91 +198,6 @@
 #' @importFrom glue glue
 #' @importFrom tools file_path_sans_ext
 #' @importFrom stats na.omit
-#'
-#' @examples
-#' \dontrun{
-#' # --- Setup: Create a temporary project ---
-#' proj_path <- file.path(tempdir(), "add_study_test")
-#' create_metawoRld(
-#'   path = proj_path,
-#'   project_name = "Add Study Test",
-#'   project_description = "Testing add_study_data()"
-#' )
-#'
-#' # --- Prepare Sample Data ---
-#' study_meta <- list(
-#'   study_id = "PMID12345",
-#'   title = "Test Study One",
-#'   authors = list("Doe J"), year = 2023, journal = "Test Journal",
-#'   study_design = "Case-Control", country = "Testland", sample_type = "Serum",
-#'   outcome_groups = list(
-#'      grpA = list(name = "Cases", definition = "Has condition X"),
-#'      grpB = list(name = "Controls", definition = "Healthy participants")
-#'    ),
-#'   measurement_methods = list(
-#'     method1 = list(analysis_type = "ELISA", target_cytokine = "IL-TEST", unit = "pg/mL"),
-#'     method2 = list(analysis_type = "LC-MS", target_cytokine = "CYTO-X", unit = "ng/mL")
-#'    ),
-#'   datafindr_assessment = list(relevance_score = 0.9, rationale = "Looks good")
-#' )
-#'
-#' study_data <- data.frame(
-#'   measurement_id = c("m1", "m2", "m3", "m4"),
-#'   method_ref_id = c("method1", "method1", "method2", "method2"),
-#'   cytokine_name = c("IL-TEST", "IL-TEST", "CYTO-X", "CYTO-X"),
-#'   group_label = c("grpA", "grpB", "grpA", "grpB"),
-#'   gestational_age_timing = rep("T2", 4),
-#'   n = c(20, 40, 18, 35),
-#'   statistic_type = rep("mean_sd", 4),
-#'   value1 = c(10.1, 5.5, 105.2, 80.1),
-#'   value2 = c(2.1, 1.5, 25.0, 15.5),
-#'   notes = c("", "Lower detection limit", "", "")
-#' )
-#'
-#' # --- Add the study data ---
-#' add_study_data(
-#'   path = proj_path,
-#'   study_id = "PMID12345",
-#'   metadata_list = study_meta,
-#'   data_df = study_data
-#' )
-#'
-#' # Verify files were created
-#' list.files(file.path(proj_path, "data", "PMID12345"))
-#'
-#' # Try adding again without overwrite (should fail)
-#' tryCatch(
-#'   add_study_data(proj_path, "PMID12345", study_meta, study_data),
-#'   error = function(e) print(e$message)
-#' )
-#'
-#' # Add again with overwrite
-#' add_study_data(
-#'  path = proj_path,
-#'  study_id = "PMID12345",
-#'  metadata_list = study_meta, # Can modify data here if needed
-#'  data_df = study_data,
-#'  overwrite = TRUE
-#' )
-#'
-#' # --- Example of failed validation ---
-#' study_data_bad_link <- study_data
-#' study_data_bad_link$method_ref_id[1] <- "method_BAD" # Non-existent method
-#' tryCatch(
-#'   add_study_data(proj_path, "PMID_bad_link", study_meta, study_data_bad_link),
-#'   error = function(e) print(e$message)
-#' )
-#'
-#' study_meta_missing_req <- study_meta
-#' study_meta_missing_req$study_design <- NULL # Remove a required field
-#' tryCatch(
-#'   add_study_data(proj_path, "PMID_missing_req", study_meta_missing_req, study_data),
-#'   error = function(e) print(e$message)
-#' )
-#'
-#' # --- Clean up ---
-#' unlink(proj_path, recursive = TRUE)
-#' }
 add_study_data <- function(path = ".",
                            study_id,
                            metadata_list,
@@ -278,16 +228,15 @@ add_study_data <- function(path = ".",
     rlang::abort(glue::glue("Project configuration file '_metawoRld.yml' not found in: {proj_path}"))
   }
 
-  project_schema <- get_schema(proj_path)
-  if (is.null(project_schema)) {
-    rlang::abort(glue::glue("Could not retrieve schema from '_metawoRld.yml' in: {proj_path}"))
+  extraction_schema <- get_schema(proj_path, schema = "extraction")
+  if (is.null(extraction_schema)) {
+    rlang::abort(glue::glue("Could not retrieve schema in: {proj_path}"))
   }
 
   # --- Data Validation using Helpers ---
-  # Wrap in tryCatch? No, let aborts propagate.
-  .validate_metadata(metadata_list, project_schema, study_id)
-  .validate_data_df(data_df, project_schema, study_id)
-  .validate_linkages(data_df, metadata_list, project_schema, study_id)
+  .validate_metadata(metadata_list, extraction_schema, study_id)
+  .validate_data_df(data_df, extraction_schema, study_id)
+  .validate_linkages(data_df, metadata_list, extraction_schema, study_id)
   # If we reached here, validation passed
 
   # --- Directory Handling ---
@@ -320,7 +269,7 @@ add_study_data <- function(path = ".",
 
   tryCatch({
     # Use na = "" to write NA values as empty strings in CSV
-    readr::write_csv(data_df, file = data_file, na = "")
+    data.table::fwrite(data_df, file = data_file, na = "")
     rlang::inform(glue::glue("Written data to: {data_file}"))
   }, error = function(e) {
     rlang::abort(glue::glue("Failed to write data CSV for study '{study_id}': {e$message}"))

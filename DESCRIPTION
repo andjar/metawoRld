@@ -13,7 +13,9 @@ Depends:
   here,
   rcrossref,
   yaml,
-  dplyr
+  dplyr,
+Remotes:
+  andjar/DataFindR
 Imports:
     data.table,
     fs,

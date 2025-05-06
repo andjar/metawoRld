@@ -69,7 +69,10 @@
   }
 
   file.copy(
-    from = fs::path(template_dir, "quarto_study_templates", "study.qmd.tmpl"),
+    from = fs::path(system.file(
+      fs::path("quarto_study_templates"),
+      package = "metawoRld"
+    ), "study.qmd.tmpl"),
     to = fs::path(output_dir, "study.qmd.tmpl"),
     overwrite = FALSE
   )

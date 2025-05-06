@@ -1,0 +1,150 @@
+---
+title: "Demo"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Demo}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Creating a project
+
+```r
+library("metawoRld")
+library("ellmer")
+library("DataFindR")
+
+create_metawoRld(
+  path = "../neoFlow",
+  project_name = "Neonate flow data",
+  project_decsription = "An overview over cerebral Doppler flow data in neonates",
+  inclusion_criteria = c("Human neonates/infants below 1 years of age", "Cerebral Doppler Ultrasound", "Cerebral blood flow velocities and/or indices"),
+  exclusion_criteria = c("Case reports", "Animal study", "Not English", "Less than five participants")
+)
+
+setwd("../neoFlow")
+```
+
+## Performing a PubMed search
+
+```r
+library("easyPubMed")
+
+concept_1 <- '("Infant"[Mesh] OR "neonat*" OR "infant*")'
+concept_2 <- '("Ultrasonography"[Mesh] OR "Doppler" OR "ultraso*")'
+concept_3 <- '("Brain"[Mesh] OR "cerebr*" OR "brain")'
+
+my_query <- paste(concept_1, "AND", concept_2, "AND", concept_3)
+my_entrez_id <- get_pubmed_ids(my_query)
+
+dir.create("pubmed")
+
+search.res <- batch_pubmed_download(pubmed_query_string = my_query,
+                                 format = "xml",
+                                 batch_size = 20,
+                                 dest_file_prefix = "pubmed/",
+                                 encoding = "ASCII")
+
+```
+
+## Extract study metadata
+
+```r
+file_list <- list.files(path = "pubmed", full.names = TRUE)
+for (j in file_list) {
+  my_PM_list <- articles_to_list(pubmed_data = j)
+  for (i in seq_along(my_PM_list)) {
+    df_add_meta_manual(
+      identifier = custom_grep(my_PM_list[[i]], tag = "PMID", format = "char")[[1]],
+      meta = list(
+        identifier = custom_grep(my_PM_list[[i]], tag = "PMID", format = "char")[[1]],
+        type = "pmid",
+        title = custom_grep(my_PM_list[[i]], tag = "ArticleTitle", format = "char"),
+        abstract = custom_grep(my_PM_list[[i]], tag = "Abstract", format = "char")
+      ),
+      metawoRldPath = getwd())
+  }
+}
+```
+
+## Initiate connection to LLM
+
+```r
+chat_assessment <- chat_gemini(model = "gemini-2.5-flash-preview-04-17")
+chat_extraction <- chat_gemini(model = "gemini-2.5-pro-preview-03-25")
+```
+
+## Study assessment
+
+```r
+my_PM_list <- read_all_from_cache(type = "metadata", metawoRld_path = getwd())
+
+df_assess_batch(
+  chat_assessment,
+  identifiers = metawoRld::.desanitize_id(names(my_PM_list)),
+  metawoRld_path = getwd()
+)
+```
+
+To see study assessments, run
+
+```r
+k <- read_all_from_cache(type = "assessment", metawoRld_path = proj_path)
+kk <- rbindlist(lapply(names(k), function(x) {
+  data.table(
+    identifier = x,
+    identifier_clean = metawoRld::.desanitize_id(x),
+    assessment = k[[x]][["assessment"]][["decision"]],
+    score = k[[x]][["assessment"]][["score"]],
+    rationale = k[[x]][["assessment"]][["rationale"]],
+    assessment_tokens = k[[x]][["assessment"]][["assessment_tokens"]]
+  )
+}))
+```
+
+## Study acquisition
+
+This step is manual. Add the relevant pdf files to a folder, say `pdf`, and name them with PMID.
+
+## Data extraction
+
+```r
+identifiers <- metawoRld::.desanitize_id(gsub(".pdf", "", list.files(path = file.path(getwd(), "pdf"), pattern = "*.pdf"), fixed = TRUE))
+paper_paths <- list.files(path = file.path(getwd(), "pdf"), pattern = "*.pdf", full.names = TRUE)
+names(paper_paths) <- identifiers
+df_extract_batch(
+  chat_extraction,
+  identifiers = identifiers,
+  paper_paths = paper_paths,
+  metawoRld_path = getwd(),
+  force_extract = FALSE,
+  stop_on_error = FALSE
+)
+```
+
+To see extracted data, run
+
+```
+df <- read_all_from_cache(type = "extraction", metawoRld_path = getwd())
+```
+
+## Import data to metawoRld
+
+```
+df_import_batch(names(df),getwd())
+```
+
+## Generate project web page
+
+```
+generate_study_webpage(getwd())
+```
+
+And run `quarto render` in the project folder.
