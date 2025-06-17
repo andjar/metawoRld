@@ -183,12 +183,15 @@
 #'   if linkage validation is expected.
 #' @param data_df Data frame. A data frame containing the quantitative data,
 #'   conforming to the `data_fields` defined in the project's schema.
-#'   Must include `method_ref_id` and `group_label` columns matching keys in
+#'   Must include `method_ref_id` and `outcome_group_ref_id` columns matching keys in
 #'   `metadata_list` for linkage validation.
 #' @param overwrite Logical. If a directory for `study_id` already exists,
 #'   should its contents be overwritten? Defaults to `FALSE`.
 #'
 #' @return Invisibly returns the path to the created or updated study directory.
+#' @seealso
+#' \\code{\\link{validate_study}} for validating study data,
+#' \\code{\\link{add_study_template}} for creating template files.
 #' @export
 #'
 #' @importFrom fs path dir_exists file_exists dir_create path_norm file_copy
@@ -318,6 +321,9 @@ add_study_data <- function(path = ".",
 #' @importFrom glue glue
 #' @importFrom magrittr %>%
 #'
+#' @seealso
+#' \\code{\\link{create_metawoRld}} for project setup,
+#' \\code{\\link{add_study_data}} for adding individual study data.
 #' @examples
 #' \dontrun{
 #' # --- Setup: Create a temporary project and add two studies ---
@@ -627,6 +633,9 @@ load_metawoRld <- function(path = ".", verbose = TRUE) {
 #' # --- Clean up ---
 #' unlink(proj_path, recursive = TRUE)
 #' }
+#' @seealso
+#' \\code{\\link{add_study_data}} for adding data after populating templates,
+#' \\code{\\link{validate_study}} for validating manually edited templates.
 add_study_template <- function(path = ".",
                                study_id,
                                overwrite = FALSE) {
@@ -854,6 +863,9 @@ add_study_template <- function(path = ".",
 #' # --- Clean up ---
 #' unlink(proj_path, recursive = TRUE)
 #' }
+#' @seealso
+#' \\code{\\link{validate_world}} for validating all studies in a project,
+#' \\code{\\link{add_study_template}} for creating files that might need validation.
 validate_study <- function(study_id, path = ".", check_linkages = TRUE) {
 
   # --- Input Type Validation ---
@@ -1040,6 +1052,8 @@ validate_study <- function(study_id, path = ".", check_linkages = TRUE) {
 #' # --- Clean up ---
 #' unlink(proj_path, recursive = TRUE)
 #' }
+#' @seealso
+#' \\code{\\link{validate_study}} for validating individual studies.
 validate_world <- function(path = ".", check_linkages = TRUE) {
 
   # --- Input Validation ---
