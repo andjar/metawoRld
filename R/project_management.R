@@ -56,6 +56,11 @@
 #' # Clean up
 #' unlink(proj_path, recursive = TRUE)
 #' }
+#' @seealso
+#' \\code{\\link{add_study_data}} for adding data to the project,
+#' \\code{\\link{load_metawoRld}} for loading data from the project,
+#' \\code{\\link{get_schema}} for retrieving project schemas,
+#' \\code{\\link{generate_study_webpage}} for creating a project website.
 create_metawoRld <- function(path,
                              project_name,
                              project_description,
@@ -204,18 +209,16 @@ create_metawoRld <- function(path,
 
 #' @title Get the Schema from a metawoRld Project
 #'
-#' @description Reads the `_metawoRld.yml` configuration file from a project
-#' directory and returns the defined schema.
+#' @description Reads the specified schema configuration file (either `_extraction_schema.yml` or `_assessment_schema.yml`) from a project directory and returns its content.
 #'
 #' @param path Character string. The path to the root directory of the
 #'   metawoRld project. Defaults to the current working directory (`.`).
 #' @param schema Character string. Either `extraction` (default) or `assessment`.
 #'
-#' @return A list representing the schema defined in the project's
-#'   `_metawoRld.yml` file. This typically includes definitions for
-#'   `metadata_fields` and `data_fields`. Returns `NULL` invisibly and issues
-#'   a warning if the schema cannot be retrieved.
+#' @return A list representing the schema defined in the specified project schema file (e.g., `_extraction_schema.yml` or `_assessment_schema.yml`). Returns `NULL` invisibly and issues a warning if the schema cannot be retrieved.
 #'
+#' @seealso
+#' \\code{\\link{create_metawoRld}} for setting up a project which includes schema files.
 #' @export
 #'
 #' @importFrom fs path dir_exists file_exists

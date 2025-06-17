@@ -1,10 +1,10 @@
 Package: metawoRld
-Title: What the Package Does (One Line, Title Case)
+Title: A Framework for Managing Data in Living Systematic Reviews
 Version: 0.0.0.9000
 Authors@R: 
     person("Anders Hagen", "Jarmund", , "anders.h.jarmund@ntnu.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3923-1637"))
-Description: What the package does (one paragraph).
+Description: Provides a structured environment for creating, validating, and managing data for living systematic reviews. It facilitates reproducible data storage using YAML and CSV formats, and supports the generation of project websites to display review progress and findings. It is designed to integrate with the DataFindR package for AI-assisted data extraction from scientific literature.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

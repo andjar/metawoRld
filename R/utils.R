@@ -9,7 +9,6 @@
 #' @return A sanitized character string suitable for filenames.
 #' @noRd # Internal helper
 #' @keywords internal
-#' @export
 .sanitize_id <- function(id) {
   if (is.null(id) || id == "") return("")
   id <- gsub("/", "_fslash_", id, fixed = TRUE)
@@ -33,7 +32,6 @@
 #' @return The original identifier string.
 #' @noRd # Internal helper
 #' @keywords internal
-#' @export
 .desanitize_id <- function(sanitized_id) {
 
   if (is.null(sanitized_id)) return("")

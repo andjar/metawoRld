@@ -1,39 +1,28 @@
-#' Generate a Quarto Webpage from a Template
+#' Generate Base Project Webpage Files from Template
 #'
-#' Creates and optionally renders a Quarto webpage using package templates.
-#'
-#' @param data Your input data or parameters needed for the report.
-#' @param output_dir The directory where the Quarto files and rendered output
-#'   should be saved.
-#' @param template_name The name of the template directory within
-#'   `inst/quarto_templates` (e.g., "basic_report", "full_website").
-#' @param render Should the Quarto project/document be rendered? (Requires
-#'   the quarto package and Quarto CLI). Defaults to TRUE.
-#' @param open Should the rendered output be opened? Defaults to `render`.
-#' @param ... Additional arguments passed to glue::glue() for template filling.
-#'
-#' @return Invisibly returns the path to the main output file or directory.
+#' @description
+#' Internal helper function to copy and process base Quarto template files
+#' (like `_quarto.yml`, `index.qmd`) into a project directory.
+#' It uses `glue` to inject project-specific variables into the templates.
 #'
 #' @importFrom glue glue
 #' @importFrom fs dir_create path file_exists dir_copy file_copy
 #' @importFrom readr read_file write_file
+#' @importFrom utils browseURL
 #'
-#' @examples
-#' \dontrun{
-#'   # Create a temporary directory for output
-#'   temp_dir <- tempdir()
-#'   my_output_dir <- file.path(temp_dir, "my_report")
+#' @param proj_path Path to the metawoRld project.
+#' @param output_dir Directory where the processed template files are written.
+#'   Defaults to `proj_path`.
+#' @param template_folder Name of the base template folder within `inst/`
+#'   (e.g., "quarto_base_templates").
+#' @param render Logical. If TRUE, attempts to render the Quarto site/document.
+#' @param open Logical. If TRUE and `render` is TRUE, attempts to open the
+#'   rendered output.
+#' @param ... Additional arguments passed to `glue::glue()` for template filling.
 #'
-#'   generate_webpage(
-#'     data = list(title = "My Dynamic Report", value = 42),
-#'     output_dir = my_output_dir,
-#'     template_name = "basic_report",
-#'     report_date = Sys.Date() # Example of passing extra vars via ...
-#'   )
-#'
-#'   # Clean up
-#'   unlink(my_output_dir, recursive = TRUE)
-#' }
+#' @return Invisibly returns the render target path or the `output_dir`.
+#' @keywords internal
+#' @noRd
 .generate_webpage <- function(proj_path = ".",
                              output_dir = NA,
                              template_folder = "quarto_base_templates",
@@ -190,25 +179,84 @@
   invisible(render_target %||% output_dir) # Return render target or output dir
 }
 
-#' Generate a Quarto Webpage from a Template
+#' Generate Individual Study Webpages
 #'
-#' Creates and optionally renders a Quarto webpage using package templates.
+#' @title Generate Individual Study Webpages for a metawoRld Project
 #'
-#' @param data Your input data or parameters needed for the report.
-#' @param output_dir The directory where the Quarto files and rendered output
-#'   should be saved.
-#' @param template_name The name of the template directory within
-#'   `inst/quarto_templates` (e.g., "basic_report", "full_website").
-#' @param render Should the Quarto project/document be rendered? (Requires
-#'   the quarto package and Quarto CLI). Defaults to TRUE.
-#' @param open Should the rendered output be opened? Defaults to `render`.
-#' @param ... Additional arguments passed to glue::glue() for template filling.
+#' @description
+#' This function iterates through all studies within a `metawoRld` project.
+#' For each study, it uses the `study.qmd.tmpl` template and the study's
+#' metadata to generate an individual Quarto (`.qmd`) file. These files
+#' are saved in a `study/` subdirectory within the project.
 #'
-#' @return Invisibly returns the path to the main output file or directory.
-#' @export
-#' @importFrom glue glue
-#' @importFrom fs dir_create path file_exists dir_copy file_copy
+#' The generated `.qmd` files can then be rendered as part of the overall
+#' project website, allowing each study to have its own descriptive page.
+#'
 #' @importFrom readr read_file write_file
+#' @importFrom fs path dir_create
+#' @importFrom glue glue
+#'
+#' @param proj_path Character string. The path to the root directory of the
+#'   metawoRld project. Defaults to the current working directory (`.`).
+#'
+#' @return Invisibly returns the path to the `study` directory where
+#'   webpages are generated. The primary effect is file creation.
+#' @export
+#'
+#' @seealso
+#' \\code{\\link{create_metawoRld}} for creating a new project.
+#' \\code{\\link{load_metawoRld}} for loading project data which is used by this function.
+#' \\code{\\link{.generate_webpage}} for generating the main project website files.
+#'
+#' @examples
+#' \dontrun{
+#' # --- Setup: Create a temporary project and add a study ---
+#' temp_proj_path <- file.path(tempdir(), "study_page_test")
+#' create_metawoRld(
+#'   path = temp_proj_path,
+#'   project_name = "Study Webpage Test",
+#'   project_description = "Testing generate_study_webpage()"
+#' )
+#'
+#' # Add some dummy study data (required for the function to work)
+#' study_meta <- list(
+#'   study_id = "Study01", title = "My First Study",
+#'   authors = list("Author A", "Author B"), year = 2023,
+#'   journal = "Journal of Examples", study_design = "Cohort",
+#'   country = "R Land", sample_type = "Virtual",
+#'   abstract = "This is a sample abstract for the study.",
+#'   outcome_groups = list(
+#'     og1 = list(name = "Group 1", definition = "Participants in group 1.")
+#'   ),
+#'   measurement_methods = list(
+#'     mm1 = list(analysis_type = "Simulated", unit = "units")
+#'   )
+#' )
+#' study_data_df <- data.frame(
+#'   measurement_id = "m1",
+#'   method_ref_id = "mm1",
+#'   cytokine_name = "FakoStat",
+#'   outcome_group_ref_id = "og1",
+#'   n = 10,
+#'   value1 = 5,
+#'   statistic_type = "mean_sd"
+#' )
+#' add_study_data(temp_proj_path, "Study01", study_meta, study_data_df)
+#'
+#' # Generate the webpage for this study
+#' generate_study_webpage(proj_path = temp_proj_path)
+#'
+#' # Check for the created file:
+#' study_page_file <- file.path(temp_proj_path, "study", "Study01.qmd")
+#' print(paste("Study page generated:", fs::file_exists(study_page_file)))
+#' if (fs::file_exists(study_page_file)) {
+#'   # cat(readLines(study_page_file), sep = "
+") # View content
+#' }
+#'
+#' # --- Clean up ---
+#' unlink(temp_proj_path, recursive = TRUE)
+#' }
 generate_study_webpage <- function(proj_path = ".") {
 
   template_content <- readr::read_file(fs::path(proj_path, "study.qmd.tmpl"))
