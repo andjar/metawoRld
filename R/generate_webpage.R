@@ -18,6 +18,8 @@
 #' @param render Logical. If TRUE, attempts to render the Quarto site/document.
 #' @param open Logical. If TRUE and `render` is TRUE, attempts to open the
 #'   rendered output.
+#' @param overwrite Logical. If TRUE, existing files in `output_dir` are
+#'   overwritten. If FALSE, existing files are skipped.
 #' @param ... Additional arguments passed to `glue::glue()` for template filling.
 #'
 #' @return Invisibly returns the render target path or the `output_dir`.
@@ -28,6 +30,7 @@
                              template_folder = "quarto_base_templates",
                              render = FALSE,
                              open = render,
+                             overwrite = FALSE,
                              ...) {
 
   if (is.na(output_dir)) {
@@ -83,8 +86,10 @@
   qmd_files_to_render <- character() # Keep track of main qmd files
 
   template_files <- list.files(template_dir, full.names = TRUE)
-  existing_files <- list.files(output_dir, full.names = TRUE)
-  template_files <- template_files[!basename(template_files) %in% basename(existing_files)]
+  if (!overwrite) {
+    existing_files <- list.files(output_dir, full.names = TRUE)
+    template_files <- template_files[!basename(template_files) %in% basename(existing_files)]
+  }
 
   for (template_file_path in template_files) {
     output_file_path <- fs::path(output_dir, basename(template_file_path))
@@ -177,6 +182,74 @@
 
   # --- Return Output Path ---
   invisible(render_target %||% output_dir) # Return render target or output dir
+}
+
+#' Generate or Update the Full Project Website
+#'
+#' @description
+#' This is a high-level function that orchestrates the generation of all
+#' components of the metawoRld project's Quarto website. It is designed
+#' to be used in automated contexts like GitHub Actions.
+#'
+#' The function performs the following steps:
+#' 1. Generates the base website structure (e.g., `_quarto.yml`, `index.qmd`)
+#'    using the project's configuration, overwriting existing files to ensure
+#'    the site is up-to-date with the current package templates.
+#' 2. Generates individual `.qmd` pages for each study found in the project.
+#' 3. Renders the entire Quarto project to produce the final website (e.g., in `_site/`).
+#'
+#' @param proj_path Path to the metawoRld project. Defaults to the current
+#'   working directory (`.`).
+#' @param render Logical. If `TRUE` (the default), the function will call
+#'   `quarto::quarto_render()` to build the website after generating the source
+#'   files. Requires the `quarto` package.
+#'
+#' @return Invisibly returns the project path. The primary effect is the
+#'   creation and rendering of website files.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Setup a temporary project for demonstration
+#' temp_dir <- tempfile("metawoRld-website")
+#' create_metawoRld(
+#'   path = temp_dir,
+#'   project_name = "Website Example",
+#'   project_description = "A project to demonstrate website generation."
+#' )
+#'
+#' # Generate the full website
+#' generate_website(proj_path = temp_dir)
+#'
+#' # Check if the output directory exists
+#' site_dir <- file.path(temp_dir, "_site")
+#' print(paste("Website generated in:", site_dir, "-", dir.exists(site_dir)))
+#'
+#' # Clean up
+#' unlink(temp_dir, recursive = TRUE)
+#' }
+generate_website <- function(proj_path = ".", render = TRUE) {
+
+  # Step 1: Generate base files, force overwrite
+  .generate_webpage(proj_path = proj_path, overwrite = TRUE, render = FALSE)
+
+  # Step 2: Generate individual study pages
+  generate_study_webpage(proj_path = proj_path)
+
+  # Step 3: Render the full quarto site
+  if (render) {
+    if (!requireNamespace("quarto", quietly = TRUE)) {
+      warning("The 'quarto' package is not installed. Cannot render the website. ",
+              "Please install it with: install.packages('quarto')",
+              call. = FALSE)
+      return(invisible(proj_path))
+    }
+    message("Rendering Quarto website...")
+    quarto::quarto_render(input = proj_path, as_job = FALSE)
+    message("Website rendering complete.")
+  }
+
+  invisible(proj_path)
 }
 
 #' Generate Individual Study Webpages
