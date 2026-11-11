@@ -1,0 +1,14 @@
+---
+{{front_matter}}
+---
+
+{{summary}}
+
+{{sections}}
+
+### Data
+
+```{r}
+d <- data.table::fread("{{data_path}}", na.strings = "")
+DT::datatable(d, rownames = FALSE, options = list(pageLength = 25, scrollX = TRUE))
+```

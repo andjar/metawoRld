@@ -1,0 +1,24 @@
+---
+title: Studies
+---
+
+```{r}
+world <- metawoRld::load_metawoRld(".", verbose = FALSE)
+st <- world$studies
+link <- paste0("study/", utils::URLencode(metawoRld::sanitize_id(st$study_id), reserved = TRUE), ".html")
+title <- if ("title" %in% names(st)) st$title else st$study_id
+st$title <- paste0("<a href='", link, "'>", htmltools::htmlEscape(title), "</a>")
+show <- intersect(c("title", "authors", "year", "journal", "country", "study_design"), names(st))
+```
+
+The review includes `r nrow(st)` studies. Click a title to see the study's details and data.
+
+```{r}
+DT::datatable(
+  st[, show, drop = FALSE],
+  escape = setdiff(seq_along(show), 1),
+  rownames = FALSE,
+  filter = "top",
+  options = list(pageLength = 25, autoWidth = TRUE)
+)
+```

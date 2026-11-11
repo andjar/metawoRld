@@ -2,71 +2,63 @@
 % Please edit documentation in R/project_management.R
 \name{create_metawoRld}
 \alias{create_metawoRld}
-\title{Create a New metawoRld Project}
+\title{Create a new metawoRld project}
 \usage{
 create_metawoRld(
   path,
   project_name,
   project_description,
-  schema = NULL,
+  inclusion_criteria = character(0),
+  exclusion_criteria = character(0),
   git_init = TRUE,
+  website = TRUE,
   ...
 )
 }
 \arguments{
-\item{path}{Character string. The path where the new project directory should be created.
-The directory itself will be created and should not already exist.}
+\item{path}{Folder to create. Must not exist yet.}
 
-\item{project_name}{Character string. A short, descriptive name for the project.}
+\item{project_name}{Short name of the review.}
 
-\item{project_description}{Character string. A longer description of the project's scope.}
+\item{project_description}{One or two sentences describing the scope.}
 
-\item{schema}{List. A list defining the structure for metadata and data files.
-If NULL (default), a standard default schema is used. See details.}
+\item{inclusion_criteria, exclusion_criteria}{Character vectors of criteria
+used for screening.}
 
-\item{git_init}{Logical. Initialize a Git repository in the project directory? Defaults to TRUE.}
+\item{git_init}{Initialise a Git repository? Defaults to \code{TRUE}.}
 
-\item{...}{Additional key-value pairs to add to the root \verb{_metawoRld.yml} file.}
+\item{website}{Add Quarto website templates? Defaults to \code{TRUE}.}
+
+\item{...}{Further named values stored in \verb{_metawoRld.yml}
+(e.g. \code{search_query = "..."}).}
 }
 \value{
-Invisibly returns the normalized path to the created project directory.
+The project path, invisibly.
 }
 \description{
-Initializes the directory structure, configuration file, and Git repository
-for a new metawoRld living review project.
+Creates the project folder with a configuration file (\verb{_metawoRld.yml}),
+the default schema and prompt templates, a \verb{data/} folder, a README,
+website templates and (optionally) a Git repository.
 }
 \details{
-The function creates the main project directory at \code{path} and sets up the following:
+The project contains:
 \itemize{
-\item{\verb{_metawoRld.yml}: The main configuration file containing project metadata
-and the data schema.}
-\item{\verb{data/}: An empty directory to store study-specific subdirectories.}
-\item{\verb{.git/}: If \code{git_init = TRUE}, initializes a Git repository.}
-\item{\code{.gitignore}: A standard R/.git/.quarto ignore file.}
-\item{\code{README.md}: A basic README file.}
+\item \verb{_metawoRld.yml}: project name, description, criteria and other settings.
+\item \verb{_extraction_schema.yml}, \verb{_assessment_schema.yml}: what is extracted and
+how screening results look. Edit these to fit your review.
+\item \verb{_extraction_prompt.txt}, \verb{_assessment_prompt.txt}: LLM prompts used by
+DataFindR. \code{{{placeholders}}} are filled in automatically.
+\item \verb{data/<study>/metadata.yml} and \verb{data/<study>/data.csv} for each study.
 }
-
-The default schema defines expected fields for \code{metadata.yml} and \code{data.csv} files
-within each study folder. You can provide a custom schema using the \code{schema} argument.
 }
 \examples{
 \dontrun{
-# Create a project in a temporary directory
-proj_path <- file.path(tempdir(), "my_cytokine_review")
-
 create_metawoRld(
-  path = proj_path,
-  project_name = "Serum Cytokines in Pre-eclampsia",
-  project_description = "A living review of serum cytokine levels associated with PE.",
-  inclusion_criteria = c("Human studies", "Serum samples", "Preeclampsia outcome"),
-  search_keywords = list(mandatory = c("cytokine", "serum", "preeclampsia"),
-                         optional = c("pregnancy", "biomarker"))
+  file.path(tempdir(), "my_review"),
+  project_name = "Biomarker X in pregnancy",
+  project_description = "Living review of maternal serum levels of X.",
+  inclusion_criteria = c("Human pregnancy", "Serum or plasma levels of X reported"),
+  exclusion_criteria = c("Animal study", "Review or case report")
 )
-
-# List files in the new project
-list.files(proj_path, recursive = TRUE)
-
-# Clean up
-unlink(proj_path, recursive = TRUE)
 }
 }

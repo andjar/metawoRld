@@ -1,17 +1,24 @@
-url: https://andjar.github.io/metawoRld # Replace with your site URL if deploying
+url: https://andjar.github.io/metawoRld
 template:
   bootstrap: 5
 
 navbar:
-  left:
-    - text: "Get Started"
-      href: articles/conceptual_overview.html
-    - text: "Reference"
-      href: reference/index.html
-    - text: "Articles"
-      menu:
-        - text: "Conceptual Overview"
-          href: articles/conceptual_overview.html
-        # Add other articles here if created
-    - text: "DataFindR Pkg" # Link to the other package's site
-      href: https://andjar.github.io/DataFindR # Replace with DataFindR site URL
+  structure:
+    left: [intro, reference, articles]
+    right: [datafindr, github]
+  components:
+    datafindr:
+      text: DataFindR
+      href: https://andjar.github.io/DataFindR
+
+reference:
+  - title: Projects
+    contents: [create_metawoRld, use_templates, read_config, get_schema]
+  - title: Study data
+    contents: [add_study_data, add_study_template, read_study, list_studies, load_metawoRld]
+  - title: Validation
+    contents: [validate_study, validate_world, validate_against_schema, validate_links, schema_refs, schema_col_types]
+  - title: Website
+    contents: [generate_website, generate_study_webpage, use_github_action_quarto]
+  - title: Identifiers
+    contents: [normalize_identifier, identifier_type, sanitize_id]

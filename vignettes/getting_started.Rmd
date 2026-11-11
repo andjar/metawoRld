@@ -1,0 +1,110 @@
+---
+title: "Getting started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(metawoRld)
+```
+
+## Create a project
+
+```{r}
+path <- file.path(tempdir(), "neoflow")
+create_metawoRld(
+  path,
+  project_name = "Cerebral Doppler in neonates",
+  project_description = "Reference values for cerebral blood flow velocities in neonates.",
+  inclusion_criteria = c("Human neonates or infants under 1 year",
+                         "Cerebral Doppler ultrasound",
+                         "Flow velocities or indices reported"),
+  exclusion_criteria = c("Case report", "Animal study", "Fewer than five participants"),
+  git_init = FALSE
+)
+list.files(path)
+```
+
+Open `_extraction_schema.yml` and adapt it to your review before extracting
+data. The default is generic.
+
+## Add a study by hand
+
+```{r}
+add_study_data(
+  path,
+  study_id = "10.1000/example.1",
+  metadata = list(
+    title = "Cerebral blood flow in term neonates",
+    authors = c("Smith J", "Doe A"), year = 2021L, country = "Norway",
+    study_design = "Prospective cohort", population = "Healthy term neonates",
+    methods = list(list(method_id = "m1", name = "Pulsed Doppler, middle cerebral artery", unit = "cm/s")),
+    groups = list(list(group_id = "g1", name = "Term neonates", sample_size = 40L))
+  ),
+  data = data.frame(
+    measurement_id = c("dp1", "dp2"), method_id = "m1", group_id = "g1",
+    variable_name = c("Peak systolic velocity", "Resistance index"),
+    timepoint = "Day 1", sample_size = 40, statistic_type = "mean_sd",
+    value1 = c(35.2, 0.72), value2 = c(6.1, 0.06), source = "Table 2"
+  )
+)
+```
+
+Problems are reported all at once. For example, using a group that is not
+defined:
+
+```{r, error = TRUE}
+add_study_data(path, "bad", metadata = list(title = "x"),
+               data = data.frame(group_id = "g9"))
+```
+
+## Load the data
+
+```{r}
+world <- load_metawoRld(path)
+world$studies
+world$studies_data[, c("study_id", "variable_name", "value1", "value2", "method_unit", "group_name")]
+```
+
+## Screening and extraction with DataFindR
+
+```{r, eval = FALSE}
+library(DataFindR)
+Sys.setenv(DATAFINDR_EMAIL = "you@example.org")   # polite use of NCBI/Crossref
+
+# 1. Records
+hits <- df_search_pubmed(
+  '("Infant, Newborn"[Mesh] OR neonat*) AND Doppler AND (cerebral OR brain)',
+  path
+)
+
+# 2. Screening (parallel; use mode = "batch" for half price with OpenAI/Anthropic/Gemini)
+chat_screen <- ellmer::chat_openai(model = "gpt-4.1-mini")
+screen <- df_assess_batch(chat_screen, hits$identifier, path)
+df_shiny_assess(path, chat_screen)          # review "Needs manual review"
+
+# 3. Extraction from full texts saved as fulltext/<df_fulltext_filename(id)>
+df_pending_extraction(path)
+chat_extract <- ellmer::chat_anthropic()
+df_extract_batch(chat_extract, file.path(path, "fulltext"), path)
+df_shiny_extract(path, chat_extract, fulltext_dir = file.path(path, "fulltext"))
+
+# 4. Import and check
+df_import_batch(metawoRld_path = path)
+df_status(path)
+df_prisma_counts(path)
+```
+
+## Publish
+
+```{r, eval = FALSE}
+generate_website(path)            # renders into _site/
+use_github_action_quarto(path)    # rebuild on GitHub at every push
+```

@@ -1,31 +1,40 @@
 Package: metawoRld
 Title: A Framework for Managing Data in Living Systematic Reviews
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: 
     person("Anders Hagen", "Jarmund", , "anders.h.jarmund@ntnu.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3923-1637"))
-Description: Provides a structured environment for creating, validating, and managing data for living systematic reviews. It facilitates reproducible data storage using YAML and CSV formats, and supports the generation of project websites to display review progress and findings. It is designed to integrate with the DataFindR package for AI-assisted data extraction from scientific literature.
+Description: Provides a structured environment for creating, validating and
+    managing data for living systematic reviews. Study metadata and results are
+    stored as YAML and CSV files that are validated against a project-specific
+    schema, can be loaded for analysis, and can be published as a Quarto
+    website. Designed to work with the 'DataFindR' package for AI-assisted
+    screening and data extraction.
 License: GPL (>= 3)
+URL: https://github.com/andjar/metawoRld
+BugReports: https://github.com/andjar/metawoRld/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.1
 Depends:
-  here,
-  rcrossref,
-  yaml,
-  dplyr,
-Remotes:
-  andjar/DataFindR
+    R (>= 4.1.0)
 Imports:
     data.table,
+    dplyr,
     fs,
     git2r,
+    glue,
     readr,
     rlang,
-    purrr
-Suggests: 
+    tools,
+    utils,
+    yaml
+Suggests:
+    DT,
+    htmltools,
     knitr,
-    rmarkdown,
     quarto,
-    DT
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
 VignetteBuilder: knitr

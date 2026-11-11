@@ -1,47 +1,54 @@
-# metawoRld: A Framework for Structured Living Review Data
+# metawoRld
 
-<!-- badges: start -->
-[![Conceptual Overview](https://img.shields.io/badge/Overview-Conceptual%20Pipeline-blue)](articles/conceptual_overview.html) <!-- Adjust link if site structure differs -->
-<!-- badges: end -->
+Structured, validated, version-controlled data for living systematic reviews.
 
-The `metawoRld` package provides the foundational structure for creating and managing data for living systematic reviews. It helps ensure data is consistently structured, validated, stored reproducibly (using YAML/CSV), and can be easily loaded for analysis or presentation.
+A metawoRld project is a folder (usually a Git repository) holding:
 
-It is designed to work in tandem with the `DataFindR` package, which uses AI to help populate the `metawoRld` project with data extracted from scientific literature.
+* the review's settings and screening criteria (`_metawoRld.yml`),
+* a schema describing what is extracted from each study (`_extraction_schema.yml`),
+* one folder per study with `metadata.yml` and `data.csv`,
+* a Quarto website that can be published automatically.
 
-**Please see the [Conceptual Overview vignette](articles/conceptual_overview.html) for a detailed explanation of the entire living review pipeline and how `metawoRld` and `DataFindR` work together.**
+It works on its own with manual data entry, and with
+[DataFindR](https://github.com/andjar/DataFindR), which uses LLMs to screen
+studies and extract data into the project.
+
+See `vignette("getting_started")` and `vignette("conceptual_overview")`.
 
 ## Installation
 
 ```r
-# Assuming metawoRld is on GitHub (replace 'andjar/metawoRld')
 # install.packages("remotes")
 remotes::install_github("andjar/metawoRld")
-
-# You will likely also need DataFindR
-# remotes::install_github("andjar/DataFindR")
+remotes::install_github("andjar/DataFindR")   # optional, for LLM screening/extraction
 ```
 
-## Example: Creating a Project
+## Example
 
 ```r
-# library(metawoRld)
-# 
-# proj_path <- file.path(tempdir(), "my_living_review")
-# 
-# # Clean up previous run if needed
-# if(dir.exists(proj_path)) unlink(proj_path, recursive = TRUE)
-# 
-# create_metawoRld(
-#   path = proj_path,
-#   project_name = "Cytokines in Pregnancy",
-#   project_description = "A test living review project.",
-#   # Define criteria and schema details here or rely on defaults
-#   inclusion_criteria = c("Human", "Pregnancy", "Serum/Plasma", "Cytokine"),
-#   exclusion_criteria = c("Animal", "Review", "Non-English")
-# )
-# 
-# list.files(proj_path)
+library(metawoRld)
 
-# Clean up
-# unlink(proj_path, recursive = TRUE)
+create_metawoRld(
+  "my_review",
+  project_name = "Biomarker X in pregnancy",
+  project_description = "Living review of maternal serum levels of X.",
+  inclusion_criteria = c("Human pregnancy", "Serum or plasma X reported"),
+  exclusion_criteria = c("Animal study", "Review or case report")
+)
+
+add_study_data("my_review", "10.1000/abc", metadata = list(...), data = my_data_frame)
+validate_world("my_review")
+world <- load_metawoRld("my_review")
+generate_website("my_review")
 ```
+
+## Main functions
+
+| Task | Function |
+|---|---|
+| Create a project / refresh templates | `create_metawoRld()`, `use_templates()` |
+| Add data | `add_study_data()`, `add_study_template()` |
+| Validate | `validate_study()`, `validate_world()`, `validate_against_schema()`, `validate_links()` |
+| Load | `load_metawoRld()`, `read_study()`, `list_studies()` |
+| Website | `generate_website()`, `use_github_action_quarto()` |
+| Identifiers | `normalize_identifier()`, `sanitize_id()`, `desanitize_id()` |

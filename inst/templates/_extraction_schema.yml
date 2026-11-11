@@ -1,0 +1,176 @@
+# metawoRld extraction schema
+#
+# This file defines what is extracted from each study and how it is stored:
+#   - `metadata`    -> data/<study>/metadata.yml
+#   - `data_points` -> data/<study>/data.csv (one row per reported statistic)
+#
+# Node keys (all start with an underscore):
+#   _type         object | array | string | integer | number | boolean | enum
+#   _description  Shown to the LLM; be specific.
+#   _required     Defaults to true. Set to false for optional fields.
+#   _items        Item definition for arrays.
+#   _values       Allowed values for enums.
+#   _ref          (data_points fields only) "<metadata array>.<id field>".
+#                 Values must match an id defined in that metadata array.
+#                 metawoRld validates the link and load_metawoRld() joins the
+#                 referenced fields onto the data.
+#   _ref_allow    Extra values accepted for a _ref field (e.g. POP_CHAR).
+#
+# Avoid the field names y, n, yes, no, on, off, true and false: YAML reads
+# them as TRUE/FALSE.
+#
+# The schema is deliberately generic. Adapt descriptions, add fields or
+# tighten enums for your review; keep the `_ref` links consistent.
+
+_type: object
+_description: "Study metadata and every quantitative result reported in a scientific paper."
+
+metadata:
+  _type: object
+  _description: "Bibliographic and design information about the study."
+  study_id:
+    _type: string
+    _description: "Study identifier. Use the DOI if available, otherwise the PMID."
+  title:
+    _type: string
+    _description: "Full study title."
+  authors:
+    _type: array
+    _description: "Author names in order, e.g. 'Smith J'."
+    _items:
+      _type: string
+  year:
+    _type: integer
+    _description: "Publication year."
+  journal:
+    _type: string
+    _description: "Journal name."
+    _required: false
+  doi:
+    _type: string
+    _description: "DOI, if available."
+    _required: false
+  pmid:
+    _type: string
+    _description: "PubMed ID, if available."
+    _required: false
+  country:
+    _type: array
+    _description: "Countries where participants were recruited."
+    _items:
+      _type: string
+  study_design:
+    _type: string
+    _description: "Primary design as reported, e.g. 'Prospective cohort', 'Case-control', 'Cross-sectional', 'RCT'."
+  population:
+    _type: string
+    _description: "Brief description of the study population and setting."
+  methods:
+    _type: array
+    _description: "Every distinct measurement method or instrument used to produce the reported values."
+    _items:
+      _type: object
+      method_id:
+        _type: string
+        _description: "Short unique id for this method, e.g. 'm1'. Referenced by data_points.method_id."
+      name:
+        _type: string
+        _description: "What was measured and how, e.g. 'Serum IL-6 by ELISA (R&D Systems)'."
+      sample_type:
+        _type: string
+        _description: "Sample or source, e.g. 'Serum', 'Plasma', 'Ultrasound', 'Questionnaire'."
+        _required: false
+      unit:
+        _type: string
+        _description: "Unit of measurement, e.g. 'pg/mL'. Use '' if unitless."
+        _required: false
+  groups:
+    _type: array
+    _description: "Every participant group for which results are reported (including 'All participants' if results are pooled)."
+    _items:
+      _type: object
+      group_id:
+        _type: string
+        _description: "Short unique id for this group, e.g. 'g1'. Referenced by data_points.group_id."
+      name:
+        _type: string
+        _description: "Descriptive group name, e.g. 'Preeclampsia', 'Controls'."
+      definition:
+        _type: string
+        _description: "How group membership was defined."
+        _required: false
+      sample_size:
+        _type: integer
+        _description: "Number of participants in the group."
+        _required: false
+  abstract:
+    _type: string
+    _description: "Abstract text."
+    _required: false
+  notes:
+    _type: string
+    _description: "Anything a reviewer should know (e.g. overlapping cohorts, unclear reporting)."
+    _required: false
+
+data_points:
+  _type: array
+  _description: "One entry per reported statistic (e.g. the mean and the median of the same variable are two entries). Include population characteristics using method_id 'POP_CHAR'."
+  _items:
+    _type: object
+    measurement_id:
+      _type: string
+      _description: "Unique sequential id, e.g. 'dp1'."
+    method_id:
+      _type: string
+      _description: "A metadata.methods[].method_id, or 'POP_CHAR' for population characteristics such as age or BMI."
+      _ref: methods.method_id
+      _ref_allow: [POP_CHAR]
+    group_id:
+      _type: string
+      _description: "A metadata.groups[].group_id."
+      _ref: groups.group_id
+    variable_name:
+      _type: string
+      _description: "Name of the variable, e.g. 'IL-6', 'Age', 'Pulsatility index'."
+    timepoint:
+      _type: string
+      _description: "When the value was measured, e.g. 'Gestational week 24-28', 'Baseline', 'Day 3'. Use '' if not applicable."
+      _required: false
+    sample_size:
+      _type: integer
+      _description: "Number of participants contributing to this statistic."
+    statistic_type:
+      _type: enum
+      _description: "How value1-value3 should be read."
+      _values: [mean_sd, mean_se, mean_ci95, median_iqr, median_range, n_percent, count, proportion, geometric_mean_sd, other]
+    value1:
+      _type: number
+      _description: "Central value: mean, median, count or proportion."
+    value2:
+      _type: number
+      _description: "SD, SE, lower CI/IQR/range bound, or percentage (n_percent). Null if not reported."
+      _required: false
+    value3:
+      _type: number
+      _description: "Upper CI/IQR/range bound. Null if not applicable."
+      _required: false
+    unit:
+      _type: string
+      _description: "Unit, if different from the method's unit or for POP_CHAR rows."
+      _required: false
+    comparison_group_id:
+      _type: string
+      _description: "group_id of the comparison group for p_value, if any."
+      _required: false
+      _ref: groups.group_id
+    p_value:
+      _type: string
+      _description: "P-value as reported, e.g. '0.03', '<0.001', 'NS'."
+      _required: false
+    source:
+      _type: string
+      _description: "Where in the paper the value is reported, e.g. 'Table 2', 'Figure 3 legend', 'Results p. 5'."
+    notes:
+      _type: string
+      _description: "Adjustments, subgroups or other caveats."
+      _required: false
