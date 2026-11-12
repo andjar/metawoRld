@@ -59,10 +59,37 @@
 - [`canonical_variable()`](https://andjar.github.io/metawoRld/reference/canonical_variable.md)
   : Map variable names to their canonical names
 
+## Meta-analysis
+
+- [`read_analyses()`](https://andjar.github.io/metawoRld/reference/read_analyses.md)
+  : Read the project's meta-analysis definitions
+- [`analysis_data()`](https://andjar.github.io/metawoRld/reference/analysis_data.md)
+  : Data used in a meta-analysis
+- [`run_meta_analysis()`](https://andjar.github.io/metawoRld/reference/run_meta_analysis.md)
+  : Run a meta-analysis
+- [`run_all_meta_analyses()`](https://andjar.github.io/metawoRld/reference/run_all_meta_analyses.md)
+  : Run all meta-analyses of a project
+- [`summary_of_findings()`](https://andjar.github.io/metawoRld/reference/summary_of_findings.md)
+  : Summary of findings table
+- [`plot_forest()`](https://andjar.github.io/metawoRld/reference/plot_forest.md)
+  : Forest plot of a meta-analysis
+- [`plot_cumulative()`](https://andjar.github.io/metawoRld/reference/plot_cumulative.md)
+  : Cumulative meta-analysis plot
+- [`plot_variable()`](https://andjar.github.io/metawoRld/reference/plot_variable.md)
+  : Plot all reported values of a variable
+- [`to_mean_sd()`](https://andjar.github.io/metawoRld/reference/to_mean_sd.md)
+  : Convert summary statistics to mean and SD
+- [`group_category()`](https://andjar.github.io/metawoRld/reference/group_category.md)
+  : Assign study groups to group categories
+- [`rules_for_prompt()`](https://andjar.github.io/metawoRld/reference/rules_for_prompt.md)
+  : The project vocabulary formatted for an LLM prompt
+
 ## Website
 
 - [`generate_website()`](https://andjar.github.io/metawoRld/reference/generate_website.md)
   : Generate (and render) the project website
+- [`generate_dashboard()`](https://andjar.github.io/metawoRld/reference/generate_dashboard.md)
+  : Generate the dashboard pages of the website
 - [`generate_study_webpage()`](https://andjar.github.io/metawoRld/reference/generate_study_webpage.md)
   : Generate one web page per study
 - [`use_github_action_quarto()`](https://andjar.github.io/metawoRld/reference/use_github_action_quarto.md)

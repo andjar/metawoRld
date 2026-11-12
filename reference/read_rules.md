@@ -21,5 +21,6 @@ read_rules(path = ".")
 
 ## Value
 
-A list with `variables` (named list) and `checks` (named list of
-severities: `"error"`, `"warning"` or `"off"`).
+A list with `variables` (named list), `group_categories` (named list)
+and `checks` (named list of severities: `"error"`, `"warning"` or
+`"off"`).

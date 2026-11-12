@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="index.html">metawoRld</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,7 +58,8 @@
 <li>the review’s settings and screening criteria (<code>_metawoRld.yml</code>),</li>
 <li>a schema describing what is extracted from each study (<code>_extraction_schema.yml</code>),</li>
 <li>one folder per study with <code>metadata.yml</code> and <code>data.csv</code>,</li>
-<li>a Quarto website that can be published automatically.</li>
+<li>meta-analyses defined in <code>_analyses.yml</code>, re-run whenever data change,</li>
+<li>a Quarto dashboard website (summary of findings, forest plots, cumulative meta-analyses, results per variable) that can be published automatically.</li>
 </ul>
 <p>It works on its own with manual data entry, and with <a href="https://github.com/andjar/DataFindR" class="external-link">DataFindR</a>, which uses LLMs to screen studies and extract data into the project.</p>
 <p>See <code><a href="articles/getting_started.html">vignette("getting_started")</a></code> and <code><a href="articles/conceptual_overview.html">vignette("conceptual_overview")</a></code>.</p>
@@ -139,9 +140,15 @@
 </td>
 </tr>
 <tr>
-<td>Website</td>
+<td>Living meta-analysis (<code>_analyses.yml</code>)</td>
 <td>
-<code><a href="reference/generate_website.html">generate_website()</a></code>, <code><a href="reference/use_github_action_quarto.html">use_github_action_quarto()</a></code>
+<code><a href="reference/read_analyses.html">read_analyses()</a></code>, <code><a href="reference/run_meta_analysis.html">run_meta_analysis()</a></code>, <code><a href="reference/run_all_meta_analyses.html">run_all_meta_analyses()</a></code>, <code><a href="reference/summary_of_findings.html">summary_of_findings()</a></code>, <code><a href="reference/plot_forest.html">plot_forest()</a></code>, <code><a href="reference/plot_cumulative.html">plot_cumulative()</a></code>, <code><a href="reference/plot_variable.html">plot_variable()</a></code>, <code><a href="reference/to_mean_sd.html">to_mean_sd()</a></code>
+</td>
+</tr>
+<tr>
+<td>Website dashboard</td>
+<td>
+<code><a href="reference/generate_website.html">generate_website()</a></code>, <code><a href="reference/generate_dashboard.html">generate_dashboard()</a></code>, <code><a href="reference/use_github_action_quarto.html">use_github_action_quarto()</a></code>
 </td>
 </tr>
 <tr>

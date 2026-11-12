@@ -20,13 +20,13 @@ create_metawoRld(
   exclusion_criteria = c("Case report", "Animal study", "Fewer than five participants"),
   git_init = FALSE
 )
-#> Created metawoRld project at /tmp/RtmpRQyDvj/neoflow
+#> Created metawoRld project at /tmp/Rtmp8WL2oL/neoflow
 list.files(path)
-#>  [1] "_assessment_prompt.txt" "_assessment_schema.yml" "_extraction_prompt.txt"
-#>  [4] "_extraction_schema.yml" "_metawoRld.yml"         "_quarto.yml"           
-#>  [7] "_rules.yml"             "data"                   "data.qmd"              
-#> [10] "index.qmd"              "README.md"              "studies.qmd"           
-#> [13] "study.qmd.tmpl"         "styles.css"
+#>  [1] "_analyses.yml"          "_assessment_prompt.txt" "_assessment_schema.yml"
+#>  [4] "_extraction_prompt.txt" "_extraction_schema.yml" "_metawoRld.yml"        
+#>  [7] "_quarto.yml"            "_rules.yml"             "data"                  
+#> [10] "data.qmd"               "index.qmd"              "README.md"             
+#> [13] "studies.qmd"            "study.qmd.tmpl"         "styles.css"
 ```
 
 Open `_extraction_schema.yml` and adapt it to your review before
@@ -131,8 +131,8 @@ verification_status(path)
 #> # A tibble: 2 × 6
 #>   study_id          measurement_id status   reviewer timestamp             note 
 #>   <chr>             <chr>          <chr>    <chr>    <chr>                 <chr>
-#> 1 10.1000/example.1 dp1            verified AHJ      2026-11-12T23:36:41+… ""   
-#> 2 10.1000/example.1 dp2            verified AHJ      2026-11-12T23:36:41+… "Cor…
+#> 1 10.1000/example.1 dp1            verified AHJ      2026-11-12T23:38:23+… ""   
+#> 2 10.1000/example.1 dp2            verified AHJ      2026-11-12T23:38:23+… "Cor…
 ```
 
 If a value changes after review (for example after re-extraction) its
@@ -176,10 +176,37 @@ df_status(path)
 df_prisma_counts(path)
 ```
 
+## Living meta-analysis
+
+Define meta-analyses in `_analyses.yml`. Group categories (e.g. cases
+and controls) and variable names come from `_rules.yml`; DataFindR
+passes both to the LLM so extracted names follow this vocabulary.
+
+``` yaml
+analyses:
+  - name: Peak systolic velocity in preterm vs term neonates
+    variable: Peak systolic velocity
+    measure: SMD
+    compare: [Preterm, Term]
+```
+
+``` r
+
+ma <- run_meta_analysis(path, "Peak systolic velocity in preterm vs term neonates")
+ma
+plot_forest(ma)
+plot_cumulative(ma)      # how the pooled estimate evolved over time
+```
+
+Medians with IQR/range, SEs and CIs are converted to means and SDs when
+needed, units are converted using `_rules.yml`, and subgroups of the
+same category within a study are combined. Studies that cannot be used
+are listed with the reason.
+
 ## Publish
 
 ``` r
 
-generate_website(path)            # renders into _site/
+generate_website(path)            # dashboard: overview, meta-analyses, results, studies, data
 use_github_action_quarto(path)    # rebuild on GitHub at every push
 ```

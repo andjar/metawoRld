@@ -19,7 +19,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">metawoRld</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,13 +79,13 @@
 <span>  exclusion_criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Case report"</span>, <span class="st">"Animal study"</span>, <span class="st">"Fewer than five participants"</span><span class="op">)</span>,</span>
 <span>  git_init <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Created metawoRld project at /tmp/RtmpRQyDvj/neoflow</span></span>
+<span><span class="co">#&gt; Created metawoRld project at /tmp/Rtmp8WL2oL/neoflow</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "_assessment_prompt.txt" "_assessment_schema.yml" "_extraction_prompt.txt"</span></span>
-<span><span class="co">#&gt;  [4] "_extraction_schema.yml" "_metawoRld.yml"         "_quarto.yml"           </span></span>
-<span><span class="co">#&gt;  [7] "_rules.yml"             "data"                   "data.qmd"              </span></span>
-<span><span class="co">#&gt; [10] "index.qmd"              "README.md"              "studies.qmd"           </span></span>
-<span><span class="co">#&gt; [13] "study.qmd.tmpl"         "styles.css"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] "_analyses.yml"          "_assessment_prompt.txt" "_assessment_schema.yml"</span></span>
+<span><span class="co">#&gt;  [4] "_extraction_prompt.txt" "_extraction_schema.yml" "_metawoRld.yml"        </span></span>
+<span><span class="co">#&gt;  [7] "_quarto.yml"            "_rules.yml"             "data"                  </span></span>
+<span><span class="co">#&gt; [10] "data.qmd"               "index.qmd"              "README.md"             </span></span>
+<span><span class="co">#&gt; [13] "studies.qmd"            "study.qmd.tmpl"         "styles.css"</span></span></code></pre></div>
 <p>Open <code>_extraction_schema.yml</code> and adapt it to your review
 before extracting data. The default is generic.</p>
 </div>
@@ -178,8 +178,8 @@ logged:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 6</span></span></span>
 <span><span class="co">#&gt;   study_id          measurement_id status   reviewer timestamp             note </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 10.1000/example.1 dp1            verified AHJ      2026-11-12T23:36:41+… <span style="color: #949494;">""</span>   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 10.1000/example.1 dp2            verified AHJ      2026-11-12T23:36:41+… <span style="color: #949494;">"</span>Cor…</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 10.1000/example.1 dp1            verified AHJ      2026-11-12T23:38:23+… <span style="color: #949494;">""</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 10.1000/example.1 dp2            verified AHJ      2026-11-12T23:38:23+… <span style="color: #949494;">"</span>Cor…</span></span></code></pre></div>
 <p>If a value changes after review (for example after re-extraction) its
 status becomes <code>"changed"</code> and it returns to the review
 queue. <code><a href="../reference/load_metawoRld.html">load_metawoRld()</a></code> leaves out rejected values and can
@@ -217,10 +217,32 @@ keep verified values only (<code>verified_only = TRUE</code>).</p>
 <span><span class="fu">df_prisma_counts</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="living-meta-analysis">Living meta-analysis<a class="anchor" aria-label="anchor" href="#living-meta-analysis"></a>
+</h2>
+<p>Define meta-analyses in <code>_analyses.yml</code>. Group categories
+(e.g. cases and controls) and variable names come from
+<code>_rules.yml</code>; DataFindR passes both to the LLM so extracted
+names follow this vocabulary.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">analyses</span><span class="kw">:</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Peak systolic velocity in preterm vs term neonates</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="at">    </span><span class="fu">variable</span><span class="kw">:</span><span class="at"> Peak systolic velocity</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="at">    </span><span class="fu">measure</span><span class="kw">:</span><span class="at"> SMD</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="at">    </span><span class="fu">compare</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Preterm</span><span class="kw">,</span><span class="at"> Term</span><span class="kw">]</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_meta_analysis.html">run_meta_analysis</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"Peak systolic velocity in preterm vs term neonates"</span><span class="op">)</span></span>
+<span><span class="va">ma</span></span>
+<span><span class="fu"><a href="../reference/plot_forest.html">plot_forest</a></span><span class="op">(</span><span class="va">ma</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot_cumulative.html">plot_cumulative</a></span><span class="op">(</span><span class="va">ma</span><span class="op">)</span>      <span class="co"># how the pooled estimate evolved over time</span></span></code></pre></div>
+<p>Medians with IQR/range, SEs and CIs are converted to means and SDs
+when needed, units are converted using <code>_rules.yml</code>, and
+subgroups of the same category within a study are combined. Studies that
+cannot be used are listed with the reason.</p>
+</div>
+<div class="section level2">
 <h2 id="publish">Publish<a class="anchor" aria-label="anchor" href="#publish"></a>
 </h2>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/generate_website.html">generate_website</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>            <span class="co"># renders into _site/</span></span>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/generate_website.html">generate_website</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>            <span class="co"># dashboard: overview, meta-analyses, results, studies, data</span></span>
 <span><span class="fu"><a href="../reference/use_github_action_quarto.html">use_github_action_quarto</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>    <span class="co"># rebuild on GitHub at every push</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -9,7 +9,10 @@ A metawoRld project is a folder (usually a Git repository) holding:
 - a schema describing what is extracted from each study
   (`_extraction_schema.yml`),
 - one folder per study with `metadata.yml` and `data.csv`,
-- a Quarto website that can be published automatically.
+- meta-analyses defined in `_analyses.yml`, re-run whenever data change,
+- a Quarto dashboard website (summary of findings, forest plots,
+  cumulative meta-analyses, results per variable) that can be published
+  automatically.
 
 It works on its own with manual data entry, and with
 [DataFindR](https://github.com/andjar/DataFindR), which uses LLMs to
@@ -59,5 +62,6 @@ generate_website("my_review")
 | Load | [`load_metawoRld()`](https://andjar.github.io/metawoRld/reference/load_metawoRld.md), [`read_study()`](https://andjar.github.io/metawoRld/reference/read_study.md), [`list_studies()`](https://andjar.github.io/metawoRld/reference/list_studies.md) |
 | Review values against the papers | [`review_values()`](https://andjar.github.io/metawoRld/reference/review_values.md), [`check_values()`](https://andjar.github.io/metawoRld/reference/check_values.md), [`verification_status()`](https://andjar.github.io/metawoRld/reference/verification_status.md), [`set_verification()`](https://andjar.github.io/metawoRld/reference/set_verification.md), [`update_data_point()`](https://andjar.github.io/metawoRld/reference/update_data_point.md) |
 | Value rules (`_rules.yml`) | [`read_rules()`](https://andjar.github.io/metawoRld/reference/read_rules.md), [`add_variable_synonym()`](https://andjar.github.io/metawoRld/reference/add_variable_synonym.md), [`canonical_variable()`](https://andjar.github.io/metawoRld/reference/canonical_variable.md) |
-| Website | [`generate_website()`](https://andjar.github.io/metawoRld/reference/generate_website.md), [`use_github_action_quarto()`](https://andjar.github.io/metawoRld/reference/use_github_action_quarto.md) |
+| Living meta-analysis (`_analyses.yml`) | [`read_analyses()`](https://andjar.github.io/metawoRld/reference/read_analyses.md), [`run_meta_analysis()`](https://andjar.github.io/metawoRld/reference/run_meta_analysis.md), [`run_all_meta_analyses()`](https://andjar.github.io/metawoRld/reference/run_all_meta_analyses.md), [`summary_of_findings()`](https://andjar.github.io/metawoRld/reference/summary_of_findings.md), [`plot_forest()`](https://andjar.github.io/metawoRld/reference/plot_forest.md), [`plot_cumulative()`](https://andjar.github.io/metawoRld/reference/plot_cumulative.md), [`plot_variable()`](https://andjar.github.io/metawoRld/reference/plot_variable.md), [`to_mean_sd()`](https://andjar.github.io/metawoRld/reference/to_mean_sd.md) |
+| Website dashboard | [`generate_website()`](https://andjar.github.io/metawoRld/reference/generate_website.md), [`generate_dashboard()`](https://andjar.github.io/metawoRld/reference/generate_dashboard.md), [`use_github_action_quarto()`](https://andjar.github.io/metawoRld/reference/use_github_action_quarto.md) |
 | Identifiers | [`normalize_identifier()`](https://andjar.github.io/metawoRld/reference/normalize_identifier.md), [`sanitize_id()`](https://andjar.github.io/metawoRld/reference/sanitize_id.md), [`desanitize_id()`](https://andjar.github.io/metawoRld/reference/sanitize_id.md) |

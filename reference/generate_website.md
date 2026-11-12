@@ -1,7 +1,12 @@
 # Generate (and render) the project website
 
-Writes one Quarto page per study into `study/` (removing pages of
-studies that no longer exist) and renders the site into `_site/`.
+Builds a living meta-analysis dashboard: an overview page (studies,
+verification progress, summary of findings), one dashboard page per
+meta-analysis in `_analyses.yml` (see
+[`generate_dashboard()`](https://andjar.github.io/metawoRld/reference/generate_dashboard.md)),
+a results page per variable, plus the study list, the full data and one
+page per study (pages of removed studies are deleted). Renders into
+`_site/`.
 
 ## Usage
 
@@ -30,3 +35,8 @@ generate_website(path = ".", render = TRUE, update_templates = FALSE)
 ## Value
 
 The project path, invisibly.
+
+## Details
+
+Existing projects: use `update_templates = TRUE` once to get the new
+`_quarto.yml` and overview page.
