@@ -71,8 +71,7 @@ publication. A study has one or more reports; a report belongs to at most one
 study. Records (search hits) are reports before screening; an included record
 is linked to a study.
 
-Study ids are chosen once and never reused. Renaming a study is a migration
-(§13), not an edit.
+Study ids are chosen once and never reused.
 
 ## 4. Files common to all tables
 
@@ -263,14 +262,14 @@ Rules:
    writes `data/<study_id>/`, records which extraction each accepted value
    came from in `provenance.csv`, and marks submissions `accepted` or
    `superseded`. Submissions are kept, so disagreements can be audited.
-4. When a study already has accepted data, a new accepted submission
-   replaces only the data points it contains; verification of unchanged
-   values is kept (row hashes, §10).
+4. When a study already has accepted data, accepting a new submission
+   replaces the study's data (with `overwrite = TRUE`); verification of data
+   points whose id and values are unchanged is kept (row hashes, §10).
 
 ## 10. Integrity
 
-- **Values:** verification and provenance rows store the row hash of the
-  values they refer to (SHA-256 over the data point's value fields, as in
+- **Values:** verification rows store a hash of the values they refer to
+  (computed over the data point's value fields with `rlang::hash()`, as in
   0.2). A changed value invalidates its verification.
 - **Sources:** `source_sha256` records which file a value was read from,
   without storing the file.
@@ -306,8 +305,9 @@ Schemas and the rules in this document; the authoritative check is
 
 - `spec_version` in `_metawoRld.yml`: this document's version.
 - `form_version` in each form: bump major for breaking changes (renamed or
-  removed fields), minor for added optional fields. `migrate_form()` upgrades
-  stored data between versions.
+  removed fields), minor for added optional fields. Every submission and
+  accepted study records the form version it follows, and `check_project()`
+  warns when it differs in major version from the current form.
 - Dataset releases use `vMAJOR.MINOR.PATCH`: major for a new form major
   version, minor when studies are added, patch for corrections. `NEWS.md`
   lists studies added or changed and pooled estimates that moved; it is
@@ -315,25 +315,7 @@ Schemas and the rules in this document; the authoritative check is
 - Data are released under CC BY 4.0 unless `_metawoRld.yml` says otherwise.
   Full texts are never released.
 
-## 13. Migration from metawoRld 0.2
-
-`migrate_project()` converts a 0.2 project:
-
-1. Moves `_extraction_schema.yml` → `forms/extraction.yml` and
-   `_assessment_schema.yml` → `forms/screening.yml`, adding `_form` headers,
-   and prompts into `prompts/`.
-2. Renames `data/<sanitized DOI>/` folders to study ids generated from first
-   author + year (with letters for clashes), writing `study.yml` with the
-   former identifier as a report.
-3. Creates `people.yml` from reviewer names found in `verification.csv`.
-4. Writes `provenance.csv` (channel `legacy`) and `datapackage.json` for each
-   study.
-5. Creates `records.csv` and `screening.csv` from DataFindR's cache, if
-   present.
-
-The migration is reversible from Git and prints a summary of every rename.
-
-## 14. Open points
+## 13. Open points
 
 - Whether assessments (risk of bias) of one study by several people are
   stored as submissions too (proposed: yes, same mechanism).
