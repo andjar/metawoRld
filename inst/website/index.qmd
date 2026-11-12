@@ -1,32 +1,86 @@
 ---
-title: "{{project_name}}"
+title: "Overview"
+format: dashboard
 ---
 
-::: {.callout-note}
-{{project_description}}
-:::
-
 ```{r}
+#| include: false
 world <- metawoRld::load_metawoRld(".", verbose = FALSE)
 cfg <- metawoRld::read_config(".")
+results <- if (requireNamespace("metafor", quietly = TRUE)) metawoRld::run_all_meta_analyses(".", world) else list()
+sof <- metawoRld::summary_of_findings(results)
+n_dp <- nrow(world$studies_data)
+n_ver <- sum(world$studies_data$verification_status == "verified")
+years <- suppressWarnings(as.integer(world$studies$year))
+```
+
+## Row {height=24%}
+
+```{r}
+#| content: valuebox
+#| title: "Studies included"
+list(icon = "journal-text", color = "primary", value = nrow(world$studies))
 ```
 
 ```{r}
-vs <- table(factor(world$studies_data$verification_status, c("verified", "unverified", "changed")))
+#| content: valuebox
+#| title: "Data points"
+list(icon = "table", color = "secondary", value = format(n_dp, big.mark = ","))
 ```
 
-This living review currently includes **`r nrow(world$studies)` studies** with **`r nrow(world$studies_data)` data points**, of which **`r vs[["verified"]]`** have been verified against the original papers by a reviewer.
-
-## Inclusion criteria
-
 ```{r}
-#| results: asis
-cat(paste0("- ", cfg$inclusion_criteria, collapse = "\n"))
+#| content: valuebox
+#| title: "Values verified"
+list(icon = "patch-check", color = if (n_dp && n_ver / n_dp >= 0.9) "success" else "warning",
+     value = if (n_dp) paste0(round(100 * n_ver / n_dp), "%") else "-")
 ```
 
-## Exclusion criteria
+```{r}
+#| content: valuebox
+#| title: "Last updated"
+list(icon = "calendar-event", color = "light", value = format(Sys.Date(), "%b %Y"))
+```
+
+## Row {height=47%}
+
+### Column {width=62%}
 
 ```{r}
-#| results: asis
-cat(paste0("- ", cfg$exclusion_criteria, collapse = "\n"))
+#| title: "Summary of findings"
+if (nrow(sof)) {
+  tab <- sof[, c("analysis", "measure", "studies", "participants", "estimate", "I2", "prediction_interval")]
+  names(tab) <- c("Meta-analysis", "Measure", "Studies", "Participants", "Pooled estimate [95% CI]", "I&sup2;", "Prediction interval")
+  knitr::kable(tab, format = "html", escape = FALSE, table.attr = "class='table table-sm'")
+} else {
+  cat("No meta-analyses defined yet. Add them to _analyses.yml.")
+}
+```
+
+### Column {width=38%}
+
+```{r}
+#| title: "Studies by publication year"
+if (any(!is.na(years))) {
+  par(mar = c(3, 3, 1, 1))
+  barplot(table(factor(years, levels = seq(min(years, na.rm = TRUE), max(years, na.rm = TRUE)))),
+          col = "steelblue", border = NA, las = 2, cex.names = 0.8)
+}
+```
+
+## Row {height=35%}
+
+```{r}
+#| title: "About this review"
+#| output: asis
+cat(cfg$project_description, "\n\n")
+cat("**Inclusion criteria**\n\n", paste0("- ", cfg$inclusion_criteria, collapse = "\n"), "\n\n")
+cat("**Exclusion criteria**\n\n", paste0("- ", cfg$exclusion_criteria, collapse = "\n"), "\n")
+```
+
+```{r}
+#| title: "Study designs"
+if (nrow(world$studies) && "study_design" %in% names(world$studies)) {
+  tab <- sort(table(world$studies$study_design), decreasing = TRUE)
+  knitr::kable(data.frame(Design = names(tab), Studies = as.integer(tab)), format = "html", table.attr = "class='table table-sm'")
+}
 ```

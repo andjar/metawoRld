@@ -20,7 +20,9 @@ reference:
     contents: [validate_study, validate_world, validate_against_schema, validate_links, schema_refs, schema_col_types]
   - title: Reviewing values
     contents: [review_values, check_values, verification_status, set_verification, update_data_point, read_rules, add_variable_synonym, canonical_variable]
+  - title: Meta-analysis
+    contents: [read_analyses, analysis_data, run_meta_analysis, run_all_meta_analyses, summary_of_findings, plot_forest, plot_cumulative, plot_variable, to_mean_sd, group_category, rules_for_prompt]
   - title: Website
-    contents: [generate_website, generate_study_webpage, use_github_action_quarto]
+    contents: [generate_website, generate_dashboard, generate_study_webpage, use_github_action_quarto]
   - title: Identifiers
     contents: [normalize_identifier, identifier_type, sanitize_id]

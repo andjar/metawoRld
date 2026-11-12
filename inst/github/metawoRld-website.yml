@@ -34,6 +34,8 @@ jobs:
             github::andjar/metawoRld
             any::quarto
             any::DT
+            any::metafor
+            any::knitr
             any::htmltools
             any::rmarkdown
 

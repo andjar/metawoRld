@@ -7,6 +7,12 @@ The attached document is the full text of one study (identifier: {{identifier}})
 Known bibliographic details (prefer these over your own reading):
 {{known_metadata}}
 
+Variable names. When a variable matches one of these, use exactly this name in variable_name (alternative names used in papers are in parentheses). Otherwise use the name as reported:
+{{known_variables}}
+
+Group categories. Set metadata.groups[].category to one of these when it applies (leave it empty otherwise):
+{{group_categories}}
+
 Rules:
 - Read Methods, Results, all Tables and Figure legends, and Supplementary tables if included.
 - Define every measurement method in metadata.methods and every participant group in metadata.groups, each with a short unique id. Refer to them in data_points using exactly those ids (method_id, group_id). Use method_id "POP_CHAR" for population characteristics (age, BMI, sex distribution, ...).

@@ -134,9 +134,35 @@ df_status(path)
 df_prisma_counts(path)
 ```
 
+## Living meta-analysis
+
+Define meta-analyses in `_analyses.yml`. Group categories (e.g. cases and
+controls) and variable names come from `_rules.yml`; DataFindR passes both to
+the LLM so extracted names follow this vocabulary.
+
+```yaml
+analyses:
+  - name: Peak systolic velocity in preterm vs term neonates
+    variable: Peak systolic velocity
+    measure: SMD
+    compare: [Preterm, Term]
+```
+
+```{r, eval = FALSE}
+ma <- run_meta_analysis(path, "Peak systolic velocity in preterm vs term neonates")
+ma
+plot_forest(ma)
+plot_cumulative(ma)      # how the pooled estimate evolved over time
+```
+
+Medians with IQR/range, SEs and CIs are converted to means and SDs when
+needed, units are converted using `_rules.yml`, and subgroups of the same
+category within a study are combined. Studies that cannot be used are listed
+with the reason.
+
 ## Publish
 
 ```{r, eval = FALSE}
-generate_website(path)            # renders into _site/
+generate_website(path)            # dashboard: overview, meta-analyses, results, studies, data
 use_github_action_quarto(path)    # rebuild on GitHub at every push
 ```

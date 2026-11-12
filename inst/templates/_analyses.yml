@@ -1,0 +1,42 @@
+# metawoRld meta-analyses
+#
+# Each entry defines one meta-analysis shown on the website dashboard and
+# available via run_meta_analysis(). Analyses are re-run every time the site
+# is built, so they update as studies are added: a living meta-analysis.
+#
+# Fields:
+#   name           Title shown on the dashboard (required, unique).
+#   variable       Canonical variable name (see variables in _rules.yml) or the
+#                  name as extracted (matched case-insensitively).
+#   measure        Effect measure:
+#                    SMD  standardized mean difference (Hedges' g), two groups
+#                    MD   mean difference, two groups (same unit after conversion)
+#                    ROM  ratio of means, two groups (shown as a ratio)
+#                    OR   odds ratio from counts / percentages, two groups
+#                    MN   pooled mean, one group
+#                    PLO  pooled proportion, one group
+#   compare        Two group categories [group of interest, reference] for
+#                  SMD, MD, ROM and OR (see group_categories in _rules.yml).
+#   group          One group category for MN and PLO.
+#   timepoint      Optional regular expression; only data points whose
+#                  timepoint matches are used (e.g. "2[4-8]" or "third trimester").
+#   verified_only  Use only values verified in review_values()? Default false.
+#   method         Between-study variance estimator for metafor::rma().
+#                  Default "REML".
+#
+# Medians with IQR or range, SEs and 95% CIs are converted to means and SDs
+# (Wan et al. 2014) when needed; converted studies are marked in the plots.
+# Units are converted to the variable's unit using `convert` in _rules.yml.
+# If a study reports several timepoints, the first one (in data.csv order)
+# with data for all required groups is used, unless `timepoint` selects one.
+
+analyses: []
+#  - name: IL-6 in preeclampsia vs controls
+#    variable: IL-6
+#    measure: SMD
+#    compare: [Preeclampsia, Control]
+#  - name: IL-6 in uncomplicated pregnancy
+#    variable: IL-6
+#    measure: MN
+#    group: Control
+#    timepoint: "2[4-9]|third trimester"

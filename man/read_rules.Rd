@@ -10,8 +10,9 @@ read_rules(path = ".")
 \item{path}{Project root.}
 }
 \value{
-A list with \code{variables} (named list) and \code{checks} (named list of
-severities: \code{"error"}, \code{"warning"} or \code{"off"}).
+A list with \code{variables} (named list), \code{group_categories} (named
+list) and \code{checks} (named list of severities: \code{"error"}, \code{"warning"} or
+\code{"off"}).
 }
 \description{
 Reads \verb{_rules.yml} (see the comments in the file created by
