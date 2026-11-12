@@ -20,13 +20,13 @@ create_metawoRld(
   exclusion_criteria = c("Case report", "Animal study", "Fewer than five participants"),
   git_init = FALSE
 )
-#> Created metawoRld project at /tmp/RtmpfZHeLL/neoflow
+#> Created metawoRld project at /tmp/RtmpRQyDvj/neoflow
 list.files(path)
 #>  [1] "_assessment_prompt.txt" "_assessment_schema.yml" "_extraction_prompt.txt"
 #>  [4] "_extraction_schema.yml" "_metawoRld.yml"         "_quarto.yml"           
-#>  [7] "data"                   "data.qmd"               "index.qmd"             
-#> [10] "README.md"              "studies.qmd"            "study.qmd.tmpl"        
-#> [13] "styles.css"
+#>  [7] "_rules.yml"             "data"                   "data.qmd"              
+#> [10] "index.qmd"              "README.md"              "studies.qmd"           
+#> [13] "study.qmd.tmpl"         "styles.css"
 ```
 
 Open `_extraction_schema.yml` and adapt it to your review before
@@ -98,6 +98,52 @@ world$studies_data[, c("study_id", "variable_name", "value1", "value2", "method_
 #>   <chr>             <chr>                   <dbl>  <dbl> <chr>       <chr>      
 #> 1 10.1000/example.1 Peak systolic velocity  35.2    6.1  cm/s        Term neona…
 #> 2 10.1000/example.1 Resistance index         0.72   0.06 cm/s        Term neona…
+```
+
+## Review values against the papers
+
+Extracted values, whether typed by hand or produced by an LLM, should be
+checked against the paper.
+[`check_values()`](https://andjar.github.io/metawoRld/reference/check_values.md)
+flags values that are internally inconsistent or implausible, using
+built-in checks and the optional vocabulary in `_rules.yml`:
+
+``` r
+
+check_values(path)
+#> # A tibble: 0 × 5
+#> # ℹ 5 variables: study_id <chr>, measurement_id <chr>, check <chr>,
+#> #   severity <chr>, message <chr>
+```
+
+[`review_values()`](https://andjar.github.io/metawoRld/reference/review_values.md)
+opens an app that shows each data point in plain language next to its
+flags, source quote and the full text (from `fulltext/`) at the right
+page. Verify, correct or reject values with the buttons or the keys `V`,
+`R`, `N` and `P`. Every decision is stored with reviewer and time in
+`data/<study>/verification.csv`, and corrections are logged:
+
+``` r
+
+set_verification(path, "10.1000/example.1", "dp1", "verified", reviewer = "AHJ")
+update_data_point(path, "10.1000/example.1", "dp2", value2 = 0.07, reviewer = "AHJ")
+verification_status(path)
+#> # A tibble: 2 × 6
+#>   study_id          measurement_id status   reviewer timestamp             note 
+#>   <chr>             <chr>          <chr>    <chr>    <chr>                 <chr>
+#> 1 10.1000/example.1 dp1            verified AHJ      2026-11-12T23:36:41+… ""   
+#> 2 10.1000/example.1 dp2            verified AHJ      2026-11-12T23:36:41+… "Cor…
+```
+
+If a value changes after review (for example after re-extraction) its
+status becomes `"changed"` and it returns to the review queue.
+[`load_metawoRld()`](https://andjar.github.io/metawoRld/reference/load_metawoRld.md)
+leaves out rejected values and can keep verified values only
+(`verified_only = TRUE`).
+
+``` r
+
+review_values(path)
 ```
 
 ## Screening and extraction with DataFindR

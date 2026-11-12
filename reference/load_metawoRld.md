@@ -5,7 +5,12 @@ Load all studies of a metawoRld project
 ## Usage
 
 ``` r
-load_metawoRld(path = ".", verbose = TRUE)
+load_metawoRld(
+  path = ".",
+  verbose = TRUE,
+  drop_rejected = TRUE,
+  verified_only = FALSE
+)
 ```
 
 ## Arguments
@@ -17,6 +22,15 @@ load_metawoRld(path = ".", verbose = TRUE)
 - verbose:
 
   Report skipped studies? Defaults to `TRUE`.
+
+- drop_rejected:
+
+  Leave out data points a reviewer rejected? Defaults to `TRUE`.
+
+- verified_only:
+
+  Keep only data points whose current values were verified? Defaults to
+  `FALSE`.
 
 ## Value
 
@@ -32,6 +46,10 @@ A list with
   All data points with a `study_id` column. For each `_ref` field in the
   schema the scalar fields of the referenced object are joined, prefixed
   with the field name without `_id` (e.g. `method_unit`, `group_name`).
+  `verification_status` (see
+  [`verification_status()`](https://andjar.github.io/metawoRld/reference/verification_status.md))
+  and, when `_rules.yml` defines variables, `variable_canonical` are
+  added.
 
 - `studies_metadata`:
 

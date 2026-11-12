@@ -79,13 +79,13 @@
 <span>  exclusion_criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Case report"</span>, <span class="st">"Animal study"</span>, <span class="st">"Fewer than five participants"</span><span class="op">)</span>,</span>
 <span>  git_init <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Created metawoRld project at /tmp/RtmpfZHeLL/neoflow</span></span>
+<span><span class="co">#&gt; Created metawoRld project at /tmp/RtmpRQyDvj/neoflow</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "_assessment_prompt.txt" "_assessment_schema.yml" "_extraction_prompt.txt"</span></span>
 <span><span class="co">#&gt;  [4] "_extraction_schema.yml" "_metawoRld.yml"         "_quarto.yml"           </span></span>
-<span><span class="co">#&gt;  [7] "data"                   "data.qmd"               "index.qmd"             </span></span>
-<span><span class="co">#&gt; [10] "README.md"              "studies.qmd"            "study.qmd.tmpl"        </span></span>
-<span><span class="co">#&gt; [13] "styles.css"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [7] "_rules.yml"             "data"                   "data.qmd"              </span></span>
+<span><span class="co">#&gt; [10] "index.qmd"              "README.md"              "studies.qmd"           </span></span>
+<span><span class="co">#&gt; [13] "study.qmd.tmpl"         "styles.css"</span></span></code></pre></div>
 <p>Open <code>_extraction_schema.yml</code> and adapt it to your review
 before extracting data. The default is generic.</p>
 </div>
@@ -152,9 +152,45 @@ not defined:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 10.1000/example.1 Resistance index         0.72   0.06 cm/s        Term neona…</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="review-values-against-the-papers">Review values against the papers<a class="anchor" aria-label="anchor" href="#review-values-against-the-papers"></a>
+</h2>
+<p>Extracted values, whether typed by hand or produced by an LLM, should
+be checked against the paper. <code><a href="../reference/check_values.html">check_values()</a></code> flags values
+that are internally inconsistent or implausible, using built-in checks
+and the optional vocabulary in <code>_rules.yml</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/check_values.html">check_values</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 0 × 5</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 variables: study_id &lt;chr&gt;, measurement_id &lt;chr&gt;, check &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   severity &lt;chr&gt;, message &lt;chr&gt;</span></span></span></code></pre></div>
+<p><code><a href="../reference/review_values.html">review_values()</a></code> opens an app that shows each data point
+in plain language next to its flags, source quote and the full text
+(from <code>fulltext/</code>) at the right page. Verify, correct or
+reject values with the buttons or the keys <code>V</code>,
+<code>R</code>, <code>N</code> and <code>P</code>. Every decision is
+stored with reviewer and time in
+<code>data/&lt;study&gt;/verification.csv</code>, and corrections are
+logged:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/set_verification.html">set_verification</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"10.1000/example.1"</span>, <span class="st">"dp1"</span>, <span class="st">"verified"</span>, reviewer <span class="op">=</span> <span class="st">"AHJ"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/update_data_point.html">update_data_point</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"10.1000/example.1"</span>, <span class="st">"dp2"</span>, value2 <span class="op">=</span> <span class="fl">0.07</span>, reviewer <span class="op">=</span> <span class="st">"AHJ"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/verification_status.html">verification_status</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 6</span></span></span>
+<span><span class="co">#&gt;   study_id          measurement_id status   reviewer timestamp             note </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 10.1000/example.1 dp1            verified AHJ      2026-11-12T23:36:41+… <span style="color: #949494;">""</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 10.1000/example.1 dp2            verified AHJ      2026-11-12T23:36:41+… <span style="color: #949494;">"</span>Cor…</span></span></code></pre></div>
+<p>If a value changes after review (for example after re-extraction) its
+status becomes <code>"changed"</code> and it returns to the review
+queue. <code><a href="../reference/load_metawoRld.html">load_metawoRld()</a></code> leaves out rejected values and can
+keep verified values only (<code>verified_only = TRUE</code>).</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/review_values.html">review_values</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="screening-and-extraction-with-datafindr">Screening and extraction with DataFindR<a class="anchor" aria-label="anchor" href="#screening-and-extraction-with-datafindr"></a>
 </h2>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">DataFindR</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>DATAFINDR_EMAIL <span class="op">=</span> <span class="st">"you@example.org"</span><span class="op">)</span>   <span class="co"># polite use of NCBI/Crossref</span></span>
 <span></span>
@@ -183,7 +219,7 @@ not defined:</p>
 <div class="section level2">
 <h2 id="publish">Publish<a class="anchor" aria-label="anchor" href="#publish"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/generate_website.html">generate_website</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>            <span class="co"># renders into _site/</span></span>
 <span><span class="fu"><a href="../reference/use_github_action_quarto.html">use_github_action_quarto</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>    <span class="co"># rebuild on GitHub at every push</span></span></code></pre></div>
 </div>

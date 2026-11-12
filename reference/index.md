@@ -39,6 +39,26 @@
 - [`schema_col_types()`](https://andjar.github.io/metawoRld/reference/schema_col_types.md)
   : Column types for a study's data.csv derived from the schema
 
+## Reviewing values
+
+- [`review_values()`](https://andjar.github.io/metawoRld/reference/review_values.md)
+  [`review_values_app()`](https://andjar.github.io/metawoRld/reference/review_values.md)
+  : Review extracted values against the papers
+- [`check_values()`](https://andjar.github.io/metawoRld/reference/check_values.md)
+  : Check extracted values for plausibility and consistency
+- [`verification_status()`](https://andjar.github.io/metawoRld/reference/verification_status.md)
+  : Verification status of data points
+- [`set_verification()`](https://andjar.github.io/metawoRld/reference/set_verification.md)
+  : Record the verification of data points
+- [`update_data_point()`](https://andjar.github.io/metawoRld/reference/update_data_point.md)
+  : Correct a data point
+- [`read_rules()`](https://andjar.github.io/metawoRld/reference/read_rules.md)
+  : Read the project's value rules
+- [`add_variable_synonym()`](https://andjar.github.io/metawoRld/reference/add_variable_synonym.md)
+  : Add a variable or synonym to the project's rules
+- [`canonical_variable()`](https://andjar.github.io/metawoRld/reference/canonical_variable.md)
+  : Map variable names to their canonical names
+
 ## Website
 
 - [`generate_website()`](https://andjar.github.io/metawoRld/reference/generate_website.md)

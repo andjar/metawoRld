@@ -57,6 +57,8 @@ generate_website("my_review")
 | Add data | [`add_study_data()`](https://andjar.github.io/metawoRld/reference/add_study_data.md), [`add_study_template()`](https://andjar.github.io/metawoRld/reference/add_study_template.md) |
 | Validate | [`validate_study()`](https://andjar.github.io/metawoRld/reference/validate_study.md), [`validate_world()`](https://andjar.github.io/metawoRld/reference/validate_world.md), [`validate_against_schema()`](https://andjar.github.io/metawoRld/reference/validate_against_schema.md), [`validate_links()`](https://andjar.github.io/metawoRld/reference/validate_links.md) |
 | Load | [`load_metawoRld()`](https://andjar.github.io/metawoRld/reference/load_metawoRld.md), [`read_study()`](https://andjar.github.io/metawoRld/reference/read_study.md), [`list_studies()`](https://andjar.github.io/metawoRld/reference/list_studies.md) |
+| Review values against the papers | [`review_values()`](https://andjar.github.io/metawoRld/reference/review_values.md), [`check_values()`](https://andjar.github.io/metawoRld/reference/check_values.md), [`verification_status()`](https://andjar.github.io/metawoRld/reference/verification_status.md), [`set_verification()`](https://andjar.github.io/metawoRld/reference/set_verification.md), [`update_data_point()`](https://andjar.github.io/metawoRld/reference/update_data_point.md) |
+| Value rules (`_rules.yml`) | [`read_rules()`](https://andjar.github.io/metawoRld/reference/read_rules.md), [`add_variable_synonym()`](https://andjar.github.io/metawoRld/reference/add_variable_synonym.md), [`canonical_variable()`](https://andjar.github.io/metawoRld/reference/canonical_variable.md) |
 | Website | [`generate_website()`](https://andjar.github.io/metawoRld/reference/generate_website.md), [`use_github_action_quarto()`](https://andjar.github.io/metawoRld/reference/use_github_action_quarto.md) |
 | Identifiers | [`normalize_identifier()`](https://andjar.github.io/metawoRld/reference/normalize_identifier.md), [`sanitize_id()`](https://andjar.github.io/metawoRld/reference/sanitize_id.md), [`desanitize_id()`](https://andjar.github.io/metawoRld/reference/sanitize_id.md) |
 
@@ -100,6 +102,26 @@ generate_website("my_review")
   : List the cross-references defined in a schema
 - [`schema_col_types()`](https://andjar.github.io/metawoRld/reference/schema_col_types.md)
   : Column types for a study's data.csv derived from the schema
+
+## Reviewing values
+
+- [`review_values()`](https://andjar.github.io/metawoRld/reference/review_values.md)
+  [`review_values_app()`](https://andjar.github.io/metawoRld/reference/review_values.md)
+  : Review extracted values against the papers
+- [`check_values()`](https://andjar.github.io/metawoRld/reference/check_values.md)
+  : Check extracted values for plausibility and consistency
+- [`verification_status()`](https://andjar.github.io/metawoRld/reference/verification_status.md)
+  : Verification status of data points
+- [`set_verification()`](https://andjar.github.io/metawoRld/reference/set_verification.md)
+  : Record the verification of data points
+- [`update_data_point()`](https://andjar.github.io/metawoRld/reference/update_data_point.md)
+  : Correct a data point
+- [`read_rules()`](https://andjar.github.io/metawoRld/reference/read_rules.md)
+  : Read the project's value rules
+- [`add_variable_synonym()`](https://andjar.github.io/metawoRld/reference/add_variable_synonym.md)
+  : Add a variable or synonym to the project's rules
+- [`canonical_variable()`](https://andjar.github.io/metawoRld/reference/canonical_variable.md)
+  : Map variable names to their canonical names
 
 ## Website
 

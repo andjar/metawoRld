@@ -8,6 +8,9 @@
 <url><loc>https://andjar.github.io/metawoRld/index.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/add_study_data.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/add_study_template.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/add_variable_synonym.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/canonical_variable.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/check_values.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/create_metawoRld.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/generate_study_webpage.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/generate_website.html</loc></url>
@@ -19,15 +22,20 @@
 <url><loc>https://andjar.github.io/metawoRld/reference/metawoRld-package.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/normalize_identifier.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/read_config.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/read_rules.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/read_study.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/review_values.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/sanitize_id.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/schema_col_types.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/schema_refs.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/set_verification.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/update_data_point.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/use_github_action_quarto.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/use_templates.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/validate_against_schema.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/validate_links.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/validate_study.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/validate_world.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/verification_status.html</loc></url>
 </urlset>
 
