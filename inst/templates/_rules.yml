@@ -1,0 +1,38 @@
+# metawoRld value rules
+#
+# These rules do not change what is stored. They flag values that a reviewer
+# should look at closely in review_values() and check_values().
+#
+# variables: canonical variable names. For each you can give
+#   synonyms: other names used in papers (matched case-insensitively)
+#   unit:     the expected unit
+#   convert:  factors to convert other units into `unit`
+#             (value_in_unit = value_in_other_unit * factor)
+#   range:    plausible [min, max] for central values (mean/median) in `unit`
+# The list can start empty and grow during review: mapping an unknown name
+# in review_values() adds it as a synonym here.
+#
+# checks: severity of each built-in check: error, warning or off.
+#   statistic_consistency  e.g. Q1 <= median <= Q3, SD >= 0, 0-100 %, n_percent arithmetic
+#   missing_dispersion     mean/median reported without SD/SE/IQR/range
+#   sample_size            data point n larger than its group's n
+#   duplicate              same group, variable, timepoint and statistic twice
+#   unknown_variable       variable name not in `variables` (only when variables are defined)
+#   unit_mismatch          unit differs from the variable's unit and cannot be converted
+#   out_of_range           central value outside the variable's range
+
+variables: {}
+#  IL-6:
+#    synonyms: [IL6, interleukin-6, interleukin 6]
+#    unit: pg/mL
+#    convert: {ng/mL: 1000}
+#    range: [0, 500]
+
+checks:
+  statistic_consistency: error
+  missing_dispersion: warning
+  sample_size: warning
+  duplicate: warning
+  unknown_variable: warning
+  unit_mismatch: warning
+  out_of_range: warning

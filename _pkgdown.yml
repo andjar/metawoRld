@@ -18,6 +18,8 @@ reference:
     contents: [add_study_data, add_study_template, read_study, list_studies, load_metawoRld]
   - title: Validation
     contents: [validate_study, validate_world, validate_against_schema, validate_links, schema_refs, schema_col_types]
+  - title: Reviewing values
+    contents: [review_values, check_values, verification_status, set_verification, update_data_point, read_rules, add_variable_synonym, canonical_variable]
   - title: Website
     contents: [generate_website, generate_study_webpage, use_github_action_quarto]
   - title: Identifiers

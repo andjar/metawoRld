@@ -4,12 +4,23 @@
 \alias{load_metawoRld}
 \title{Load all studies of a metawoRld project}
 \usage{
-load_metawoRld(path = ".", verbose = TRUE)
+load_metawoRld(
+  path = ".",
+  verbose = TRUE,
+  drop_rejected = TRUE,
+  verified_only = FALSE
+)
 }
 \arguments{
 \item{path}{Project root.}
 
 \item{verbose}{Report skipped studies? Defaults to \code{TRUE}.}
+
+\item{drop_rejected}{Leave out data points a reviewer rejected? Defaults
+to \code{TRUE}.}
+
+\item{verified_only}{Keep only data points whose current values were
+verified? Defaults to \code{FALSE}.}
 }
 \value{
 A list with
@@ -19,7 +30,9 @@ string-vector) metadata fields; vectors are collapsed with \code{"; "}.}
 \item{\code{studies_data}}{All data points with a \code{study_id} column. For each
 \verb{_ref} field in the schema the scalar fields of the referenced object
 are joined, prefixed with the field name without \verb{_id} (e.g.
-\code{method_unit}, \code{group_name}).}
+\code{method_unit}, \code{group_name}). \code{verification_status} (see
+\code{\link[=verification_status]{verification_status()}}) and, when \verb{_rules.yml} defines variables,
+\code{variable_canonical} are added.}
 \item{\code{studies_metadata}}{Named list of each study's metadata.}
 }
 }
