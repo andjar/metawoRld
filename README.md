@@ -50,5 +50,7 @@ generate_website("my_review")
 | Add data | `add_study_data()`, `add_study_template()` |
 | Validate | `validate_study()`, `validate_world()`, `validate_against_schema()`, `validate_links()` |
 | Load | `load_metawoRld()`, `read_study()`, `list_studies()` |
+| Review values against the papers | `review_values()`, `check_values()`, `verification_status()`, `set_verification()`, `update_data_point()` |
+| Value rules (`_rules.yml`) | `read_rules()`, `add_variable_synonym()`, `canonical_variable()` |
 | Website | `generate_website()`, `use_github_action_quarto()` |
 | Identifiers | `normalize_identifier()`, `sanitize_id()`, `desanitize_id()` |

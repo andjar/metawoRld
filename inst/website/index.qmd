@@ -11,7 +11,11 @@ world <- metawoRld::load_metawoRld(".", verbose = FALSE)
 cfg <- metawoRld::read_config(".")
 ```
 
-This living review currently includes **`r nrow(world$studies)` studies** with **`r nrow(world$studies_data)` data points**.
+```{r}
+vs <- table(factor(world$studies_data$verification_status, c("verified", "unverified", "changed")))
+```
+
+This living review currently includes **`r nrow(world$studies)` studies** with **`r nrow(world$studies_data)` data points**, of which **`r vs[["verified"]]`** have been verified against the original papers by a reviewer.
 
 ## Inclusion criteria
 

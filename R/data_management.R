@@ -52,13 +52,18 @@ add_study_data <- function(path = ".",
   }
 
   study_dir <- .study_dir(proj_path, study_id)
+  verification <- NULL
   if (fs::dir_exists(study_dir)) {
     if (!overwrite) {
       rlang::abort(paste0("Study '", study_id, "' already exists. Use `overwrite = TRUE` to replace it."))
     }
+    # Keep reviewers' decisions; changed values show up as "changed".
+    vf <- fs::path(study_dir, "verification.csv")
+    if (fs::file_exists(vf)) verification <- readLines(vf, warn = FALSE)
     fs::dir_delete(study_dir)
   }
   fs::dir_create(study_dir)
+  if (!is.null(verification)) writeLines(verification, fs::path(study_dir, "verification.csv"))
 
   yaml::write_yaml(metadata, fs::path(study_dir, "metadata.yml"))
   .write_data_csv(data, schema, fs::path(study_dir, "data.csv"))
@@ -96,6 +101,10 @@ list_studies <- function(path = ".") {
 #'
 #' @param path Project root.
 #' @param verbose Report skipped studies? Defaults to `TRUE`.
+#' @param drop_rejected Leave out data points a reviewer rejected? Defaults
+#'   to `TRUE`.
+#' @param verified_only Keep only data points whose current values were
+#'   verified? Defaults to `FALSE`.
 #'
 #' @return A list with
 #' \describe{
@@ -104,13 +113,16 @@ list_studies <- function(path = ".") {
 #'   \item{`studies_data`}{All data points with a `study_id` column. For each
 #'     `_ref` field in the schema the scalar fields of the referenced object
 #'     are joined, prefixed with the field name without `_id` (e.g.
-#'     `method_unit`, `group_name`).}
+#'     `method_unit`, `group_name`). `verification_status` (see
+#'     [verification_status()]) and, when `_rules.yml` defines variables,
+#'     `variable_canonical` are added.}
 #'   \item{`studies_metadata`}{Named list of each study's metadata.}
 #' }
 #' @export
-load_metawoRld <- function(path = ".", verbose = TRUE) {
+load_metawoRld <- function(path = ".", verbose = TRUE, drop_rejected = TRUE, verified_only = FALSE) {
   proj_path <- .check_project(path)
   schema <- get_schema(proj_path, "extraction")
+  rules <- read_rules(proj_path)
   ids <- list_studies(proj_path)
 
   metas <- list()
@@ -123,6 +135,15 @@ load_metawoRld <- function(path = ".", verbose = TRUE) {
     }
     metas[[id]] <- res$metadata
     d <- res$data
+    if (nrow(d) > 0) {
+      vs <- .status_for(d, .read_verification(.study_dir(proj_path, id)), schema)
+      d$verification_status <- vs$status
+      if (drop_rejected) d <- d[d$verification_status != "rejected", , drop = FALSE]
+      if (verified_only) d <- d[d$verification_status == "verified", , drop = FALSE]
+      if (length(rules$variables) && "variable_name" %in% names(d)) {
+        d$variable_canonical <- canonical_variable(d$variable_name, rules)
+      }
+    }
     if (nrow(d) > 0) {
       d <- .join_refs(d, res$metadata, schema)
       d <- dplyr::mutate(d, study_id = id, .before = 1)

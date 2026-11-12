@@ -169,7 +169,15 @@ data_points:
       _required: false
     source:
       _type: string
-      _description: "Where in the paper the value is reported, e.g. 'Table 2', 'Figure 3 legend', 'Results p. 5'."
+      _description: "Where in the paper the value is reported, e.g. 'Table 2', 'Figure 3 legend', 'Results'."
+    source_page:
+      _type: integer
+      _description: "Page number of the PDF where the value appears (1 = first page of the file)."
+      _required: false
+    source_quote:
+      _type: string
+      _description: "The shortest verbatim snippet that shows the value, e.g. the table row label and numbers ('IL-6, pg/mL  5.1 (1.2)'). Max ~15 words."
+      _required: false
     notes:
       _type: string
       _description: "Adjustments, subgroups or other caveats."

@@ -25,16 +25,19 @@ Imports:
     git2r,
     glue,
     readr,
-    rlang,
+    rlang (>= 1.0.0),
+    stats,
     tools,
     utils,
     yaml
 Suggests:
+    bslib,
     DT,
     htmltools,
     knitr,
     quarto,
     rmarkdown,
+    shiny,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr

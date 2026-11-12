@@ -12,6 +12,6 @@ Rules:
 - Define every measurement method in metadata.methods and every participant group in metadata.groups, each with a short unique id. Refer to them in data_points using exactly those ids (method_id, group_id). Use method_id "POP_CHAR" for population characteristics (age, BMI, sex distribution, ...).
 - Create one data point per reported statistic, per group, per timepoint. Never combine or recalculate values; copy them as reported.
 - Choose statistic_type carefully: mean_sd, mean_se, mean_ci95, median_iqr, median_range, n_percent, count, proportion, geometric_mean_sd or other. value1 is the central value; value2/value3 hold dispersion or bounds as described in the schema.
-- Record in `source` where each value was found (e.g. "Table 2").
+- Record in `source` where each value was found (e.g. "Table 2"), the PDF page in `source_page`, and in `source_quote` the shortest verbatim snippet showing the value (row label and numbers). Reviewers use these to verify every value.
 - Use the sample_size that applies to that specific statistic.
 - If a required value cannot be found, use null. Never invent data.

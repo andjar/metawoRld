@@ -73,6 +73,38 @@ world$studies
 world$studies_data[, c("study_id", "variable_name", "value1", "value2", "method_unit", "group_name")]
 ```
 
+## Review values against the papers
+
+Extracted values, whether typed by hand or produced by an LLM, should be
+checked against the paper. `check_values()` flags values that are internally
+inconsistent or implausible, using built-in checks and the optional
+vocabulary in `_rules.yml`:
+
+```{r}
+check_values(path)
+```
+
+`review_values()` opens an app that shows each data point in plain language
+next to its flags, source quote and the full text (from `fulltext/`) at the
+right page. Verify, correct or reject values with the buttons or the keys
+`V`, `R`, `N` and `P`. Every decision is stored with reviewer and time in
+`data/<study>/verification.csv`, and corrections are logged:
+
+```{r}
+set_verification(path, "10.1000/example.1", "dp1", "verified", reviewer = "AHJ")
+update_data_point(path, "10.1000/example.1", "dp2", value2 = 0.07, reviewer = "AHJ")
+verification_status(path)
+```
+
+If a value changes after review (for example after re-extraction) its status
+becomes `"changed"` and it returns to the review queue. `load_metawoRld()`
+leaves out rejected values and can keep verified values only
+(`verified_only = TRUE`).
+
+```{r, eval = FALSE}
+review_values(path)
+```
+
 ## Screening and extraction with DataFindR
 
 ```{r, eval = FALSE}
