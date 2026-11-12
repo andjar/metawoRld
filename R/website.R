@@ -1,7 +1,13 @@
 #' Generate (and render) the project website
 #'
-#' Writes one Quarto page per study into `study/` (removing pages of studies
-#' that no longer exist) and renders the site into `_site/`.
+#' Builds a living meta-analysis dashboard: an overview page (studies,
+#' verification progress, summary of findings), one dashboard page per
+#' meta-analysis in `_analyses.yml` (see [generate_dashboard()]), a results
+#' page per variable, plus the study list, the full data and one page per
+#' study (pages of removed studies are deleted). Renders into `_site/`.
+#'
+#' Existing projects: use `update_templates = TRUE` once to get the new
+#' `_quarto.yml` and overview page.
 #'
 #' @param path Project root.
 #' @param render Render with Quarto? Requires the `quarto` R package and the
@@ -16,6 +22,7 @@ generate_website <- function(path = ".", render = TRUE, update_templates = FALSE
   proj_path <- .check_project(path)
   .write_website_templates(proj_path, overwrite = update_templates)
   generate_study_webpage(proj_path)
+  generate_dashboard(proj_path)
   if (render) {
     rlang::check_installed("quarto", reason = "to render the website.")
     quarto::quarto_render(input = proj_path, as_job = FALSE)

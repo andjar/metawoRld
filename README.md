@@ -7,7 +7,9 @@ A metawoRld project is a folder (usually a Git repository) holding:
 * the review's settings and screening criteria (`_metawoRld.yml`),
 * a schema describing what is extracted from each study (`_extraction_schema.yml`),
 * one folder per study with `metadata.yml` and `data.csv`,
-* a Quarto website that can be published automatically.
+* meta-analyses defined in `_analyses.yml`, re-run whenever data change,
+* a Quarto dashboard website (summary of findings, forest plots, cumulative
+  meta-analyses, results per variable) that can be published automatically.
 
 It works on its own with manual data entry, and with
 [DataFindR](https://github.com/andjar/DataFindR), which uses LLMs to screen
@@ -52,5 +54,6 @@ generate_website("my_review")
 | Load | `load_metawoRld()`, `read_study()`, `list_studies()` |
 | Review values against the papers | `review_values()`, `check_values()`, `verification_status()`, `set_verification()`, `update_data_point()` |
 | Value rules (`_rules.yml`) | `read_rules()`, `add_variable_synonym()`, `canonical_variable()` |
-| Website | `generate_website()`, `use_github_action_quarto()` |
+| Living meta-analysis (`_analyses.yml`) | `read_analyses()`, `run_meta_analysis()`, `run_all_meta_analyses()`, `summary_of_findings()`, `plot_forest()`, `plot_cumulative()`, `plot_variable()`, `to_mean_sd()` |
+| Website dashboard | `generate_website()`, `generate_dashboard()`, `use_github_action_quarto()` |
 | Identifiers | `normalize_identifier()`, `sanitize_id()`, `desanitize_id()` |

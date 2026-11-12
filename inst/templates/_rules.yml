@@ -12,6 +12,14 @@
 # The list can start empty and grow during review: mapping an unknown name
 # in review_values() adds it as a synonym here.
 #
+# group_categories: categories that study groups are mapped to, e.g. for
+#   meta-analyses comparing cases with controls (see _analyses.yml). Each can
+#   have synonyms (matched case-insensitively against group names) and a
+#   description. DataFindR asks the LLM to assign groups to these categories.
+#
+# Variables and group categories are given to the LLM during extraction, so
+# extracted names follow this vocabulary.
+#
 # checks: severity of each built-in check: error, warning or off.
 #   statistic_consistency  e.g. Q1 <= median <= Q3, SD >= 0, 0-100 %, n_percent arithmetic
 #   missing_dispersion     mean/median reported without SD/SE/IQR/range
@@ -27,6 +35,13 @@ variables: {}
 #    unit: pg/mL
 #    convert: {ng/mL: 1000}
 #    range: [0, 500]
+
+group_categories: {}
+#  Preeclampsia:
+#    synonyms: [PE, pre-eclampsia, preeclamptic]
+#    description: "Preeclampsia by any standard definition"
+#  Control:
+#    synonyms: [controls, normotensive controls, healthy pregnant women]
 
 checks:
   statistic_consistency: error

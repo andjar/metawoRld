@@ -15,8 +15,9 @@
 #' back to the defaults: no variable vocabulary and all checks enabled.
 #'
 #' @param path Project root.
-#' @return A list with `variables` (named list) and `checks` (named list of
-#'   severities: `"error"`, `"warning"` or `"off"`).
+#' @return A list with `variables` (named list), `group_categories` (named
+#'   list) and `checks` (named list of severities: `"error"`, `"warning"` or
+#'   `"off"`).
 #' @export
 read_rules <- function(path = ".") {
   proj_path <- .check_project(path)
@@ -24,10 +25,62 @@ read_rules <- function(path = ".") {
   r <- if (fs::file_exists(f)) yaml::read_yaml(f) %||% list() else list()
   vars <- r$variables %||% list()
   if (length(vars) && is.null(names(vars))) rlang::abort("`variables` in _rules.yml must be a mapping of variable names.")
+  cats <- r$group_categories %||% list()
+  if (length(cats) && is.null(names(cats))) rlang::abort("`group_categories` in _rules.yml must be a mapping of category names.")
   checks <- utils::modifyList(.default_checks, r$checks %||% list())
   bad <- setdiff(unlist(checks), c("error", "warning", "off"))
   if (length(bad)) rlang::abort(paste0("Check severities must be error, warning or off; got: ", paste(bad, collapse = ", ")))
-  list(variables = vars, checks = checks)
+  list(variables = vars, group_categories = cats, checks = checks)
+}
+
+#' Assign study groups to group categories
+#'
+#' Uses a group's `category` field if it names a known category (or one of
+#' its synonyms); otherwise matches the group's `name` against the category
+#' names and synonyms in `_rules.yml` (case-insensitive).
+#'
+#' @param groups The `groups` array of a study's metadata.
+#' @param rules Rules from [read_rules()].
+#' @return A character vector of categories named by `group_id` (`NA` where
+#'   no category applies).
+#' @export
+group_category <- function(groups, rules) {
+  if (is.null(groups) || !length(groups)) return(stats::setNames(character(0), character(0)))
+  df <- .rows_to_df(if (is.data.frame(groups)) lapply(seq_len(nrow(groups)), function(k) .df_row(groups, k)) else groups)
+  lookup <- .category_lookup(rules)
+  pick <- function(x) if (is.null(x)) rep(NA_character_, nrow(df)) else unname(lookup[tolower(trimws(as.character(x)))])
+  cat <- pick(df$category)
+  by_name <- pick(df$name)
+  cat[is.na(cat)] <- by_name[is.na(cat)]
+  stats::setNames(cat, as.character(df$group_id))
+}
+
+#' The project vocabulary formatted for an LLM prompt
+#'
+#' Used by DataFindR to fill `{{known_variables}}` and `{{group_categories}}`
+#' in `_extraction_prompt.txt`.
+#'
+#' @param path Project root.
+#' @return A list with the strings `known_variables` and `group_categories`.
+#' @export
+rules_for_prompt <- function(path = ".") {
+  r <- read_rules(path)
+  vars <- vapply(names(r$variables), function(v) {
+    x <- r$variables[[v]]
+    syn <- unlist(x$synonyms)
+    paste0("- ", v, if (length(syn)) paste0(" (", paste(syn, collapse = ", "), ")") else "",
+           if (!is.null(x$unit)) paste0("; unit: ", x$unit) else "")
+  }, character(1))
+  cats <- vapply(names(r$group_categories), function(v) {
+    x <- r$group_categories[[v]]
+    syn <- unlist(x$synonyms)
+    paste0("- ", v, if (!is.null(x$description)) paste0(": ", x$description) else "",
+           if (length(syn)) paste0(" (also: ", paste(syn, collapse = ", "), ")") else "")
+  }, character(1))
+  list(
+    known_variables = if (length(vars)) paste(vars, collapse = "\n") else "- (none defined; use the names as reported)",
+    group_categories = if (length(cats)) paste(cats, collapse = "\n") else "- (none defined; leave category empty)"
+  )
 }
 
 #' Map variable names to their canonical names
@@ -126,6 +179,17 @@ check_values <- function(path = ".", study_ids = NULL, rules = read_rules(path))
   stats::setNames(vals, keys)
 }
 
+.category_lookup <- function(rules) {
+  cats <- rules$group_categories
+  if (!length(cats)) return(stats::setNames(character(0), character(0)))
+  keys <- character(0); vals <- character(0)
+  for (v in names(cats)) {
+    syn <- c(v, as.character(unlist(cats[[v]]$synonyms)))
+    keys <- c(keys, tolower(trimws(syn))); vals <- c(vals, rep(v, length(syn)))
+  }
+  stats::setNames(vals, keys)
+}
+
 .write_rules <- function(file, rules) {
   lines <- readLines(file, warn = FALSE)
   first <- which(!grepl("^\\s*#", lines) & nzchar(trimws(lines)))[1]
@@ -133,7 +197,9 @@ check_values <- function(path = ".", study_ids = NULL, rules = read_rules(path))
   vars <- rules$variables
   body <- yaml::as.yaml(list(checks = rules$checks))
   vars_yaml <- if (length(vars)) yaml::as.yaml(list(variables = vars)) else "variables: {}\n"
-  writeLines(c(header, sub("\n$", "", vars_yaml), "", sub("\n$", "", body)), file)
+  cats <- rules$group_categories
+  cats_yaml <- if (length(cats)) yaml::as.yaml(list(group_categories = cats)) else "group_categories: {}\n"
+  writeLines(c(header, sub("\n$", "", vars_yaml), "", sub("\n$", "", cats_yaml), "", sub("\n$", "", body)), file)
 }
 
 .check_study_values <- function(d, meta, rules) {

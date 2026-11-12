@@ -3,6 +3,8 @@ project:
   output-dir: _site
   render:
     - index.qmd
+    - analyses.qmd
+    - results.qmd
     - studies.qmd
     - data.qmd
     - study/*.qmd
@@ -12,14 +14,17 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Home
+        text: Overview
+      - href: analyses.qmd
+        text: Meta-analyses
+      - href: results.qmd
+        text: Results
       - href: studies.qmd
         text: Studies
       - href: data.qmd
         text: Data
   page-footer:
     left: "Built with Quarto and metawoRld"
-    right: "Last updated {{date}}"
 
 format:
   html:

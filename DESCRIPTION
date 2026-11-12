@@ -1,6 +1,6 @@
 Package: metawoRld
 Title: A Framework for Managing Data in Living Systematic Reviews
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
     person("Anders Hagen", "Jarmund", , "anders.h.jarmund@ntnu.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3923-1637"))
@@ -24,6 +24,8 @@ Imports:
     fs,
     git2r,
     glue,
+    grDevices,
+    graphics,
     readr,
     rlang (>= 1.0.0),
     stats,
@@ -35,6 +37,7 @@ Suggests:
     DT,
     htmltools,
     knitr,
+    metafor,
     quarto,
     rmarkdown,
     shiny,

@@ -6,7 +6,7 @@ test_that("create_metawoRld writes config, templates and website files", {
                     ".gitignore", "_quarto.yml", "index.qmd", "styles.css", "study.qmd.tmpl") %in% files))
   cfg <- read_config(p)
   expect_equal(cfg$inclusion_criteria, c("Human", "Biomarker X reported"))
-  expect_match(readLines(file.path(p, "_quarto.yml"))[[11]], "Test review")
+  expect_true(any(grepl("Test review", readLines(file.path(p, "_quarto.yml")))))
   expect_error(create_metawoRld(p, "a", "b"), "already exists")
 })
 

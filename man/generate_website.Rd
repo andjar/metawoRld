@@ -21,6 +21,13 @@ missing files are always added.}
 The project path, invisibly.
 }
 \description{
-Writes one Quarto page per study into \verb{study/} (removing pages of studies
-that no longer exist) and renders the site into \verb{_site/}.
+Builds a living meta-analysis dashboard: an overview page (studies,
+verification progress, summary of findings), one dashboard page per
+meta-analysis in \verb{_analyses.yml} (see \code{\link[=generate_dashboard]{generate_dashboard()}}), a results
+page per variable, plus the study list, the full data and one page per
+study (pages of removed studies are deleted). Renders into \verb{_site/}.
+}
+\details{
+Existing projects: use \code{update_templates = TRUE} once to get the new
+\verb{_quarto.yml} and overview page.
 }
