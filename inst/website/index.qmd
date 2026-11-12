@@ -1,0 +1,28 @@
+---
+title: "{{project_name}}"
+---
+
+::: {.callout-note}
+{{project_description}}
+:::
+
+```{r}
+world <- metawoRld::load_metawoRld(".", verbose = FALSE)
+cfg <- metawoRld::read_config(".")
+```
+
+This living review currently includes **`r nrow(world$studies)` studies** with **`r nrow(world$studies_data)` data points**.
+
+## Inclusion criteria
+
+```{r}
+#| results: asis
+cat(paste0("- ", cfg$inclusion_criteria, collapse = "\n"))
+```
+
+## Exclusion criteria
+
+```{r}
+#| results: asis
+cat(paste0("- ", cfg$exclusion_criteria, collapse = "\n"))
+```

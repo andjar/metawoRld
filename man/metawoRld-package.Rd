@@ -4,9 +4,34 @@
 \name{metawoRld-package}
 \alias{metawoRld}
 \alias{metawoRld-package}
-\title{metawoRld: What the Package Does (One Line, Title Case)}
+\title{metawoRld: structured, validated data for living systematic reviews}
 \description{
-What the package does (one paragraph).
+A metawoRld project is a folder (usually a Git repository) holding the
+review's settings, a schema describing what is extracted from each study,
+and one folder per study with \code{metadata.yml} and \code{data.csv}.
+}
+\details{
+Main functions:
+\itemize{
+\item \code{\link[=create_metawoRld]{create_metawoRld()}} creates a project with generic, editable templates.
+\item \code{\link[=add_study_data]{add_study_data()}} validates and stores one study; \code{\link[=add_study_template]{add_study_template()}}
+creates files for manual entry; \code{\link[=validate_study]{validate_study()}} / \code{\link[=validate_world]{validate_world()}}
+check edited files.
+\item \code{\link[=load_metawoRld]{load_metawoRld()}} loads everything for analysis.
+\item \code{\link[=generate_website]{generate_website()}} builds a Quarto website; \code{\link[=use_github_action_quarto]{use_github_action_quarto()}}
+publishes it automatically.
+}
+
+The companion package DataFindR uses LLMs to screen studies and extract
+data into a metawoRld project.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/andjar/metawoRld}
+  \item Report bugs at \url{https://github.com/andjar/metawoRld/issues}
+}
+
 }
 \author{
 \strong{Maintainer}: Anders Hagen Jarmund \email{anders.h.jarmund@ntnu.no} (\href{https://orcid.org/0000-0002-3923-1637}{ORCID})

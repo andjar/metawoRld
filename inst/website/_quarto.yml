@@ -1,0 +1,33 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - index.qmd
+    - studies.qmd
+    - data.qmd
+    - study/*.qmd
+
+website:
+  title: "{{project_name}}"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: studies.qmd
+        text: Studies
+      - href: data.qmd
+        text: Data
+  page-footer:
+    left: "Built with Quarto and metawoRld"
+    right: "Last updated {{date}}"
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+execute:
+  echo: false
+  warning: false
+  message: false

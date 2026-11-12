@@ -1,0 +1,17 @@
+---
+title: Data
+---
+
+All extracted data points, one row per reported statistic. Use the buttons to download.
+
+```{r}
+world <- metawoRld::load_metawoRld(".", verbose = FALSE)
+DT::datatable(
+  world$studies_data,
+  rownames = FALSE,
+  filter = "top",
+  extensions = "Buttons",
+  options = list(pageLength = 25, scrollX = TRUE, dom = "Bfrtip",
+                 buttons = c("copy", "csv", "excel"))
+)
+```

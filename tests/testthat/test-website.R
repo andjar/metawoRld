@@ -1,0 +1,22 @@
+test_that("study pages are generated with relative data paths and stale pages removed", {
+  p <- local_project()
+  add_study_data(p, "10.1000/abc", modifyList(example_metadata(), list(title = 'Quote "this": yes')), example_data())
+  dir.create(file.path(p, "study"), showWarnings = FALSE)
+  writeLines("old", file.path(p, "study", "gone.qmd"))
+  pages <- generate_study_webpage(p)
+  expect_equal(basename(pages), "10.1000_fslash_abc.qmd")
+  expect_false(file.exists(file.path(p, "study", "gone.qmd")))
+  txt <- readLines(pages)
+  fm <- yaml::yaml.load(paste(txt[2:(which(txt == "---")[2] - 1)], collapse = "\n"))
+  expect_equal(fm$title, 'Quote "this": yes')
+  expect_true(any(grepl('"../data/10.1000_fslash_abc/data.csv"', txt, fixed = TRUE)))
+  expect_true(any(grepl("| group_id | name | sample_size |", txt, fixed = TRUE)))
+})
+
+test_that("GitHub workflow is written", {
+  p <- local_project()
+  wf <- suppressMessages(use_github_action_quarto(p))
+  expect_true(file.exists(wf))
+  expect_match(paste(readLines(wf), collapse = "\n"), "github::andjar/metawoRld")
+  expect_error(use_github_action_quarto(p), "already exists")
+})

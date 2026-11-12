@@ -2,35 +2,40 @@
 % Please edit documentation in R/data_management.R
 \name{add_study_data}
 \alias{add_study_data}
-\title{Add Study Data to a metawoRld Project}
+\title{Add a study to a metawoRld project}
 \usage{
-add_study_data(path = ".", study_id, metadata_list, data_df, overwrite = FALSE)
+add_study_data(
+  path = ".",
+  study_id,
+  metadata,
+  data,
+  overwrite = FALSE,
+  validate = TRUE
+)
 }
 \arguments{
-\item{path}{Character string. The path to the root directory of the
-metawoRld project. Defaults to the current working directory (\code{.}).}
+\item{path}{Project root.}
 
-\item{study_id}{Character string. A unique identifier for the study (e.g.,
-PMID, DOI, or a custom ID). This will be used as the directory name
-within the \verb{data/} folder. Should be filesystem-friendly.}
+\item{study_id}{Study identifier, preferably the DOI or PMID. It is
+normalized with \code{\link[=normalize_identifier]{normalize_identifier()}}, stored as \code{metadata$study_id}
+and used (encoded with \code{\link[=sanitize_id]{sanitize_id()}}) as the folder name.}
 
-\item{metadata_list}{List. A named list containing the study's metadata,
-conforming to the \code{metadata_fields} defined in the project's schema.
-Must include \code{measurement_methods} and \code{outcome_groups} as named lists
-if linkage validation is expected.}
+\item{metadata}{Named list matching the \code{metadata} part of the schema.
+Arrays of objects may be given as data frames.}
 
-\item{data_df}{Data frame. A data frame containing the quantitative data,
-conforming to the \code{data_fields} defined in the project's schema.
-Must include \code{method_ref_id} and \code{group_label} columns matching keys in
-\code{metadata_list} for linkage validation.}
+\item{data}{Data frame (or list of objects) matching \code{data_points}. May
+have zero rows.}
 
-\item{overwrite}{Logical. If a directory for \code{study_id} already exists,
-should its contents be overwritten? Defaults to \code{FALSE}.}
+\item{overwrite}{Replace an existing study? Defaults to \code{FALSE}.}
+
+\item{validate}{Validate before writing? Defaults to \code{TRUE}.}
 }
 \value{
-Invisibly returns the path to the created or updated study directory.
+The study folder, invisibly.
 }
 \description{
-Adds the metadata (YAML) and quantitative data (CSV) for a single study
-to the project, performing validation against the project's schema.
+Validates the metadata and data points against the project's extraction
+schema (types, required fields, enum values and \verb{_ref} links) and writes
+\verb{data/<study>/metadata.yml} and \verb{data/<study>/data.csv}. All validation
+problems are reported at once.
 }
