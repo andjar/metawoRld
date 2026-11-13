@@ -128,11 +128,16 @@ create_metawoRld <- function(path,
     )
   }
 
+  .ensure_gitattributes(proj_path)
   if (isTRUE(git_init)) {
-    tryCatch(
-      git2r::init(proj_path),
-      error = function(e) rlang::warn(paste("Could not initialise Git repository:", conditionMessage(e)))
-    )
+    tryCatch({
+      if (nzchar(.git_bin())) {
+        .git(proj_path, c("init", "-q"))
+        commit_project(proj_path, "Create metawoRld project")
+      } else {
+        git2r::init(proj_path)
+      }
+    }, error = function(e) rlang::warn(paste("Could not initialise Git repository:", conditionMessage(e))))
   }
 
   rlang::inform(paste0("Created metawoRld project at ", proj_path))

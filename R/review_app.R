@@ -38,82 +38,95 @@ review_values <- function(path = ".", fulltext_dir = NULL, reviewer = NULL, laun
 review_values_app <- function(path = ".", fulltext_dir = NULL, reviewer = NULL) {
   rlang::check_installed(c("shiny", "bslib", "DT"), reason = "to review values.")
   proj_path <- .check_project(path)
-  schema <- get_schema(proj_path, "extraction")
-  items <- schema$data_points$`_items`
-  stat_types <- unlist(items$statistic_type$`_values`) %||% character(0)
-  if (is.null(fulltext_dir) && fs::dir_exists(fs::path(proj_path, "fulltext"))) fulltext_dir <- fs::path(proj_path, "fulltext")
-  ft_prefix <- paste0("fulltext_", substr(rlang::hash(proj_path), 1, 8))
-  if (!is.null(fulltext_dir)) shiny::addResourcePath(ft_prefix, fulltext_dir)
+  shiny::shinyApp(.review_ui("review", proj_path, reviewer), function(input, output, session) {
+    .review_server("review", proj_path, fulltext_dir)
+  })
+}
 
-  ui <- bslib::page_sidebar(
-    title = paste("Value review:", read_config(proj_path)$project_name %||% ""),
-    theme = bslib::bs_theme(version = 5),
-    shiny::tags$head(shiny::tags$style(.review_css), shiny::tags$script(shiny::HTML(.review_js))),
-    sidebar = bslib::sidebar(
+# UI of the review module. `standalone`: a full page, else a panel.
+.review_ui <- function(id, proj_path, reviewer = NULL, standalone = TRUE) {
+  ns <- shiny::NS(id)
+  schema <- get_schema(proj_path, "extraction")
+  stat_types <- unlist(schema$data_points$`_items`$statistic_type$`_values`) %||% character(0)
+  sidebar <- bslib::sidebar(
       width = 300,
-      shiny::textInput("reviewer", "Reviewer", reviewer %||% getOption("metawoRld.reviewer", "")),
-      shiny::checkboxGroupInput("status_filter", "Show",
+      shiny::textInput(ns("reviewer"), "Reviewer", reviewer %||% getOption("metawoRld.reviewer", "")),
+      shiny::checkboxGroupInput(ns("status_filter"), "Show",
                                 c("Unverified" = "unverified", "Changed since review" = "changed",
                                   "Verified" = "verified", "Rejected" = "rejected"),
                                 selected = c("unverified", "changed")),
-      shiny::checkboxInput("flagged_only", "Only values with flags", FALSE),
-      shiny::selectInput("study_filter", "Study", choices = c("All studies" = "")),
+      shiny::checkboxInput(ns("flagged_only"), "Only values with flags", FALSE),
+      shiny::selectInput(ns("study_filter"), "Study", choices = c("All studies" = "")),
       shiny::hr(),
-      shiny::uiOutput("progress"),
+      shiny::uiOutput(ns("progress")),
       shiny::hr(),
       shiny::div(class = "small text-muted",
                  shiny::HTML("<b>Keys</b>: <kbd>V</kbd> verify / save &middot; <kbd>R</kbd> reject &middot; <kbd>N</kbd>/<kbd>&rarr;</kbd> next &middot; <kbd>P</kbd>/<kbd>&larr;</kbd> previous"))
-    ),
-    bslib::layout_columns(
+    )
+  main <- bslib::layout_columns(
       col_widths = c(4, 8),
       bslib::card(
         full_screen = TRUE,
         bslib::card_header("Queue"),
-        DT::DTOutput("queue")
+        DT::DTOutput(ns("queue"))
       ),
       shiny::div(
         bslib::card(
-          bslib::card_header(shiny::uiOutput("dp_header")),
-          shiny::uiOutput("dp_summary"),
-          shiny::uiOutput("dp_flags"),
-          shiny::uiOutput("dp_source"),
-          shiny::uiOutput("dp_map"),
+          bslib::card_header(shiny::uiOutput(ns("dp_header"))),
+          shiny::uiOutput(ns("dp_summary")),
+          shiny::uiOutput(ns("dp_flags")),
+          shiny::uiOutput(ns("dp_source")),
+          shiny::uiOutput(ns("dp_map")),
           shiny::hr(),
           bslib::layout_columns(
             col_widths = c(4, 4, 4),
-            shiny::textInput("f_variable_name", "Variable"),
-            shiny::selectInput("f_group_id", "Group", choices = NULL),
-            shiny::textInput("f_timepoint", "Timepoint")
+            shiny::textInput(ns("f_variable_name"), "Variable"),
+            shiny::selectInput(ns("f_group_id"), "Group", choices = NULL),
+            shiny::textInput(ns("f_timepoint"), "Timepoint")
           ),
           bslib::layout_columns(
             col_widths = c(4, 4, 4),
-            shiny::selectInput("f_statistic_type", "Statistic", choices = stat_types),
-            shiny::numericInput("f_sample_size", "n", NA),
-            shiny::textInput("f_unit", "Unit (if not the method's)")
+            shiny::selectInput(ns("f_statistic_type"), "Statistic", choices = stat_types),
+            shiny::numericInput(ns("f_sample_size"), "n", NA),
+            shiny::textInput(ns("f_unit"), "Unit (if not the method's)")
           ),
           bslib::layout_columns(
             col_widths = c(3, 3, 3, 3),
-            shiny::numericInput("f_value1", "value1", NA),
-            shiny::numericInput("f_value2", "value2", NA),
-            shiny::numericInput("f_value3", "value3", NA),
-            shiny::textInput("f_p_value", "p-value")
+            shiny::numericInput(ns("f_value1"), "value1", NA),
+            shiny::numericInput(ns("f_value2"), "value2", NA),
+            shiny::numericInput(ns("f_value3"), "value3", NA),
+            shiny::textInput(ns("f_p_value"), "p-value")
           ),
-          shiny::textInput("note", "Note (optional; e.g. reason for rejection)", width = "100%"),
+          shiny::textInput(ns("note"), "Note (optional; e.g. reason for rejection)", width = "100%"),
           shiny::div(
             class = "d-flex gap-2 flex-wrap",
-            shiny::uiOutput("verify_button", inline = TRUE),
-            shiny::actionButton("reject", shiny::HTML("&#10007; Reject"), class = "btn-outline-danger"),
+            shiny::uiOutput(ns("verify_button"), inline = TRUE),
+            shiny::actionButton(ns("reject"), shiny::HTML("&#10007; Reject"), class = "btn-outline-danger"),
             shiny::div(class = "ms-auto d-flex gap-2",
-              shiny::actionButton("prev", shiny::HTML("&larr; Previous"), class = "btn-outline-secondary"),
-              shiny::actionButton("nxt", shiny::HTML("Skip &rarr;"), class = "btn-outline-secondary"))
+              shiny::actionButton(ns("prev"), shiny::HTML("&larr; Previous"), class = "btn-outline-secondary"),
+              shiny::actionButton(ns("nxt"), shiny::HTML("Skip &rarr;"), class = "btn-outline-secondary"))
           )
         ),
-        shiny::uiOutput("fulltext")
+        shiny::uiOutput(ns("fulltext"))
       )
     )
-  )
+  head <- shiny::tags$head(shiny::tags$style(.review_css), shiny::tags$script(shiny::HTML(.review_js(ns("key"), ns("queue")))))
+  if (standalone) {
+    bslib::page_sidebar(title = paste("Value review:", read_config(proj_path)$project_name %||% ""),
+                        theme = bslib::bs_theme(version = 5), head, sidebar = sidebar, main)
+  } else {
+    shiny::tagList(head, bslib::layout_sidebar(sidebar = sidebar, main, fillable = FALSE))
+  }
+}
 
-  server <- function(input, output, session) {
+# Server of the review module. `refresh`: optional reactive; when it
+# changes (e.g. after a submission was accepted), studies are re-read.
+.review_server <- function(id, proj_path, fulltext_dir = NULL, refresh = NULL) {
+  schema <- get_schema(proj_path, "extraction")
+  if (is.null(fulltext_dir) && fs::dir_exists(fs::path(proj_path, "fulltext"))) fulltext_dir <- fs::path(proj_path, "fulltext")
+  ft_prefix <- paste0("fulltext_", substr(rlang::hash(proj_path), 1, 8))
+  if (!is.null(fulltext_dir)) shiny::addResourcePath(ft_prefix, fulltext_dir)
+  shiny::moduleServer(id, function(input, output, session) {
     rules <- shiny::reactiveVal(read_rules(proj_path))
     store <- shiny::reactiveValues()
     current <- shiny::reactiveVal(NULL)    # list(study_id, measurement_id)
@@ -130,11 +143,15 @@ review_values_app <- function(path = ".", fulltext_dir = NULL, reviewer = NULL) 
         flags = .check_study_values(s$data, s$metadata, shiny::isolate(rules()))
       )
     }
-    for (id in list_studies(proj_path)) store[[id]] <- load_one(id)
-    shiny::updateSelectInput(session, "study_filter", choices = c("All studies" = "", rlang::set_names(
-      shiny::isolate(names(shiny::reactiveValuesToList(store))),
-      vapply(shiny::isolate(names(shiny::reactiveValuesToList(store))), function(i) .short_title(shiny::isolate(store[[i]]$meta), i), character(1))
-    )))
+    reload_all <- function() {
+      rules(read_rules(proj_path))
+      for (id in list_studies(proj_path)) store[[id]] <- load_one(id)
+      ids <- shiny::isolate(names(shiny::reactiveValuesToList(store)))
+      shiny::updateSelectInput(session, "study_filter", choices = c("All studies" = "", rlang::set_names(
+        ids, vapply(ids, function(i) .short_title(shiny::isolate(store[[i]]$meta), i), character(1)))))
+    }
+    reload_all()
+    if (!is.null(refresh)) shiny::observeEvent(refresh(), reload_all(), ignoreInit = TRUE)
 
     all_points <- shiny::reactive({
       sts <- shiny::reactiveValuesToList(store)
@@ -264,8 +281,8 @@ review_values_app <- function(path = ".", fulltext_dir = NULL, reviewer = NULL) 
 
     output$verify_button <- shiny::renderUI({
       ch <- changed_fields()
-      if (length(ch)) shiny::actionButton("verify", shiny::HTML(paste0("&#10003; Save correction &amp; verify (", htmltools::htmlEscape(paste(ch, collapse = ", ")), ")")), class = "btn-warning")
-      else shiny::actionButton("verify", shiny::HTML("&#10003; Verify"), class = "btn-success")
+      if (length(ch)) shiny::actionButton(session$ns("verify"), shiny::HTML(paste0("&#10003; Save correction &amp; verify (", htmltools::htmlEscape(paste(ch, collapse = ", ")), ")")), class = "btn-warning")
+      else shiny::actionButton(session$ns("verify"), shiny::HTML("&#10003; Verify"), class = "btn-success")
     })
 
     output$dp_header <- shiny::renderUI({
@@ -333,9 +350,9 @@ review_values_app <- function(path = ".", fulltext_dir = NULL, reviewer = NULL) 
       vars <- names(rules()$variables)
       shiny::div(
         class = "d-flex gap-2 align-items-end",
-        shiny::selectizeInput("map_to", paste0("Map '", .val(c$row$variable_name), "' to"),
+        shiny::selectizeInput(session$ns("map_to"), paste0("Map '", .val(c$row$variable_name), "' to"),
                               choices = c("", vars), options = list(create = TRUE, placeholder = "existing variable, or type a new name")),
-        shiny::actionButton("map", "Map variable", class = "btn-outline-primary mb-3")
+        shiny::actionButton(session$ns("map"), "Map variable", class = "btn-outline-primary mb-3")
       )
     })
 
@@ -430,10 +447,9 @@ review_values_app <- function(path = ".", fulltext_dir = NULL, reviewer = NULL) 
       for (id in names(shiny::reactiveValuesToList(store))) store[[id]] <- load_one(id)
       shiny::showNotification(paste0("'", .val(c$row$variable_name), "' mapped to '", to, "' in _rules.yml."))
     })
-  }
-
-  shiny::shinyApp(ui, server)
+  })
 }
+
 
 # ---- helpers -----------------------------------------------------------------
 
@@ -498,16 +514,18 @@ review_values_app <- function(path = ".", fulltext_dir = NULL, reviewer = NULL) 
 table.dataTable tbody tr.selected td { box-shadow: inset 0 0 0 9999px rgba(13,110,253,.15) !important; color: inherit !important; }
 "
 
-.review_js <- "
+.review_js <- function(key_id, queue_id) sprintf("
 document.addEventListener('keydown', function(e) {
+  var q = document.getElementById('%s');
+  if (!q || q.offsetParent === null) return;   /* review panel not visible */
   var t = e.target.tagName;
   if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT' || e.target.isContentEditable || e.ctrlKey || e.metaKey || e.altKey) return;
   var k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   if (['v','r','n','p','ArrowRight','ArrowLeft'].indexOf(k) === -1) return;
   e.preventDefault();
-  Shiny.setInputValue('key', {k: k, t: Date.now()}, {priority: 'event'});
+  Shiny.setInputValue('%s', {k: k, t: Date.now()}, {priority: 'event'});
 });
-"
+", queue_id, key_id)
 
 # Full text of a study: <study_id>.<ext>, or named after one of its reports
 # (sanitized DOI or PMID, as DataFindR stores them).

@@ -18,18 +18,23 @@ home:
 
 navbar:
   structure:
-    left: [intro, example, articles, reference, news]
+    left: [intro, app, example, articles, reference, news]
     right: [search, github]
   components:
     intro:
       text: Get started
       href: articles/getting_started.html
+    app:
+      text: The app
+      href: articles/app.html
     example:
       text: Worked example
       href: articles/worked-example.html
     articles:
       text: Articles
       menu:
+      - text: The metawoRld app
+        href: articles/app.html
       - text: Concepts and workflow
         href: articles/conceptual_overview.html
       - text: Worked example (IL-6 in preeclampsia)
@@ -43,11 +48,17 @@ articles:
   contents:
   - getting_started
   - conceptual_overview
+  - articles/app
   - articles/worked-example
 
 reference:
+- title: The app
+  desc: Run the whole review without writing R.
+  contents:
+  - launch
 - title: Create a project
   contents:
+  - new_review
   - create_metawoRld
   - use_templates
   - read_config
@@ -85,6 +96,7 @@ reference:
   contents:
   - accept_submission
   - reject_submission
+  - compare_with_accepted
   - compare_extractions
   - reconcile
   - add_study_data
@@ -127,9 +139,15 @@ reference:
   - add_variable_synonym
   - canonical_variable
   - rules_for_prompt
+- title: Working as a team (Git)
+  contents:
+  - sync_project
+  - sync_status
+  - commit_project
 - title: Living meta-analysis
   contents:
   - read_analyses
+  - write_analyses
   - run_meta_analysis
   - run_all_meta_analyses
   - summary_of_findings
