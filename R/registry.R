@@ -33,7 +33,7 @@ check_study_id <- function(study_id) {
 suggest_study_id <- function(authors, year, path = ".") {
   proj_path <- .check_project(path)
   first <- trimws(as.character(unlist(authors))[1] %||% "")
-  surname <- sub("[ ,].*$", "", first)
+  surname <- .surname(first)
   surname <- .to_ascii(surname)
   surname <- tolower(gsub("[^A-Za-z]", "", surname %||% ""))
   if (!nzchar(surname)) surname <- "study"

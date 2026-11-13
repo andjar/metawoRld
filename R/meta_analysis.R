@@ -294,13 +294,33 @@ plot_forest <- function(ma, ...) {
   ilab_lab <- if (m %in% .measures_two) c("n1", "n2") else "n"
   args$ilab <- if (m %in% .measures_two) cbind(dat$n1, dat$n2) else cbind(dat$n)
   if (is.null(atr)) args$atransf <- NULL
-  op <- graphics::par(mar = c(5.5, 4, 1, 2)); on.exit(graphics::par(op))
-  res <- if (!is.null(ma$model)) {
-    do.call(metafor::forest, c(list(ma$model, addpred = TRUE), args))
-  } else {
-    args$col <- args$colout; args$colout <- NULL
-    do.call(metafor::forest, c(list(dat$yi, dat$vi), args))
+  draw <- function(args) {
+    if (!is.null(ma$model)) {
+      do.call(metafor::forest, c(list(ma$model, addpred = TRUE), args))
+    } else {
+      args$col <- args$colout; args$colout <- NULL
+      do.call(metafor::forest, c(list(dat$yi, dat$vi), args))
+    }
   }
+  # Dry run on an invisible device of the same size, to make room for long
+  # study labels before the n columns.
+  if (is.null(args$xlim) && is.null(args$ilab.xpos)) {
+    size <- grDevices::dev.size("in")
+    grDevices::pdf(NULL, width = size[1], height = size[2])
+    lay <- tryCatch({
+      graphics::par(mar = c(5.5, 4, 1, 2))
+      r <- draw(args)
+      need <- r$xlim[1] + max(graphics::strwidth(c(lab, "Study"), cex = r$cex)) +
+        graphics::strwidth("0000", cex = r$cex)
+      list(r = r, short = need - min(r$ilab.xpos))
+    }, error = function(e) NULL, finally = grDevices::dev.off())
+    if (!is.null(lay) && length(lay$r$ilab.xpos) && lay$short > 0) {
+      args$xlim <- lay$r$xlim + c(-lay$short * 1.15, 0)
+      args$ilab.xpos <- lay$r$ilab.xpos
+    }
+  }
+  op <- graphics::par(mar = c(5.5, 4, 1, 2)); on.exit(graphics::par(op))
+  res <- draw(args)
   if (!is.null(res$ilab.xpos)) graphics::text(res$ilab.xpos, res$ylim[2] - 1, ilab_lab, font = 2, cex = res$cex)
   graphics::mtext(paste0(if (m %in% .measures_two) paste0("n1: ", ma$analysis$compare[1], ", n2: ", ma$analysis$compare[2], ".  ") else "",
                          "(c) mean/SD estimated from median, range, SE or CI.  Grey: not yet verified."),

@@ -71,3 +71,15 @@ desanitize_id <- function(sanitized_id) {
   for (ch in rev(names(.id_codes))) id <- gsub(.id_codes[[ch]], ch, id, fixed = TRUE)
   id
 }
+
+# Surname of an author written as "Hansen A", "Hansen, A.", "Tavakkol Afshari J"
+# or "van der Berg AB": everything except trailing initials.
+.surname <- function(author) {
+  a <- trimws(as.character(author %||% ""))
+  if (!length(a) || is.na(a[1]) || !nzchar(a[1])) return("")
+  a <- a[1]
+  if (grepl(",", a)) return(trimws(sub(",.*$", "", a)))
+  tokens <- strsplit(a, "\\s+")[[1]]
+  while (length(tokens) > 1 && grepl("^([A-Z]\\.?-?){1,3}$", tokens[length(tokens)])) tokens <- tokens[-length(tokens)]
+  paste(tokens, collapse = " ")
+}

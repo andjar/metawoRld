@@ -1,0 +1,38 @@
+metadata:
+  title: Interleukin-6 and its correlations with maternal characteristics and echocardiographic parameters in pre-eclampsia, gestational hypertension and normotensive pregnancy
+  authors: [Gencheva D, Nikolov F, Uchikova E, Mihaylov R, Pencheva B, Vasileva M]
+  year: 2022
+  journal: Cardiovascular Journal of Africa
+  country: [Bulgaria]
+  study_design: Prospective, single-centre
+  population: Women with pre-eclampsia, gestational hypertension and healthy pregnant controls, Plovdiv, 2018-2020
+  methods:
+    - method_id: m1
+      name: Serum IL-6, sandwich ELISA (Diaclone)
+      unit: pg/mL
+  groups:
+    - group_id: pe
+      name: Pre-eclampsia
+      sample_size: 37
+      category: PE
+    - group_id: gh
+      name: Gestational hypertension
+      sample_size: 36
+      category: GH
+    - group_id: ctrl
+      name: Healthy pregnant controls
+      sample_size: 50
+      category: Control
+    - group_id: pe_early
+      name: Pre-eclampsia, early onset
+      sample_size: 31
+    - group_id: pe_late
+      name: Pre-eclampsia, late onset
+      sample_size: 6
+  notes: "PMCID PMC9364472. Early- and late-onset subgroups pool to the overall pre-eclampsia mean (8.06)."
+data_points:
+  - {measurement_id: dp1, method_id: m1, group_id: pe, variable_name: IL-6, timepoint: Antepartum, sample_size: 37, statistic_type: mean_sd, value1: 8.06, value2: 12.48, source: Results text, source_page: 67, p_value: "0.002"}
+  - {measurement_id: dp2, method_id: m1, group_id: gh, variable_name: IL-6, timepoint: Antepartum, sample_size: 36, statistic_type: mean_sd, value1: 5.08, value2: 5.16, source: Results text, source_page: 67, p_value: "0.020"}
+  - {measurement_id: dp3, method_id: m1, group_id: ctrl, variable_name: IL-6, timepoint: Antepartum, sample_size: 50, statistic_type: mean_sd, value1: 2.77, value2: 2.43, source: Results text, source_page: 67}
+  - {measurement_id: dp4, method_id: m1, group_id: pe_early, variable_name: IL-6, timepoint: Antepartum, sample_size: 31, statistic_type: mean_sd, value1: 6.46, value2: 7.73, source: Table 1, source_page: 67}
+  - {measurement_id: dp5, method_id: m1, group_id: pe_late, variable_name: IL-6, timepoint: Antepartum, sample_size: 6, statistic_type: mean_sd, value1: 16.34, value2: 25.78, source: Table 1, source_page: 67}

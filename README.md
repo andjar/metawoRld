@@ -23,7 +23,16 @@ CSV and JSON files, laid out as defined in [SPEC.md](SPEC.md):
 `check_project()` checks all of it, locally or in CI, and catches data edited
 outside metawoRld.
 
-See `vignette("getting_started")` and `vignette("conceptual_overview")`.
+**Documentation:** <https://andjar.github.io/metawoRld/>, including a
+[worked example](https://andjar.github.io/metawoRld/articles/worked-example.html)
+with real data from four open-access studies of IL-6 in preeclampsia.
+
+![The living meta-analysis dashboard built from the worked example](man/figures/dashboard-analysis.png)
+
+Values are verified against the papers in a keyboard-driven review app;
+every decision is tied to a hash of the values it approved:
+
+![Verifying values with the keyboard in review_values()](man/figures/review-app.gif)
 
 ## Installation
 
@@ -34,6 +43,17 @@ remotes::install_github("andjar/DataFindR")   # optional, for LLM screening/extr
 ```
 
 ## Example
+
+Try the worked example in one call:
+
+```r
+library(metawoRld)
+p <- example_project(file.path(tempdir(), "il6"))
+review_values(p)       # verify values
+generate_website(p)    # build the dashboard (needs Quarto)
+```
+
+Or start your own review:
 
 ```r
 library(metawoRld)

@@ -453,13 +453,13 @@ review_values_app <- function(path = ".", fulltext_dir = NULL, reviewer = NULL) 
 .study_label <- function(meta, id) {
   a <- unlist(meta$authors)
   if (!length(a)) return(id)
-  paste0(sub(" .*", "", a[1]), if (length(a) > 1) " et al." else "", " ", .val(meta$year))
+  paste0(.surname(a[1]), if (length(a) > 1) " et al." else "", " ", .val(meta$year))
 }
 
 .short_title <- function(meta, id, n = 50) {
   t <- .val(meta$title, id)
   a <- unlist(meta$authors)
-  lab <- if (length(a)) paste0(sub(" .*", "", a[1]), if (length(a) > 1) " et al." else "", " ", .val(meta$year)) else ""
+  lab <- if (length(a)) paste0(.surname(a[1]), if (length(a) > 1) " et al." else "", " ", .val(meta$year)) else ""
   t <- if (nchar(t) > n) paste0(substr(t, 1, n - 3), "...") else t
   trimws(paste(lab, if (nzchar(lab)) "-" else "", t))
 }
