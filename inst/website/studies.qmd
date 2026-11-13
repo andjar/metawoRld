@@ -5,7 +5,7 @@ title: Studies
 ```{r}
 world <- metawoRld::load_metawoRld(".", verbose = FALSE)
 st <- world$studies
-link <- paste0("study/", utils::URLencode(metawoRld::sanitize_id(st$study_id), reserved = TRUE), ".html")
+link <- paste0("study/", st$study_id, ".html")
 title <- if ("title" %in% names(st)) st$title else st$study_id
 st$title <- paste0("<a href='", link, "'>", htmltools::htmlEscape(title), "</a>")
 show <- intersect(c("title", "authors", "year", "journal", "country", "study_design"), names(st))

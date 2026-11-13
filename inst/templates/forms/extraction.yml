@@ -1,4 +1,7 @@
-# metawoRld extraction schema
+# metawoRld extraction form (forms/extraction.yml)
+#
+# The `_form` header names the form, its kind and its version (bump the major
+# version for breaking changes such as renamed or removed fields).
 #
 # This file defines what is extracted from each study and how it is stored:
 #   - `metadata`    -> data/<study>/metadata.yml
@@ -22,6 +25,16 @@
 # The schema is deliberately generic. Adapt descriptions, add fields or
 # tighten enums for your review; keep the `_ref` links consistent.
 
+_form:
+  name: extraction
+  kind: extraction
+  version: 1.0.0
+  entry:
+    rows: variable_name
+    columns: group_id
+    cells: [value1, value2, value3, sample_size]
+    context: [method_id, timepoint, statistic_type, source, source_page]
+
 _type: object
 _description: "Study metadata and every quantitative result reported in a scientific paper."
 
@@ -30,7 +43,8 @@ metadata:
   _description: "Bibliographic and design information about the study."
   study_id:
     _type: string
-    _description: "Study identifier. Use the DOI if available, otherwise the PMID."
+    _description: "Leave empty; metawoRld sets the study id."
+    _required: false
   title:
     _type: string
     _description: "Full study title."

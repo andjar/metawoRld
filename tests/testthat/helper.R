@@ -70,16 +70,24 @@ ma_project <- function(env = parent.frame()) {
     data.frame(measurement_id = id, method_id = "m1", group_id = grp, variable_name = var, timepoint = tp, sample_size = n,
                statistic_type = st, value1 = v1, value2 = v2, value3 = v3, unit = unit, source = "Table 2")
   # A: mean/SD; B: median/IQR in ng/mL with category field; C: two PE subgroups; D: controls only; E: smoking counts
-  add_study_data(p, "A", m(2015L, list(g("g1", "Preeclampsia", 20L), g("g2", "Controls", 30L))),
+  add_study_data(p, "study-a", m(2015L, list(g("g1", "Preeclampsia", 20L), g("g2", "Controls", 30L))),
                  rbind(dp("d1", "g1", "IL-6", "mean_sd", 5, 2, n = 20), dp("d2", "g2", "IL-6", "mean_sd", 3, 1.5, n = 30),
                        dp("d3", "g1", "Smoking", "n_percent", 4, 20, n = 20), dp("d4", "g2", "Smoking", "n_percent", 3, 10, n = 30)))
-  add_study_data(p, "B", m(2018L, list(g("a", "Cases", 40L, "PE"), g("b", "Healthy women", 40L, "Control"))),
+  add_study_data(p, "study-b", m(2018L, list(g("a", "Cases", 40L, "PE"), g("b", "Healthy women", 40L, "Control"))),
                  rbind(dp("d1", "a", "IL6", "median_iqr", 0.006, 0.004, 0.008, n = 40, unit = "ng/mL"),
                        dp("d2", "b", "IL6", "median_iqr", 0.004, 0.003, 0.005, n = 40, unit = "ng/mL")))
-  add_study_data(p, "C", m(2020L, list(g("g1", "Mild PE", 10L), g("g2", "Severe PE", 10L), g("g3", "Controls", 25L))),
+  add_study_data(p, "study-c", m(2020L, list(g("g1", "Mild PE", 10L), g("g2", "Severe PE", 10L), g("g3", "Controls", 25L))),
                  rbind(dp("d1", "g1", "IL-6", "mean_sd", 4, 1, n = 10), dp("d2", "g2", "IL-6", "mean_sd", 6, 1, n = 10),
                        dp("d3", "g3", "IL-6", "mean_se", 3, 0.2, n = 25)))
-  add_study_data(p, "D", m(2021L, list(g("g1", "Controls", 50L))), dp("d1", "g1", "IL-6", "mean_sd", 2.8, 1.1, n = 50))
+  add_study_data(p, "study-d", m(2021L, list(g("g1", "Controls", 50L))), dp("d1", "g1", "IL-6", "mean_sd", 2.8, 1.1, n = 50))
   p
 }
 
+
+team_project <- function(env = parent.frame()) {
+  p <- local_project(env)
+  add_person(p, "ahj", "Anders", roles = c("admin", "extractor", "verifier", "arbiter", "screener"))
+  add_person(p, "kb", "Kari", roles = c("extractor", "screener"))
+  add_person(p, "datafindr", "DataFindR", tool = TRUE)
+  p
+}

@@ -1,20 +1,22 @@
 #' metawoRld: structured, validated data for living systematic reviews
 #'
 #' A metawoRld project is a folder (usually a Git repository) holding the
-#' review's settings, a schema describing what is extracted from each study,
-#' and one folder per study with `metadata.yml` and `data.csv`.
+#' review's settings, forms describing what is extracted, a record registry
+#' and one folder per accepted study. The format is defined in `SPEC.md`.
 #'
 #' Main functions:
-#' * [create_metawoRld()] creates a project with generic, editable templates.
-#' * [add_study_data()] validates and stores one study; [add_study_template()]
-#'   creates files for manual entry; [validate_study()] / [validate_world()]
-#'   check edited files.
-#' * [load_metawoRld()] loads everything for analysis.
-#' * [generate_website()] builds a Quarto website; [use_github_action_quarto()]
-#'   publishes it automatically.
-#'
-#' The companion package DataFindR uses LLMs to screen studies and extract
-#' data into a metawoRld project.
+#' * [create_metawoRld()] creates a project; [add_person()] registers the
+#'   people and tools that contribute.
+#' * [add_search()], [add_records()], [add_screening()] and [prisma_counts()]
+#'   keep the search and screening log.
+#' * [submit_study()] is the one door for data from any channel (entry form,
+#'   CSV, DataFindR, ...). [accept_submission()], [compare_extractions()] and
+#'   [reconcile()] turn submissions into accepted data with provenance.
+#' * [review_values()] and [set_verification()] record human verification.
+#' * [check_project()] checks everything (schemas, hashes, provenance), locally
+#'   or in CI.
+#' * [load_metawoRld()], [run_all_meta_analyses()] and [generate_website()]
+#'   analyse and publish.
 #'
 #' @keywords internal
 #' @importFrom rlang %||%

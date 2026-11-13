@@ -14,7 +14,7 @@ test_that("built-in consistency checks flag the right data points", {
     value1 = c(4, 5, 5, 25, 5.1), value2 = c(6, -1, 40, NA, 1.2), value3 = c(8, NA, NA, NA, NA),
     p_value = NA, source = "Table 3"
   ))
-  add_study_data(p, "s1", example_metadata(), d)
+  add_study_data(p, "smith2020", example_metadata(), d)
   f <- check_values(p)
   expect_equal(flag_checks(f, "dp4"), "statistic_consistency")         # median below Q1
   expect_equal(flag_checks(f, "dp5"), c("sample_size", "statistic_consistency"))  # SD < 0, n 30 > 25
@@ -32,7 +32,7 @@ test_that("variables, synonyms, units, conversions and ranges", {
   d$variable_name <- c("x-level", "X", "Age")
   d$unit <- c(NA, "ng/mL", NA)
   d$value1[2] <- 4.2          # 4.2 ng/mL = 4200 pg/mL -> out of range
-  add_study_data(p, "s1", example_metadata(), d)
+  add_study_data(p, "smith2020", example_metadata(), d)
 
   # no variables defined -> no vocabulary checks
   expect_false(any(check_values(p)$check == "unknown_variable"))

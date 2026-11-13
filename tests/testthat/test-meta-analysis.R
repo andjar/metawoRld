@@ -15,16 +15,16 @@ test_that("analysis data: categories, units, subgroup combination and exclusions
   p <- ma_project()
   expect_equal(names(read_analyses(p)), c("IL-6 PE vs control", "IL-6 in controls", "Smoking PE vs control"))
   ad <- analysis_data(p, "IL-6 PE vs control")
-  expect_equal(ad$data$study_id, c("A", "B", "C"))
-  b <- ad$data[ad$data$study_id == "B", ]
+  expect_equal(ad$data$study_id, c("study-a", "study-b", "study-c"))
+  b <- ad$data[ad$data$study_id == "study-b", ]
   expect_equal(b$mean1, 6, tolerance = 1e-8)                       # (4+6+8)/3 ng/mL * 1000
   expect_true(b$converted)
-  cc <- ad$data[ad$data$study_id == "C", ]
+  cc <- ad$data[ad$data$study_id == "study-c", ]
   expect_equal(cc$n1, 20); expect_equal(cc$mean1, 5)               # combined mild + severe
   expect_equal(cc$sd1, sqrt((9 * 1 + 9 * 1 + 10 * 10 / 20 * (16 + 36 - 48)) / 19))
   expect_equal(cc$sd2, 0.2 * 5)                                     # SE -> SD
   expect_match(cc$note, "combined 2 groups")
-  expect_equal(ad$excluded$study_id, "D")
+  expect_equal(ad$excluded$study_id, "study-d")
   expect_match(ad$excluded$reason, "no usable data for: PE")
 })
 
@@ -52,9 +52,9 @@ test_that("run_meta_analysis matches metafor and produces cumulative results", {
   expect_equal(exp(or$data$yi), (4 / 16) / (3 / 27))
 
   # verified_only
-  set_verification(p, "A", c("d1", "d2"), "verified")
+  set_verification(p, "study-a", c("d1", "d2"), "verified")
   a <- read_analyses(p)[[1]]; a$verified_only <- TRUE
-  expect_equal(run_meta_analysis(p, a)$data$study_id, "A")
+  expect_equal(run_meta_analysis(p, a)$data$study_id, "study-a")
 
   # plots draw without error
   f <- tempfile(fileext = ".png"); grDevices::png(f, 900, 600)

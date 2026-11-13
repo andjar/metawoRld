@@ -2,13 +2,15 @@
 % Please edit documentation in R/data_management.R
 \name{add_study_data}
 \alias{add_study_data}
-\title{Add a study to a metawoRld project}
+\title{Write accepted study data (low level)}
 \usage{
 add_study_data(
   path = ".",
   study_id,
   metadata,
   data,
+  reports = NULL,
+  provenance = list(channel = "manual_edit"),
   overwrite = FALSE,
   validate = TRUE
 )
@@ -16,15 +18,24 @@ add_study_data(
 \arguments{
 \item{path}{Project root.}
 
-\item{study_id}{Study identifier, preferably the DOI or PMID. It is
-normalized with \code{\link[=normalize_identifier]{normalize_identifier()}}, stored as \code{metadata$study_id}
-and used (encoded with \code{\link[=sanitize_id]{sanitize_id()}}) as the folder name.}
+\item{study_id}{Study id (see \code{\link[=check_study_id]{check_study_id()}}), e.g. \code{"hansen2019"}.}
 
-\item{metadata}{Named list matching the \code{metadata} part of the schema.
+\item{metadata}{Named list matching the \code{metadata} part of the form.
 Arrays of objects may be given as data frames.}
 
 \item{data}{Data frame (or list of objects) matching \code{data_points}. May
 have zero rows.}
+
+\item{reports}{Reports (publications) of the study: a list of lists with
+\code{doi}, \code{pmid} and \code{role} (\code{primary} or \code{secondary}). Defaults to the
+existing reports, else \code{metadata$doi}/\code{metadata$pmid}.}
+
+\item{provenance}{Where the values came from: either a list of defaults
+(\code{extraction_id}, \code{person}, \code{channel}, \code{tool}, \code{model}, \code{source_sha256},
+\code{timestamp}) applied to every data point, or a data frame with a
+\code{measurement_id} column (and \verb{_metadata} for the metadata). When
+overwriting, the provenance of data points whose values did not change
+is kept.}
 
 \item{overwrite}{Replace an existing study? Defaults to \code{FALSE}.}
 
@@ -34,8 +45,13 @@ have zero rows.}
 The study folder, invisibly.
 }
 \description{
-Validates the metadata and data points against the project's extraction
-schema (types, required fields, enum values and \verb{_ref} links) and writes
-\verb{data/<study>/metadata.yml} and \verb{data/<study>/data.csv}. All validation
-problems are reported at once.
+Validates the metadata and data points against the extraction form and
+writes \verb{data/<study_id>/} (\code{study.yml}, \code{metadata.yml}, \code{data.csv},
+\code{provenance.csv} and \code{datapackage.json}; see \code{SPEC.md} section 8). All
+validation problems are reported at once.
+}
+\details{
+This bypasses the submission workflow. Input channels should use
+\code{\link[=submit_study]{submit_study()}} and \code{\link[=accept_submission]{accept_submission()}}, which call this function and
+record where each value came from.
 }

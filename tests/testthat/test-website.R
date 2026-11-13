@@ -1,15 +1,15 @@
 test_that("study pages are generated with relative data paths and stale pages removed", {
   p <- local_project()
-  add_study_data(p, "10.1000/abc", modifyList(example_metadata(), list(title = 'Quote "this": yes')), example_data())
+  add_study_data(p, "abc2020", modifyList(example_metadata(), list(title = 'Quote "this": yes')), example_data())
   dir.create(file.path(p, "study"), showWarnings = FALSE)
   writeLines("old", file.path(p, "study", "gone.qmd"))
   pages <- generate_study_webpage(p)
-  expect_equal(basename(pages), "10.1000_fslash_abc.qmd")
+  expect_equal(basename(pages), "abc2020.qmd")
   expect_false(file.exists(file.path(p, "study", "gone.qmd")))
   txt <- readLines(pages)
   fm <- yaml::yaml.load(paste(txt[2:(which(txt == "---")[2] - 1)], collapse = "\n"))
   expect_equal(fm$title, 'Quote "this": yes')
-  expect_true(any(grepl('"../data/10.1000_fslash_abc/data.csv"', txt, fixed = TRUE)))
+  expect_true(any(grepl('"../data/abc2020/data.csv"', txt, fixed = TRUE)))
   expect_true(any(grepl("| group_id | name | sample_size |", txt, fixed = TRUE)))
 })
 

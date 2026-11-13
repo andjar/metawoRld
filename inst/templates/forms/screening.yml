@@ -1,6 +1,11 @@
-# metawoRld screening (title/abstract assessment) schema.
-# Same node format as _extraction_schema.yml. The fields `decision`, `score`
+# metawoRld screening form (forms/screening.yml), used for title/abstract
+# screening. Same node format as forms/extraction.yml. The fields `decision`, `score`
 # and `rationale` are used by DataFindR and must be kept.
+
+_form:
+  name: screening
+  kind: assessment
+  version: 1.0.0
 
 _type: object
 _description: "Screening decision for one study based on its title and abstract."

@@ -2,7 +2,7 @@
 % Please edit documentation in R/project_management.R
 \name{use_templates}
 \alias{use_templates}
-\title{Add or update the schema and prompt templates in a project}
+\title{Add or update the forms, prompts and rules templates in a project}
 \usage{
 use_templates(path = ".", overwrite = FALSE)
 }
@@ -16,6 +16,6 @@ your edits are kept.}
 Paths of the files that were written, invisibly.
 }
 \description{
-Copies \verb{_extraction_schema.yml}, \verb{_assessment_schema.yml},
-\verb{_extraction_prompt.txt} and \verb{_assessment_prompt.txt} into the project.
+Copies the default \verb{forms/}, \verb{prompts/}, \verb{_rules.yml} and \verb{_analyses.yml}
+into the project.
 }

@@ -12,6 +12,7 @@ create_metawoRld(
   exclusion_criteria = character(0),
   git_init = TRUE,
   website = TRUE,
+  license = "CC-BY-4.0",
   ...
 )
 }
@@ -29,6 +30,9 @@ used for screening.}
 
 \item{website}{Add Quarto website templates? Defaults to \code{TRUE}.}
 
+\item{license}{Data license, stored in \verb{_metawoRld.yml} and in every
+study's \code{datapackage.json}. Defaults to \code{"CC-BY-4.0"}.}
+
 \item{...}{Further named values stored in \verb{_metawoRld.yml}
 (e.g. \code{search_query = "..."}).}
 }
@@ -36,19 +40,24 @@ used for screening.}
 The project path, invisibly.
 }
 \description{
-Creates the project folder with a configuration file (\verb{_metawoRld.yml}),
-the default schema and prompt templates, a \verb{data/} folder, a README,
-website templates and (optionally) a Git repository.
+Creates the project folder laid out as described in \code{SPEC.md}: settings
+(\verb{_metawoRld.yml}), forms, prompts, rules, the people list, the search
+and screening log, \verb{submissions/} and \verb{data/}, a README, website templates
+and (optionally) a Git repository.
 }
 \details{
 The project contains:
 \itemize{
 \item \verb{_metawoRld.yml}: project name, description, criteria and other settings.
-\item \verb{_extraction_schema.yml}, \verb{_assessment_schema.yml}: what is extracted and
-how screening results look. Edit these to fit your review.
-\item \verb{_extraction_prompt.txt}, \verb{_assessment_prompt.txt}: LLM prompts used by
-DataFindR. \code{{{placeholders}}} are filled in automatically.
-\item \verb{data/<study>/metadata.yml} and \verb{data/<study>/data.csv} for each study.
+\item \verb{_metawoRld.yml}: settings, criteria and \code{spec_version}.
+\item \code{forms/extraction.yml} (what is extracted) and \code{forms/screening.yml}.
+Edit these to fit your review.
+\item \verb{prompts/}: LLM prompts used by DataFindR.
+\item \verb{_rules.yml}, \verb{_analyses.yml}: vocabulary, value checks and planned
+analyses.
+\item \code{people.yml}, \code{searches.yml}, \code{records.csv}, \code{screening.csv}: who works on
+the review, and the search and screening log.
+\item \verb{submissions/}: staged extractions; \verb{data/<study_id>/}: accepted data.
 }
 }
 \examples{

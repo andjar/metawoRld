@@ -4,7 +4,7 @@ skip_if_not_installed("DT")
 
 test_that("review app verifies, corrects, rejects and maps variables", {
   p <- local_project()
-  add_study_data(p, "10.1000/abc", example_metadata(), example_data())
+  add_study_data(p, "abc2020", example_metadata(), example_data())
   app <- review_values_app(p, reviewer = "AHJ")
 
   shiny::testServer(app, {
@@ -29,7 +29,7 @@ test_that("review app verifies, corrects, rejects and maps variables", {
     st <- verification_status(p)
     expect_equal(st$status[2], "verified")
     expect_equal(st$note[2], "Corrected: value2: 3.1 -> 3.3")
-    expect_equal(read_study(p, "10.1000/abc")$data$value2[2], 3.3)
+    expect_equal(read_study(p, "abc2020")$data$value2[2], 3.3)
 
     # invalid correction is refused and nothing changes
     set_form(session, cur()$row, f_group_id = "g9")
@@ -53,7 +53,7 @@ test_that("review app verifies, corrects, rejects and maps variables", {
     for (id in names(shiny::reactiveValuesToList(store))) store[[id]] <- load_one(id)
     session$setInputs(status_filter = c("unverified", "verified", "rejected", "changed"), flagged_only = TRUE)
     expect_equal(queue()$variable, "Age")                  # unknown variable
-    current(list(study_id = "10.1000/abc", measurement_id = "dp3"))
+    current(list(study_id = "abc2020", measurement_id = "dp3"))
     expect_false(is.null(output$dp_map))
     session$setInputs(map_to = "Maternal age", map = 1)
     expect_equal(canonical_variable("Age", read_rules(p)), "Maternal age")
