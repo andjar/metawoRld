@@ -106,3 +106,19 @@ test_that("check_submission re-checks folders written by other tools", {
   expect_equal(list_submissions(p)$status, "rejected")
   expect_error(accept_submission(p, "smith2020", id), "not pending")
 })
+
+test_that("compare_with_accepted shows what a re-extraction would change", {
+  p <- team_project()
+  id <- suppressMessages(submit_study(p, "smith2020", example_metadata(), example_data(), person = "ahj"))
+  expect_null(compare_with_accepted(p, "smith2020", id))                 # not accepted yet
+  suppressMessages(accept_submission(p, "smith2020", id, person = "ahj"))
+  d <- example_data(); d$value2[2] <- 2.54; d <- d[-3, ]
+  m <- example_metadata(); m$journal <- "J Other"
+  id2 <- suppressMessages(submit_study(p, "smith2020", m, d, person = "kb"))
+  ch <- compare_with_accepted(p, "smith2020", id2)
+  expect_equal(ch$field[ch$part == "data"], c("value2", "(data point)"))
+  expect_equal(ch$submitted[ch$field == "value2"], "2.54")
+  expect_equal(ch$id[ch$part == "metadata"], "journal")
+  same <- suppressMessages(submit_study(p, "smith2020", example_metadata(), example_data(), person = "kb"))
+  expect_equal(nrow(compare_with_accepted(p, "smith2020", same)), 0)
+})

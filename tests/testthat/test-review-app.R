@@ -5,9 +5,9 @@ skip_if_not_installed("DT")
 test_that("review app verifies, corrects, rejects and maps variables", {
   p <- local_project()
   add_study_data(p, "abc2020", example_metadata(), example_data())
-  app <- review_values_app(p, reviewer = "AHJ")
+  expect_s3_class(review_values_app(p, reviewer = "AHJ"), "shiny.appobj")
 
-  shiny::testServer(app, {
+  shiny::testServer(metawoRld:::.review_server, args = list(proj_path = p), {
     session$setInputs(reviewer = "AHJ", status_filter = c("unverified", "changed"),
                       flagged_only = FALSE, study_filter = "")
     expect_equal(current()$measurement_id, "dp1")

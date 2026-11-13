@@ -46,6 +46,7 @@ my-review/
 ├── data/                   accepted data                           (§8)
 │   └── <study_id>/ …
 ├── fulltext/               full texts (git-ignored; never published)
+├── .gitattributes          screening.csv merge=union (parallel screening merges line by line)
 └── NEWS.md                 release notes                           (§12)
 ```
 
@@ -349,6 +350,16 @@ A channel is any program that produces submissions. It:
 Channels written in other languages validate against the generated JSON
 Schemas and the rules in this document; the authoritative check is
 `check_submission()`.
+
+### 11.1 Sharing through Git
+
+A project is usually a Git repository shared by the team. Sharing does not
+need Git skills (`sync_project()`, or Sync in the app): commit, pull (merge),
+push. The layout keeps conflicts rare: each extraction has its own folder
+under `submissions/`, only arbiters write `data/`, and `screening.csv` is
+append-only and merged with Git's `union` driver (`.gitattributes`). Tools
+that act on a project MAY commit after each action with a message naming
+the action, the study and the person.
 
 ## 12. Versions and releases
 
