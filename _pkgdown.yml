@@ -35,7 +35,7 @@ navbar:
       - text: Worked example (IL-6 in preeclampsia)
         href: articles/worked-example.html
       - text: Project specification (SPEC v1)
-        href: articles/specification.html
+        href: SPEC.html
 
 articles:
 - title: Articles
@@ -44,7 +44,6 @@ articles:
   - getting_started
   - conceptual_overview
   - articles/worked-example
-  - articles/specification
 
 reference:
 - title: Create a project
