@@ -100,14 +100,37 @@ generate_dashboard <- function(path = ".", max_variables = 40) {
            if (a$verified_only) " (only verified values are used)" else "", "."),
     if (any(r$data$converted)) c("", paste0(sum(r$data$converted), " stud", if (sum(r$data$converted) == 1) "y uses" else "ies use", " means/SDs estimated from medians, ranges, SEs or CIs.")),
     if (any(nzchar(r$data$note))) c("", paste0("Notes: ", paste(.md_escape(paste0(r$data$label, ": ", r$data$note)[nzchar(r$data$note)]), collapse = "; "), ".")),
+    if (length(a$subgroups) && nrow(r$subgroups)) c("", "**Subgroups:**", "",
+      paste0("- ", .md_escape(r$subgroups$subgroup), ": ", .md_escape(r$subgroups$estimate), " (", r$subgroups$studies, " stud",
+             ifelse(r$subgroups$studies == 1, "y", "ies"), ifelse(is.na(r$subgroups$I2), "", paste0(", I^2^ ", r$subgroups$I2)), ")"),
+      if (!is.na(r$subgroup_test)) c("", .md_escape(r$subgroup_test))),
     if (nrow(r$excluded)) c("", "**Not included:**", "", paste0("- ", .md_escape(r$excluded$study_id), ": ", .md_escape(r$excluded$reason)))
   )
+  contrib <- .contribution_table(r)
   c(out, "## Row", "",
     "### Column {width=60%}", "",
     "::: {.card title=\"Forest plot\"}", paste0("![](figures/", fs::path_file(ff), "){fig-alt=\"Forest plot for ", .md_attr(name), "\"}"), ":::", "",
     "### Column {width=40%}", "",
     "::: {.card title=\"How the evidence has evolved\"}", paste0("![](figures/", fs::path_file(cf), "){fig-alt=\"Cumulative meta-analysis for ", .md_attr(name), "\"}"), ":::", "",
-    "::: {.card title=\"Details\"}", info, ":::", "")
+    "::: {.card title=\"Details\"}", info, ":::", "",
+    if (length(contrib)) c("## Row", "", "::: {.card title=\"How each study contributes\"}", contrib, ":::", ""))
+}
+
+# Markdown table: which groups each study contributes, at which level.
+.contribution_table <- function(r) {
+  s <- r$selection
+  if (is.null(s) || !nrow(s)) return(character(0))
+  lab <- r$data$label[match(s$study_id, r$data$study_id)]
+  lab <- sub(" \\[[^]]*\\]$", "", ifelse(is.na(lab), s$study_id, lab))
+  how <- ifelse(s$how == "reported", "as reported", s$how)
+  conv <- ifelse(is.na(s$conversion) | s$conversion %in% c("", "reported"), "", paste0(" (", s$conversion, ")"))
+  has_sg <- any(!is.na(s$subgroup))
+  head <- c(paste0("| Study |", if (has_sg) " Subgroup |" else "", " Arm | Groups used | Level | n | Time point | Statistic |"),
+            paste0("|---|", if (has_sg) "---|" else "", "---|---|---|---:|---|---|"))
+  rows <- paste0("| ", .md_escape(lab), " |", if (has_sg) paste0(" ", .md_escape(ifelse(is.na(s$subgroup), "", s$subgroup)), " |") else "",
+                 " ", .md_escape(s$arm), " | ", .md_escape(s$group_names), " | ", .md_escape(how), " | ",
+                 formatC(s$n, format = "fg", digits = 4), " | ", .md_escape(s$timepoint), " | ", .md_escape(s$statistic), conv, " |")
+  c(head, rows, "", "Each study contributes one set of participants per arm: a group and its subgroups are never both used.")
 }
 
 .measure_short <- function(m) switch(m, SMD = "SMD (Hedges' g)", MD = "mean difference", ROM = "ratio of means",

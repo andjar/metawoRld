@@ -115,7 +115,11 @@ metadata:
         _required: false
       category:
         _type: string
-        _description: "One of the group categories listed in the instructions, if one applies to this group; otherwise empty."
+        _description: "One of the group categories listed in the instructions, if one applies to this group; otherwise empty. Subgroups inherit the category of their parent group."
+        _required: false
+      parent_group_id:
+        _type: string
+        _description: "If this group is part of a larger group that is also reported (e.g. early-onset preeclampsia within all preeclampsia, or a subset of the whole cohort), the group_id of that larger group; otherwise empty."
         _required: false
       sample_size:
         _type: integer

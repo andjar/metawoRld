@@ -20,6 +20,17 @@
 #   group          One group category for MN and PLO.
 #   timepoint      Optional regular expression; only data points whose
 #                  timepoint matches are used (e.g. "2[4-8]" or "third trimester").
+#   subgroups      Optional list of categories that split the group of
+#                  interest (e.g. [PE_early, PE_late]) for a subgroup analysis:
+#                  each study contributes one row per subgroup it reports, with
+#                  a test for subgroup differences. A reference group shared by
+#                  several subgroups of one study has its n split between them,
+#                  so it is not counted twice.
+#   levels         When a study reports both a group and its subgroups:
+#                    reported  use the group's own reported value; pool its
+#                              subgroups only if it has none (default)
+#                    pool      pool complete subgroups when possible (for a
+#                              sensitivity analysis)
 #   verified_only  Use only values verified in review_values()? Default false.
 #   method         Between-study variance estimator for metafor::rma().
 #                  Default "REML".
@@ -29,6 +40,12 @@
 # Units are converted to the variable's unit using `convert` in _rules.yml.
 # If a study reports several timepoints, the first one (in data.csv order)
 # with data for all required groups is used, unless `timepoint` selects one.
+#
+# No double counting: each study contributes one set of participants per arm.
+# If a study reports a group and its subgroups (linked by parent_group_id),
+# only one level is used; groups for the two arms must not overlap; separate
+# groups of the same category are combined into one. The analysis result's
+# `selection` (and the dashboard) shows how each study contributed.
 
 analyses: []
 #  - name: IL-6 in preeclampsia vs controls

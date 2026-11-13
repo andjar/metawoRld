@@ -215,7 +215,53 @@ pr$agreed <- nzchar(pr$agreed_with)
 pr[, c("measurement_id", "person", "channel", "agreed")]
 ```
 
-## 5. Verify values against the papers
+## 5. Refine groups during the review
+
+Halfway through, onset of preeclampsia turns out to matter. Gencheva et
+al. report IL-6 for all women with preeclampsia **and** for the early- and
+late-onset subgroups, so the same women appear twice. Both levels are kept:
+the subgroups are linked to their total with `parent_group_id`, and onset
+becomes a fact of groups in the form. Subgroups inherit the facts of their
+parent, so the early-onset group is also preeclampsia.
+
+```{r refine-form}
+add_group_fact(path, "onset", c("early", "late", "not reported"),
+               "Onset of preeclampsia as defined by the study (early or late onset).")
+rules <- read_rules(path)
+rules$group_categories$PE_early <- list(where = list(category = "PE", onset = "early"))
+rules$group_categories$PE_late <- list(where = list(category = "PE", onset = "late"))
+metawoRld:::.write_rules(file.path(path, "_rules.yml"), rules)
+```
+
+Studies accepted before the change are still valid. `refinement_queue()`
+lists the preeclampsia groups where onset has not been assessed:
+
+```{r refine-queue}
+refinement_queue(path, "onset", category = "PE")
+```
+
+Refinements go through the same door as extractions: an amendment that an
+arbiter accepts. Provenance and verification of everything that did not
+change are kept.
+
+```{r refine-amend}
+am <- amend_study(path, "gencheva2022", person = "ext1", note = "Onset subgroups linked to the PE total.",
+                  groups = list(list(group_id = "pe_early", parent_group_id = "pe", onset = "early"),
+                                list(group_id = "pe_late", parent_group_id = "pe", onset = "late")))
+accept_submission(path, "gencheva2022", am, person = "arb")
+group_memberships(read_study(path, "gencheva2022")$metadata$groups, read_rules(path))
+```
+
+The early-onset group belongs to both PE and PE_early. The subgroups are
+also checked against their total: 31 + 6 = 37 women, and pooling the
+subgroups' means and SDs gives 8.06 (SD 12.48), exactly the reported total,
+so `check_values()` raises nothing.
+
+```{r refine-check}
+check_values(path, "gencheva2022")
+```
+
+## 6. Verify values against the papers
 
 `review_values()` opens a Shiny app that shows each value in plain language,
 with its flags and source, next to the full text at the right page. `V`
@@ -233,7 +279,7 @@ set_verification(path, "vitoratos2010", c("dp1", "dp2", "dp3", "dp4"), reviewer 
 table(verification_status(path)$status)
 ```
 
-## 6. Check the project
+## 7. Check the project
 
 `check_project()` checks forms, schemas, links, provenance, people,
 records and screening, and recomputes the file hashes in each study's
@@ -253,7 +299,7 @@ x <- readLines(f); x[2] <- sub("16.05", "61.05", x[2], fixed = TRUE); writeLines
 check_project(path)$message
 ```
 
-## 7. Living meta-analysis
+## 8. Living meta-analysis
 
 ```{r restore, include = FALSE}
 x[2] <- sub("61.05", "16.05", x[2], fixed = TRUE); writeLines(x, f)
@@ -283,7 +329,40 @@ With four small, heterogeneous studies, the estimate is uncertain (the
 prediction interval includes zero), as it should be for an example this
 size.
 
-## 8. The dashboard
+### Apples to apples: one level per study
+
+Every analysis states the level it compares, and each study contributes
+exactly one set of participants per arm. `selection` (also shown on the
+dashboard) records which groups each study contributed and how:
+
+```{r selection}
+ma$selection[, c("study_id", "arm", "group_names", "how", "n")]
+```
+
+Gencheva contributes its reported preeclampsia total (n = 37), not the
+total plus its subgroups. As a sensitivity analysis, `levels: pool` uses
+the subgroups pooled instead; here that gives the same numbers, because
+they reproduce the total:
+
+```{r pooled}
+a <- read_analyses(path)[[1]]
+pooled <- run_meta_analysis(path, modifyList(a, list(name = "Subgroups pooled", levels = "pool")))
+pooled$selection[pooled$selection$study_id == "gencheva2022", c("arm", "how", "n")]
+pooled$summary$estimate == ma$summary$estimate
+```
+
+A subgroup analysis compares the subgroups instead. Each study contributes
+one row per subgroup it reports; the 50 controls shared by Gencheva's two
+subgroups are split 25/25, so no control is counted twice. Only one study
+reports onset here, so this only illustrates the mechanics:
+
+```{r by-onset}
+by_onset <- run_meta_analysis(path, modifyList(a, list(name = "IL-6 by onset", subgroups = c("PE_early", "PE_late"))))
+by_onset$data[, c("label", "n1", "n2", "note")]
+by_onset$excluded
+```
+
+## 9. The dashboard
 
 `generate_website()` builds a Quarto dashboard that is rebuilt on every
 change (`use_github_action_quarto()` publishes it on GitHub Pages):

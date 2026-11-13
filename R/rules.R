@@ -5,7 +5,9 @@
   duplicate = "warning",
   unknown_variable = "warning",
   unit_mismatch = "warning",
-  out_of_range = "warning"
+  out_of_range = "warning",
+  subgroup_size = "warning",
+  subgroup_total = "warning"
 )
 
 #' Read the project's value rules
@@ -31,28 +33,6 @@ read_rules <- function(path = ".") {
   bad <- setdiff(unlist(checks), c("error", "warning", "off"))
   if (length(bad)) rlang::abort(paste0("Check severities must be error, warning or off; got: ", paste(bad, collapse = ", ")))
   list(variables = vars, group_categories = cats, checks = checks)
-}
-
-#' Assign study groups to group categories
-#'
-#' Uses a group's `category` field if it names a known category (or one of
-#' its synonyms); otherwise matches the group's `name` against the category
-#' names and synonyms in `_rules.yml` (case-insensitive).
-#'
-#' @param groups The `groups` array of a study's metadata.
-#' @param rules Rules from [read_rules()].
-#' @return A character vector of categories named by `group_id` (`NA` where
-#'   no category applies).
-#' @export
-group_category <- function(groups, rules) {
-  if (is.null(groups) || !length(groups)) return(stats::setNames(character(0), character(0)))
-  df <- .rows_to_df(if (is.data.frame(groups)) lapply(seq_len(nrow(groups)), function(k) .df_row(groups, k)) else groups)
-  lookup <- .category_lookup(rules)
-  pick <- function(x) if (is.null(x)) rep(NA_character_, nrow(df)) else unname(lookup[tolower(trimws(as.character(x)))])
-  cat <- pick(df$category)
-  by_name <- pick(df$name)
-  cat[is.na(cat)] <- by_name[is.na(cat)]
-  stats::setNames(cat, as.character(df$group_id))
 }
 
 #' The project vocabulary formatted for an LLM prompt
@@ -298,6 +278,7 @@ check_values <- function(path = ".", study_ids = NULL, rules = read_rules(path))
       add(i, "duplicate", paste0("Same group, variable, timepoint and statistic as ", paste(others, collapse = ", "), "."))
     }
   }
+  out <- c(out, .subgroup_flags(d, meta, rules))
   if (!length(out)) return(.empty_flags()[, -1])
   dplyr::bind_rows(out)
 }

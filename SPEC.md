@@ -46,6 +46,7 @@ my-review/
 ├── data/                   accepted data                           (§8)
 │   └── <study_id>/ …
 ├── fulltext/               full texts (git-ignored; never published)
+├── .gitattributes          screening.csv merge=union (parallel screening merges line by line)
 └── NEWS.md                 release notes                           (§12)
 ```
 
@@ -169,6 +170,48 @@ _form:
   Schema 2020-12) and Frictionless Table Schemas. These are generated and
   MUST NOT be edited by hand.
 
+### 7.1 Groups, subgroups and categories
+
+A study's groups are recorded as the paper defines them, once. Analyses
+then decide which of them to compare.
+
+- **Hierarchy.** `groups[].parent_group_id` names the larger reported group
+  a group is part of (early-onset preeclampsia within all preeclampsia; a
+  subset of the whole cohort). It MUST refer to a group of the same study
+  and MUST NOT form a loop.
+- **Facts.** Every other field of `groups` in the extraction form
+  (`category`, and project fields such as `onset`) is a fact about the
+  group. A subgroup inherits each fact from its nearest ancestor unless it
+  sets its own. Facts are declared in the form (preferably as enums with a
+  `not reported` value), never as free tags. A fact that is absent (on the
+  group and its ancestors) means *not assessed*.
+- **Categories** are defined in `_rules.yml`, either by names/synonyms
+  (matched against the `category` fact or the group's own name) or as a rule
+  over facts: `PE_early: {where: {category: PE, onset: early}}`. A group can
+  belong to several categories.
+- **One level per study.** An analysis uses exactly one set of participants
+  per study and arm:
+  - among the groups of a category, only the top-most are candidates (a
+    subgroup is never used together with its parent);
+  - a candidate's own reported value is used (`levels: reported`, the
+    default); if it has none, or with `levels: pool`, complete subgroups
+    (one split, same own facts, sizes adding up to the parent's n) are
+    pooled with the Cochrane Handbook formulas;
+  - separate candidates of one category (e.g. mild and severe preeclampsia
+    without a reported total) are combined into one arm;
+  - arms that overlap (one group inside the other) exclude the study;
+  - in subgroup analyses (`subgroups:`), each study contributes one row per
+    subgroup, the subgroups of a study MUST NOT overlap, and a reference
+    group shared by `k` subgroups contributes `n/k` participants to each.
+  The result records, per study and arm, which groups were used and how
+  (`selection`), and the dashboard shows it.
+- **Consistency.** Subgroup sizes of one split SHOULD NOT exceed the
+  parent's n, and complete subgroups SHOULD pool to the parent's reported
+  mean and SD (checks `subgroup_size`, `subgroup_total`).
+- **Refinement.** Adding a fact (`add_group_fact()`) is a minor form
+  version; `refinement_queue()` lists groups where it is not assessed, and
+  changes to accepted studies are amendments (section 9).
+
 ## 8. Accepted study: `data/<study_id>/`
 
 ```
@@ -245,6 +288,7 @@ tool: metawoRld@0.3.0
 source_sha256: sha256:…   # optional
 created: 2026-11-13T00:15:02Z
 status: pending           # pending | accepted | rejected | superseded
+kind: extraction          # extraction (default) | amendment
 blind: false              # true: hidden from other extractors until reconciled
 gate:                     # written by submit_study()
   checked: 2026-11-13T00:15:03Z
@@ -265,6 +309,12 @@ Rules:
 4. When a study already has accepted data, accepting a new submission
    replaces the study's data (with `overwrite = TRUE`); verification of data
    points whose id and values are unchanged is kept (row hashes, §10).
+5. Changes to an accepted study (a new group fact, linking subgroups to
+   their parent, a group or data points missed at first, a correction) are
+   **amendments**: submissions with `kind: amendment` made with
+   `amend_study()` from the accepted study. When accepted, provenance of
+   values the amendment did not change is kept; changed values and the
+   metadata are attributed to the amendment.
 
 ## 10. Integrity
 
@@ -300,6 +350,16 @@ A channel is any program that produces submissions. It:
 Channels written in other languages validate against the generated JSON
 Schemas and the rules in this document; the authoritative check is
 `check_submission()`.
+
+### 11.1 Sharing through Git
+
+A project is usually a Git repository shared by the team. Sharing does not
+need Git skills (`sync_project()`, or Sync in the app): commit, pull (merge),
+push. The layout keeps conflicts rare: each extraction has its own folder
+under `submissions/`, only arbiters write `data/`, and `screening.csv` is
+append-only and merged with Git's `union` driver (`.gitattributes`). Tools
+that act on a project MAY commit after each action with a message naming
+the action, the study and the person.
 
 ## 12. Versions and releases
 

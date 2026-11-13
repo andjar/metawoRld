@@ -16,9 +16,12 @@ run_meta_analysis(path = ".", analysis, world = NULL)
 }
 \value{
 An object of class \code{metawoRld_meta}: a list with \code{analysis},
-\code{data} (with effect sizes \code{yi}, \code{vi}), \code{excluded}, \code{model} (the \code{rma}
-fit, or \code{NULL} with fewer than two studies), \code{summary} (one-row tibble)
-and \code{cumulative} (pooled estimate after each publication year).
+\code{data} (with effect sizes \code{yi}, \code{vi}), \code{excluded}, \code{selection} (how each
+study contributes: which groups, at which level, and whether subgroups
+were pooled), \code{model} (the \code{rma} fit, or \code{NULL} with fewer than two
+studies), \code{summary} (one-row tibble), \code{subgroups} and \code{subgroup_test}
+(for analyses with \code{subgroups}), and \code{cumulative} (pooled estimate after
+each publication year).
 }
 \description{
 Random-effects meta-analysis with \code{\link[metafor:rma.uni]{metafor::rma()}} of the data from

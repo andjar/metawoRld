@@ -189,7 +189,14 @@ accept_submission <- function(path = ".", study_id, extraction_id, person = getO
   }
   errs <- .validate_parts(s$metadata, s$data, schema)
   if (length(errs)) .abort_validation(study_id, errs)
-  prov <- .submission_provenance(s, as.character(c("_metadata", s$data$measurement_id)))
+  prov <- if (identical(s$submission$kind, "amendment")) {
+    # keep the provenance of everything the amendment did not change
+    sb <- s$submission
+    list(extraction_id = sb$extraction_id, person = sb$person, channel = sb$channel, tool = sb$tool %||% "",
+         model = sb$model %||% "", source_sha256 = sb$source_sha256 %||% "", timestamp = sb$created)
+  } else {
+    .submission_provenance(s, as.character(c("_metadata", s$data$measurement_id)))
+  }
   dir <- add_study_data(proj_path, study_id, s$metadata, s$data, reports = s$study$reports,
                         provenance = prov, overwrite = fs::dir_exists(.study_dir(proj_path, study_id)))
   .set_submission_status(proj_path, study_id, extraction_id, person, "accepted")
@@ -366,6 +373,107 @@ reconcile <- function(path = ".", study_id, extraction_ids = NULL, base = NULL, 
   rlang::inform(paste0("Reconciled ", length(ids), " extractions into data/", study_id, " (",
                        sum(!cmp$agree), " disagreement(s), ", nrow(choices), " choice(s))."))
   invisible(dir)
+}
+
+#' What a submission would change in an accepted study
+#'
+#' Before accepting a submission for a study that already has accepted data,
+#' see exactly what would change: values that differ, data points added or
+#' removed, and changed metadata.
+#'
+#' @inheritParams check_submission
+#' @return A tibble with `part` (`data` or `metadata`), `id` (measurement id
+#'   or metadata field), `field`, `accepted` and `submitted` (`NA` where
+#'   absent). Zero rows if nothing would change; `NULL` if the study has no
+#'   accepted data yet.
+#' @export
+compare_with_accepted <- function(path = ".", study_id, extraction_id) {
+  proj_path <- .check_project(path)
+  if (!study_id %in% list_studies(proj_path)) return(NULL)
+  schema <- get_schema(proj_path, "extraction")
+  old <- read_study(proj_path, study_id)
+  new <- .read_submission_dir(.submission_dir(proj_path, study_id, extraction_id), schema)
+  out <- list()
+  add <- function(part, id, field, a, b) out[[length(out) + 1]] <<- dplyr::tibble(part = part, id = id, field = field, accepted = a, submitted = b)
+  od <- as.data.frame(old$data, stringsAsFactors = FALSE); nd <- as.data.frame(new$data, stringsAsFactors = FALSE)
+  fields <- setdiff(union(names(od), names(nd)), "measurement_id")
+  for (id in union(od$measurement_id, nd$measurement_id)) {
+    i <- match(id, od$measurement_id); j <- match(id, nd$measurement_id)
+    if (is.na(i)) { add("data", id, "(data point)", NA, "added"); next }
+    if (is.na(j)) { add("data", id, "(data point)", "present", NA); next }
+    for (f in fields) {
+      a <- if (f %in% names(od)) .fmt_values(od[[f]][i]) else NA_character_
+      b <- if (f %in% names(nd)) .fmt_values(nd[[f]][j]) else NA_character_
+      if (!identical(a, b) && !(is.na(a) && is.na(b))) add("data", id, f, a, b)
+    }
+  }
+  om <- old$metadata; nm <- new$metadata; om$study_id <- NULL; nm$study_id <- NULL
+  fo <- .flatten_meta(.clean_for_yaml(om)); fn <- .flatten_meta(.clean_for_yaml(nm))
+  for (k in union(names(fo), names(fn))) {
+    a <- unname(fo[k]); b <- unname(fn[k])
+    if (!identical(a, b)) add("metadata", sub("[.\\[].*$", "", k), k, a, b)
+  }
+  dplyr::bind_rows(c(list(dplyr::tibble(part = character(0), id = character(0), field = character(0),
+                                        accepted = character(0), submitted = character(0))), out))
+}
+
+#' Amend an accepted study
+#'
+#' Refinements during a review go through the same door as extractions: a
+#' small submission that changes an accepted study, accepted with
+#' [accept_submission()]. Use it to add a fact to groups (e.g. `onset` after
+#' it was added to the form), link subgroups to their parent group, add a
+#' group that was not extracted the first time, or add or correct data
+#' points. When accepted, the provenance and verification of everything that
+#' did not change are kept.
+#'
+#' @param path Project root.
+#' @param study_id Accepted study to amend.
+#' @param person Person making the amendment.
+#' @param groups List of groups to change or add, each a list with
+#'   `group_id` and the fields to set, e.g.
+#'   `list(list(group_id = "pe_early", parent_group_id = "pe", onset = "early"))`.
+#'   Fields of existing groups not mentioned are kept.
+#' @param data Data frame (or list) of data points to add, or to replace
+#'   (matched by `measurement_id`).
+#' @param remove_data `measurement_id`s of data points to remove.
+#' @param metadata Named list of other metadata fields to replace.
+#' @param note Why the study was amended (stored in `submission.yml`).
+#' @param channel Channel name. Defaults to `"amendment"`.
+#' @return The extraction id of the amendment, invisibly.
+#' @export
+amend_study <- function(path = ".", study_id, person, groups = NULL, data = NULL, remove_data = NULL,
+                        metadata = NULL, note = "", channel = "amendment") {
+  proj_path <- .check_project(path)
+  s <- read_study(proj_path, study_id)
+  meta <- s$metadata
+  for (nm in names(metadata)) meta[nm] <- list(metadata[[nm]])
+  if (length(groups)) {
+    g <- meta$groups %||% list()
+    if (is.data.frame(g)) g <- lapply(seq_len(nrow(g)), function(k) .df_row(g, k))
+    ids <- vapply(g, function(x) as.character(x$group_id %||% ""), character(1))
+    for (ch in groups) {
+      if (is.null(ch$group_id)) rlang::abort("Each entry of `groups` needs a `group_id`.")
+      j <- match(ch$group_id, ids)
+      if (is.na(j)) { g[[length(g) + 1]] <- ch; ids <- c(ids, ch$group_id) } else g[[j]] <- utils::modifyList(g[[j]], ch)
+    }
+    meta$groups <- g
+  }
+  d <- as.data.frame(s$data, stringsAsFactors = FALSE)
+  if (length(remove_data)) d <- d[!d$measurement_id %in% remove_data, , drop = FALSE]
+  if (!is.null(data)) {
+    new <- as.data.frame(.as_data_points(data), stringsAsFactors = FALSE)
+    if (!"measurement_id" %in% names(new)) rlang::abort("`data` needs a `measurement_id` column.")
+    d <- d[!d$measurement_id %in% new$measurement_id, , drop = FALSE]
+    d <- dplyr::bind_rows(d, new)
+  }
+  id <- submit_study(proj_path, study_id, meta, d, person = person, channel = channel, reports = s$study$reports)
+  f <- fs::path(proj_path, "submissions", study_id, id, "submission.yml")
+  sub <- yaml::read_yaml(f)
+  sub$kind <- "amendment"
+  sub$note <- note
+  yaml::write_yaml(sub, f)
+  invisible(id)
 }
 
 #' Write blank files for a submission
