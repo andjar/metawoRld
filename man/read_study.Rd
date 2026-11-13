@@ -9,11 +9,12 @@ read_study(path = ".", study_id)
 \arguments{
 \item{path}{Project root.}
 
-\item{study_id}{Study identifier (as given to \code{\link[=add_study_data]{add_study_data()}}).}
+\item{study_id}{Study id.}
 }
 \value{
-A list with \code{metadata} (list) and \code{data} (tibble). \code{data.csv} is
-read with column types taken from the schema.
+A list with \code{study} (contents of \code{study.yml}), \code{metadata}
+(list), \code{data} (tibble; column types from the form) and \code{provenance}
+(tibble).
 }
 \description{
 Read one study from a metawoRld project

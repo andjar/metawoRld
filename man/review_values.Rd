@@ -18,7 +18,7 @@ review_values_app(path = ".", fulltext_dir = NULL, reviewer = NULL)
 \item{path}{Project root.}
 
 \item{fulltext_dir}{Optional folder with full texts named
-\verb{<sanitize_id(study_id)>.pdf} (or .html/.txt). Defaults to
+\verb{<study_id>.pdf} or \verb{<sanitize_id(doi)>.pdf} (or .html/.txt). Defaults to
 \verb{<path>/fulltext} if it exists.}
 
 \item{reviewer}{Reviewer name or initials (can also be set in the app).}

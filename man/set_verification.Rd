@@ -23,8 +23,8 @@ set_verification(
 \item{status}{\code{"verified"}, \code{"rejected"} (the value is wrong or should not
 be used) or \code{"unverified"} (removes an earlier decision).}
 
-\item{reviewer}{Reviewer name or initials. Defaults to the
-\code{metawoRld.reviewer} option, then the system user name.}
+\item{reviewer}{Reviewer id from \code{people.yml} (see \code{\link[=add_person]{add_person()}}).
+Defaults to the \code{metawoRld.person} option, then the system user name.}
 
 \item{note}{Optional note, e.g. why a value was rejected.}
 }

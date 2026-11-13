@@ -310,8 +310,8 @@ Schemas and the rules in this document; the authoritative check is
   warns when it differs in major version from the current form.
 - Dataset releases use `vMAJOR.MINOR.PATCH`: major for a new form major
   version, minor when studies are added, patch for corrections. `NEWS.md`
-  lists studies added or changed and pooled estimates that moved; it is
-  drafted by `draft_news()`.
+  lists studies added or changed and pooled estimates that moved (a `draft_news()` helper is
+  planned).
 - Data are released under CC BY 4.0 unless `_metawoRld.yml` says otherwise.
   Full texts are never released.
 

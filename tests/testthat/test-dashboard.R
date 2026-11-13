@@ -8,7 +8,7 @@ test_that("generate_dashboard writes analysis and results pages with figures", {
   expect_true(any(a == "# IL-6 PE vs control"))
   expect_true(any(grepl("{.valuebox", a, fixed = TRUE)))
   expect_true(any(grepl("![](figures/forest_1.png)", a, fixed = TRUE)))
-  expect_true(any(grepl("- D: no usable data for: PE", a, fixed = TRUE)))     # excluded studies listed
+  expect_true(any(grepl("- study-d: no usable data for: PE", a, fixed = TRUE)))     # excluded studies listed
   expect_true(all(file.exists(file.path(p, "figures", c("forest_1.png", "cumulative_1.png", "variable_1.png")))))
   r <- readLines(file.path(p, "results.qmd"))
   expect_true(any(grepl("IL6 (4 studies)", r, fixed = TRUE)))
@@ -16,7 +16,7 @@ test_that("generate_dashboard writes analysis and results pages with figures", {
 
 test_that("dashboard explains how to add analyses when none are defined", {
   p <- local_project()
-  add_study_data(p, "s1", example_metadata(), example_data())
+  add_study_data(p, "smith2020", example_metadata(), example_data())
   generate_dashboard(p)
   expect_true(any(grepl("No meta-analyses defined yet", readLines(file.path(p, "analyses.qmd")))))
 })

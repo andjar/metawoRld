@@ -7,23 +7,25 @@
 \title{metawoRld: structured, validated data for living systematic reviews}
 \description{
 A metawoRld project is a folder (usually a Git repository) holding the
-review's settings, a schema describing what is extracted from each study,
-and one folder per study with \code{metadata.yml} and \code{data.csv}.
+review's settings, forms describing what is extracted, a record registry
+and one folder per accepted study. The format is defined in \code{SPEC.md}.
 }
 \details{
 Main functions:
 \itemize{
-\item \code{\link[=create_metawoRld]{create_metawoRld()}} creates a project with generic, editable templates.
-\item \code{\link[=add_study_data]{add_study_data()}} validates and stores one study; \code{\link[=add_study_template]{add_study_template()}}
-creates files for manual entry; \code{\link[=validate_study]{validate_study()}} / \code{\link[=validate_world]{validate_world()}}
-check edited files.
-\item \code{\link[=load_metawoRld]{load_metawoRld()}} loads everything for analysis.
-\item \code{\link[=generate_website]{generate_website()}} builds a Quarto website; \code{\link[=use_github_action_quarto]{use_github_action_quarto()}}
-publishes it automatically.
+\item \code{\link[=create_metawoRld]{create_metawoRld()}} creates a project; \code{\link[=add_person]{add_person()}} registers the
+people and tools that contribute.
+\item \code{\link[=add_search]{add_search()}}, \code{\link[=add_records]{add_records()}}, \code{\link[=add_screening]{add_screening()}} and \code{\link[=prisma_counts]{prisma_counts()}}
+keep the search and screening log.
+\item \code{\link[=submit_study]{submit_study()}} is the one door for data from any channel (entry form,
+CSV, DataFindR, ...). \code{\link[=accept_submission]{accept_submission()}}, \code{\link[=compare_extractions]{compare_extractions()}} and
+\code{\link[=reconcile]{reconcile()}} turn submissions into accepted data with provenance.
+\item \code{\link[=review_values]{review_values()}} and \code{\link[=set_verification]{set_verification()}} record human verification.
+\item \code{\link[=check_project]{check_project()}} checks everything (schemas, hashes, provenance), locally
+or in CI.
+\item \code{\link[=load_metawoRld]{load_metawoRld()}}, \code{\link[=run_all_meta_analyses]{run_all_meta_analyses()}} and \code{\link[=generate_website]{generate_website()}}
+analyse and publish.
 }
-
-The companion package DataFindR uses LLMs to screen studies and extract
-data into a metawoRld project.
 }
 \seealso{
 Useful links:

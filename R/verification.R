@@ -46,8 +46,8 @@ verification_status <- function(path = ".", study_ids = NULL) {
 #' @param measurement_id One or more `measurement_id`s in the study.
 #' @param status `"verified"`, `"rejected"` (the value is wrong or should not
 #'   be used) or `"unverified"` (removes an earlier decision).
-#' @param reviewer Reviewer name or initials. Defaults to the
-#'   `metawoRld.reviewer` option, then the system user name.
+#' @param reviewer Reviewer id from `people.yml` (see [add_person()]).
+#'   Defaults to the `metawoRld.person` option, then the system user name.
 #' @param note Optional note, e.g. why a value was rejected.
 #' @return The updated verification table of the study, invisibly.
 #' @export
@@ -71,7 +71,7 @@ set_verification <- function(path = ".", study_id, measurement_id,
       measurement_id = measurement_id,
       status = status,
       reviewer = reviewer %||% .default_reviewer(),
-      timestamp = format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z"),
+      timestamp = .now(),
       row_hash = unname(hashes[measurement_id]),
       note = note %||% "",
       stringsAsFactors = FALSE
@@ -80,6 +80,7 @@ set_verification <- function(path = ".", study_id, measurement_id,
   }
   v <- v[order(match(v$measurement_id, data$measurement_id)), , drop = FALSE]
   data.table::fwrite(v, fs::path(dir, "verification.csv"), na = "")
+  .write_datapackage(proj_path, study_id)
   invisible(v)
 }
 
@@ -139,7 +140,8 @@ update_data_point <- function(path = ".", study_id, measurement_id, ..., verify 
     if (verify) set_verification(proj_path, study_id, measurement_id, "verified", reviewer, note)
     return(invisible(character(0)))
   }
-  add_study_data(proj_path, study_id, s$metadata, d, overwrite = TRUE)
+  add_study_data(proj_path, study_id, s$metadata, d, overwrite = TRUE,
+                 provenance = list(channel = "manual_edit", person = reviewer %||% .default_reviewer()))
   if (verify) {
     set_verification(proj_path, study_id, measurement_id, "verified", reviewer,
                      paste(c(paste0("Corrected: ", paste(log, collapse = "; ")), note), collapse = ". "))
@@ -150,7 +152,7 @@ update_data_point <- function(path = ".", study_id, measurement_id, ..., verify 
 # ---- internals ---------------------------------------------------------------
 
 .default_reviewer <- function() {
-  r <- getOption("metawoRld.reviewer")
+  r <- getOption("metawoRld.person", getOption("metawoRld.reviewer"))
   if (is.null(r)) r <- Sys.getenv("USER", Sys.getenv("USERNAME", "unknown"))
   r
 }

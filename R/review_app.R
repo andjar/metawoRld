@@ -22,7 +22,7 @@
 #'
 #' @param path Project root.
 #' @param fulltext_dir Optional folder with full texts named
-#'   `<sanitize_id(study_id)>.pdf` (or .html/.txt). Defaults to
+#'   `<study_id>.pdf` or `<sanitize_id(doi)>.pdf` (or .html/.txt). Defaults to
 #'   `<path>/fulltext` if it exists.
 #' @param reviewer Reviewer name or initials (can also be set in the app).
 #' @param launch.browser Passed to [shiny::runApp()].
@@ -342,8 +342,8 @@ review_values_app <- function(path = ".", fulltext_dir = NULL, reviewer = NULL) 
     output$fulltext <- shiny::renderUI({
       shiny::req(!is.null(fulltext_dir))
       c <- cur()
-      files <- fs::dir_ls(fulltext_dir, regexp = paste0("^", .regex_escape(fs::path(fulltext_dir, sanitize_id(c$key$study_id))), "\\.(pdf|html?|txt|md)$"), ignore.case = TRUE)
-      if (!length(files)) return(bslib::card(bslib::card_body(class = "small text-muted", "No full text found in ", fulltext_dir, " for ", sanitize_id(c$key$study_id), ".*")))
+      files <- .find_fulltext(fulltext_dir, c$key$study_id, proj_path)
+      if (!length(files)) return(bslib::card(bslib::card_body(class = "small text-muted", "No full text found in ", fulltext_dir, " for ", c$key$study_id, ".*")))
       page <- .num(c$row$source_page)
       src <- paste0(ft_prefix, "/", utils::URLencode(fs::path_file(files[1]), reserved = TRUE),
                     if (grepl("\\.pdf$", files[1], ignore.case = TRUE) && !is.na(page)) paste0("#page=", page) else "")
@@ -508,3 +508,16 @@ document.addEventListener('keydown', function(e) {
   Shiny.setInputValue('key', {k: k, t: Date.now()}, {priority: 'event'});
 });
 "
+
+# Full text of a study: <study_id>.<ext>, or named after one of its reports
+# (sanitized DOI or PMID, as DataFindR stores them).
+.find_fulltext <- function(fulltext_dir, study_id, proj_path) {
+  reports <- tryCatch(read_study(proj_path, study_id)$study$reports, error = function(e) list())
+  keys <- c(study_id, unlist(lapply(reports, function(r) c(r$doi, r$pmid))))
+  keys <- unique(sanitize_id(keys[nzchar(keys)]))
+  for (k in keys) {
+    files <- fs::dir_ls(fulltext_dir, regexp = paste0("^", .regex_escape(fs::path(fulltext_dir, k)), "\\.(pdf|html?|txt|md)$"), ignore.case = TRUE)
+    if (length(files)) return(files)
+  }
+  character(0)
+}

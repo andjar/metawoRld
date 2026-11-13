@@ -51,7 +51,7 @@ generate_study_webpage <- function(path = ".") {
   written <- character(0)
   for (id in names(world$studies_metadata)) {
     meta <- world$studies_metadata[[id]]
-    dir_name <- sanitize_id(id)
+    dir_name <- id
     page <- glue::glue_data(
       list(
         front_matter = trimws(yaml::as.yaml(list(title = as.character(meta$title %||% id)))),

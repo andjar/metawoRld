@@ -1,8 +1,9 @@
 #' Create a new metawoRld project
 #'
-#' Creates the project folder with a configuration file (`_metawoRld.yml`),
-#' the default schema and prompt templates, a `data/` folder, a README,
-#' website templates and (optionally) a Git repository.
+#' Creates the project folder laid out as described in `SPEC.md`: settings
+#' (`_metawoRld.yml`), forms, prompts, rules, the people list, the search
+#' and screening log, `submissions/` and `data/`, a README, website templates
+#' and (optionally) a Git repository.
 #'
 #' @param path Folder to create. Must not exist yet.
 #' @param project_name Short name of the review.
@@ -11,17 +12,23 @@
 #'   used for screening.
 #' @param git_init Initialise a Git repository? Defaults to `TRUE`.
 #' @param website Add Quarto website templates? Defaults to `TRUE`.
+#' @param license Data license, stored in `_metawoRld.yml` and in every
+#'   study's `datapackage.json`. Defaults to `"CC-BY-4.0"`.
 #' @param ... Further named values stored in `_metawoRld.yml`
 #'   (e.g. `search_query = "..."`).
 #'
 #' @details
 #' The project contains:
 #' * `_metawoRld.yml`: project name, description, criteria and other settings.
-#' * `_extraction_schema.yml`, `_assessment_schema.yml`: what is extracted and
-#'   how screening results look. Edit these to fit your review.
-#' * `_extraction_prompt.txt`, `_assessment_prompt.txt`: LLM prompts used by
-#'   DataFindR. `{{placeholders}}` are filled in automatically.
-#' * `data/<study>/metadata.yml` and `data/<study>/data.csv` for each study.
+#' * `_metawoRld.yml`: settings, criteria and `spec_version`.
+#' * `forms/extraction.yml` (what is extracted) and `forms/screening.yml`.
+#'   Edit these to fit your review.
+#' * `prompts/`: LLM prompts used by DataFindR.
+#' * `_rules.yml`, `_analyses.yml`: vocabulary, value checks and planned
+#'   analyses.
+#' * `people.yml`, `searches.yml`, `records.csv`, `screening.csv`: who works on
+#'   the review, and the search and screening log.
+#' * `submissions/`: staged extractions; `data/<study_id>/`: accepted data.
 #'
 #' @return The project path, invisibly.
 #' @export
@@ -42,6 +49,7 @@ create_metawoRld <- function(path,
                              exclusion_criteria = character(0),
                              git_init = TRUE,
                              website = TRUE,
+                             license = "CC-BY-4.0",
                              ...) {
   for (arg in c("path", "project_name", "project_description")) {
     val <- get(arg)
@@ -60,16 +68,19 @@ create_metawoRld <- function(path,
   proj_path <- fs::path_norm(path)
   if (fs::file_exists(proj_path)) rlang::abort(paste0("Path already exists: ", proj_path))
 
-  fs::dir_create(fs::path(proj_path, "data"))
+  fs::dir_create(fs::path(proj_path, c("data", "submissions")))
+  for (d in c("data", "submissions")) file.create(fs::path(proj_path, d, ".gitkeep"))
 
   config <- c(
     list(
+      spec_version = 1L,
       project_name = project_name,
       project_description = project_description,
       creation_date = as.character(Sys.Date()),
       metawoRld_version = as.character(utils::packageVersion("metawoRld")),
       inclusion_criteria = as.list(inclusion_criteria),
-      exclusion_criteria = as.list(exclusion_criteria)
+      exclusion_criteria = as.list(exclusion_criteria),
+      license = license
     ),
     extra
   )
@@ -77,14 +88,26 @@ create_metawoRld <- function(path,
 
   use_templates(proj_path)
 
+  yaml::write_yaml(list(people = list(), tools = list()), fs::path(proj_path, "people.yml"))
+  yaml::write_yaml(list(searches = list()), fs::path(proj_path, "searches.yml"))
+  writeLines(paste(.records_cols, collapse = ","), fs::path(proj_path, "records.csv"))
+  writeLines(paste(.screening_cols, collapse = ","), fs::path(proj_path, "screening.csv"))
+  writeLines(c("# News", "", paste0("## Unreleased"), "", paste0("* Project created on ", Sys.Date(), ".")),
+             fs::path(proj_path, "NEWS.md"))
+
   writeLines(c(
     paste("#", project_name), "",
     project_description, "",
-    paste0("Created with the metawoRld R package on ", Sys.Date(), "."), "",
+    paste0("Created with the metawoRld R package on ", Sys.Date(), ". ",
+           "The data are licensed under ", license, "."), "",
     "* `_metawoRld.yml`: project settings and screening criteria",
-    "* `_extraction_schema.yml`: what is extracted from each study",
-    "* `data/<study>/metadata.yml`: study design, methods and groups",
-    "* `data/<study>/data.csv`: one row per reported statistic"
+    "* `forms/extraction.yml`: what is extracted from each study",
+    "* `people.yml`, `searches.yml`, `records.csv`, `screening.csv`: team, searches and screening",
+    "* `submissions/`: extractions waiting to be accepted",
+    "* `data/<study_id>/`: accepted data (`metadata.yml`, `data.csv`), with `provenance.csv`,",
+    "  `verification.csv` and `datapackage.json` (file hashes)",
+    "",
+    "Check the project with `metawoRld::check_project()`."
   ), fs::path(proj_path, "README.md"))
 
   writeLines(c(
@@ -116,10 +139,10 @@ create_metawoRld <- function(path,
   invisible(proj_path)
 }
 
-#' Add or update the schema and prompt templates in a project
+#' Add or update the forms, prompts and rules templates in a project
 #'
-#' Copies `_extraction_schema.yml`, `_assessment_schema.yml`,
-#' `_extraction_prompt.txt` and `_assessment_prompt.txt` into the project.
+#' Copies the default `forms/`, `prompts/`, `_rules.yml` and `_analyses.yml`
+#' into the project.
 #'
 #' @param path Project root.
 #' @param overwrite Replace files that already exist? Defaults to `FALSE`, so
@@ -128,11 +151,13 @@ create_metawoRld <- function(path,
 #' @export
 use_templates <- function(path = ".", overwrite = FALSE) {
   proj_path <- .check_project(path)
-  files <- fs::dir_ls(system.file("templates", package = "metawoRld"))
+  src <- system.file("templates", package = "metawoRld")
+  files <- fs::dir_ls(src, recurse = TRUE, type = "file")
   written <- character(0)
   for (f in files) {
-    dest <- fs::path(proj_path, fs::path_file(f))
+    dest <- fs::path(proj_path, fs::path_rel(f, src))
     if (overwrite || !fs::file_exists(dest)) {
+      fs::dir_create(fs::path_dir(dest))
       fs::file_copy(f, dest, overwrite = TRUE)
       written <- c(written, dest)
     }

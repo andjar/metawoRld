@@ -1,15 +1,18 @@
 Package: metawoRld
 Title: A Framework for Managing Data in Living Systematic Reviews
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person("Anders Hagen", "Jarmund", , "anders.h.jarmund@ntnu.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3923-1637"))
 Description: Provides a structured environment for creating, validating and
     managing data for living systematic reviews. Study metadata and results are
-    stored as YAML and CSV files that are validated against a project-specific
-    schema, can be loaded for analysis, and can be published as a Quarto
-    website. Designed to work with the 'DataFindR' package for AI-assisted
-    screening and data extraction.
+    stored as YAML and CSV files that are validated against project-specific
+    forms. Every input channel (an entry form, CSV files, the 'DataFindR'
+    package for AI-assisted extraction, scripts) submits through one validated
+    intake; accepted data carry provenance, human verification and file
+    hashes (Frictionless Data Packages). Includes a search and screening log
+    with PRISMA counts, dual extraction with reconciliation, meta-analyses and
+    a Quarto dashboard.
 License: GPL (>= 3)
 URL: https://github.com/andjar/metawoRld
 BugReports: https://github.com/andjar/metawoRld/issues
@@ -20,12 +23,14 @@ Depends:
     R (>= 4.1.0)
 Imports:
     data.table,
+    digest,
     dplyr,
     fs,
     git2r,
     glue,
     grDevices,
     graphics,
+    jsonlite,
     readr,
     rlang (>= 1.0.0),
     stats,
