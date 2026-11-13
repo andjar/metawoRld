@@ -2,3 +2,9 @@
 .dataTables_wrapper {
   font-size: 0.9rem;
 }
+
+/* Keep value-box values on one line */
+.quarto-dashboard .bslib-value-box .value-box-area .value-box-value {
+  white-space: nowrap !important;
+  font-size: clamp(1.4rem, 2.6vw, 2.6rem) !important;
+}

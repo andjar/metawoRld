@@ -9,8 +9,9 @@ generate_website(path = ".", render = TRUE, update_templates = FALSE)
 \arguments{
 \item{path}{Project root.}
 
-\item{render}{Render with Quarto? Requires the \code{quarto} R package and the
-Quarto CLI. Defaults to \code{TRUE}.}
+\item{render}{Render with Quarto? Requires the Quarto CLI
+(\url{https://quarto.org}); the \code{quarto} R package is used when installed.
+Defaults to \code{TRUE}.}
 
 \item{update_templates}{Overwrite \verb{_quarto.yml}, \code{index.qmd},
 \code{studies.qmd}, \code{data.qmd}, \code{styles.css} and \code{study.qmd.tmpl} with the

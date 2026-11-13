@@ -1,0 +1,9 @@
+---
+title: "Project specification (SPEC v1)"
+description: >
+  The on-disk format of a metawoRld project: the contract between metawoRld
+  and every input channel.
+---
+
+```{r, child = "../../SPEC.md"}
+```

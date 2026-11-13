@@ -1,28 +1,140 @@
-url: https://andjar.github.io/metawoRld
+url: https://andjar.github.io/metawoRld/
+
 template:
   bootstrap: 5
+  bslib:
+    preset: bootstrap
+    primary: "#2c6e9e"
+    base_font: {google: "Inter"}
+    heading_font: {google: "Inter"}
+    code_font: {google: "JetBrains Mono"}
+
+home:
+  title: "metawoRld: structured, validated, traceable data for living systematic reviews"
+  description: >
+    One validated door for every data channel, provenance and human
+    verification for every value, file hashes, and a living meta-analysis
+    dashboard. Plain files, open source, R.
 
 navbar:
   structure:
-    left: [intro, reference, articles]
-    right: [datafindr, github]
+    left: [intro, example, articles, reference, news]
+    right: [search, github]
   components:
-    datafindr:
-      text: DataFindR
-      href: https://andjar.github.io/DataFindR
+    intro:
+      text: Get started
+      href: articles/getting_started.html
+    example:
+      text: Worked example
+      href: articles/worked-example.html
+    articles:
+      text: Articles
+      menu:
+      - text: Concepts and workflow
+        href: articles/conceptual_overview.html
+      - text: Worked example (IL-6 in preeclampsia)
+        href: articles/worked-example.html
+      - text: Project specification (SPEC v1)
+        href: articles/specification.html
+
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - getting_started
+  - conceptual_overview
+  - articles/worked-example
+  - articles/specification
 
 reference:
-  - title: Projects
-    contents: [create_metawoRld, use_templates, read_config, get_schema]
-  - title: Study data
-    contents: [add_study_data, add_study_template, read_study, list_studies, load_metawoRld]
-  - title: Validation
-    contents: [validate_study, validate_world, validate_against_schema, validate_links, schema_refs, schema_col_types]
-  - title: Reviewing values
-    contents: [review_values, check_values, verification_status, set_verification, update_data_point, read_rules, add_variable_synonym, canonical_variable]
-  - title: Meta-analysis
-    contents: [read_analyses, analysis_data, run_meta_analysis, run_all_meta_analyses, summary_of_findings, plot_forest, plot_cumulative, plot_variable, to_mean_sd, group_category, rules_for_prompt]
-  - title: Website
-    contents: [generate_website, generate_dashboard, generate_study_webpage, use_github_action_quarto]
-  - title: Identifiers
-    contents: [normalize_identifier, identifier_type, sanitize_id]
+- title: Create a project
+  contents:
+  - create_metawoRld
+  - use_templates
+  - read_config
+  - add_person
+  - read_people
+  - example_project
+- title: Forms
+  desc: What is extracted, defined in `forms/*.yml`.
+  contents:
+  - get_schema
+  - list_forms
+  - export_schemas
+  - table_schema
+  - validate_against_schema
+  - validate_links
+  - schema_refs
+  - schema_col_types
+- title: Search and screening log
+  desc: Searches, records and screening decisions; PRISMA counts are computed from these files.
+  contents:
+  - add_search
+  - read_records
+  - record_id
+  - add_screening
+  - prisma_counts
+- title: Submit (the one door)
+  desc: Every input channel submits through the same validated intake.
+  contents:
+  - submit_study
+  - submission_template
+  - check_submission
+  - list_submissions
+  - read_submission
+- title: Accept and reconcile
+  contents:
+  - accept_submission
+  - reject_submission
+  - compare_extractions
+  - reconcile
+  - add_study_data
+- title: Study ids and identifiers
+  contents:
+  - is_study_id
+  - normalize_identifier
+  - identifier_type
+  - sanitize_id
+- title: Load data
+  contents:
+  - load_metawoRld
+  - read_study
+  - list_studies
+- title: Verify values against the papers
+  contents:
+  - review_values
+  - check_values
+  - verification_status
+  - set_verification
+  - update_data_point
+- title: Integrity
+  contents:
+  - check_project
+  - use_github_action_check
+  - hash_file
+  - validate_study
+  - validate_world
+- title: Vocabulary and value rules
+  contents:
+  - read_rules
+  - add_variable_synonym
+  - canonical_variable
+  - group_category
+  - rules_for_prompt
+- title: Living meta-analysis
+  contents:
+  - read_analyses
+  - run_meta_analysis
+  - run_all_meta_analyses
+  - summary_of_findings
+  - analysis_data
+  - to_mean_sd
+  - plot_forest
+  - plot_cumulative
+  - plot_variable
+- title: Website dashboard
+  contents:
+  - generate_website
+  - generate_dashboard
+  - generate_study_webpage
+  - use_github_action_quarto

@@ -30,6 +30,7 @@ analyse and publish.
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://andjar.github.io/metawoRld/}
   \item \url{https://github.com/andjar/metawoRld}
   \item Report bugs at \url{https://github.com/andjar/metawoRld/issues}
 }

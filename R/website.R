@@ -10,8 +10,9 @@
 #' `_quarto.yml` and overview page.
 #'
 #' @param path Project root.
-#' @param render Render with Quarto? Requires the `quarto` R package and the
-#'   Quarto CLI. Defaults to `TRUE`.
+#' @param render Render with Quarto? Requires the Quarto CLI
+#'   (<https://quarto.org>); the `quarto` R package is used when installed.
+#'   Defaults to `TRUE`.
 #' @param update_templates Overwrite `_quarto.yml`, `index.qmd`,
 #'   `studies.qmd`, `data.qmd`, `styles.css` and `study.qmd.tmpl` with the
 #'   current package versions? Defaults to `FALSE` so your edits are kept;
@@ -23,10 +24,18 @@ generate_website <- function(path = ".", render = TRUE, update_templates = FALSE
   .write_website_templates(proj_path, overwrite = update_templates)
   generate_study_webpage(proj_path)
   generate_dashboard(proj_path)
-  if (render) {
-    rlang::check_installed("quarto", reason = "to render the website.")
-    quarto::quarto_render(input = proj_path, as_job = FALSE)
+  if (render) .quarto_render(proj_path)
+  invisible(proj_path)
+}
+
+.quarto_render <- function(proj_path) {
+  if (requireNamespace("quarto", quietly = TRUE)) {
+    return(quarto::quarto_render(input = proj_path, as_job = FALSE))
   }
+  bin <- Sys.getenv("QUARTO_PATH", Sys.which("quarto"))
+  if (!nzchar(bin)) rlang::abort("The Quarto CLI is required to render the website: https://quarto.org/docs/get-started/")
+  status <- system2(bin, c("render", shQuote(proj_path)))
+  if (!identical(as.integer(status), 0L)) rlang::abort("Quarto failed to render the website (see the messages above).")
   invisible(proj_path)
 }
 

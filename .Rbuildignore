@@ -7,3 +7,5 @@
 ^LICENSE\.md$
 ^\.git$
 ^SPEC\.md$
+^vignettes/articles$
+^man/figures$

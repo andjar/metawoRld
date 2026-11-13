@@ -1,0 +1,30 @@
+metadata:
+  title: Determination of Interleukin-6 and Tumor Necrosis Factor-alpha concentrations in Iranian-Khorasanian patients with preeclampsia
+  authors: [Tavakkol Afshari J, Ghomian N, Shameli A, Shakeri MT, Fahmidehkar MA, Mahajer E, Khoshnavaz R, Emadzadeh M]
+  year: 2005
+  journal: BMC Pregnancy and Childbirth
+  doi: 10.1186/1471-2393-5-14
+  pmid: "16259641"
+  country: [Iran]
+  study_design: Cross-sectional
+  population: Women with preeclampsia and antepartum normotensive pregnant women, Mashhad (northeast Iran); sampled at 26-41 weeks
+  methods:
+    - method_id: m1
+      name: Serum IL-6, high-sensitivity sandwich ELISA (Bender MedSystems)
+      unit: pg/mL
+  groups:
+    - group_id: g1
+      name: Preeclampsia
+      sample_size: 24
+      category: PE
+    - group_id: g2
+      name: Normal pregnant
+      sample_size: 18
+      category: Control
+data_points:
+  - {measurement_id: dp1, method_id: m1, group_id: g1, variable_name: IL-6, timepoint: Antepartum, sample_size: 24, statistic_type: mean_sd, value1: 5.8, value2: 4.85, source: "Abstract (p. 1); Results (p. 2-3)", source_page: 1, p_value: "0.02"}
+  - {measurement_id: dp2, method_id: m1, group_id: g2, variable_name: IL-6, timepoint: Antepartum, sample_size: 18, statistic_type: mean_sd, value1: 3.01, value2: 2.45, source: "Abstract (p. 1); Results (p. 2-3)", source_page: 1, p_value: "0.02"}
+  - {measurement_id: dp3, method_id: POP_CHAR, group_id: g1, variable_name: Maternal age, sample_size: 24, statistic_type: mean_sd, value1: 28.4, value2: 4.9, source: Table 1}
+  - {measurement_id: dp4, method_id: POP_CHAR, group_id: g2, variable_name: Maternal age, sample_size: 18, statistic_type: mean_sd, value1: 27.2, value2: 5.8, source: Table 1}
+  - {measurement_id: dp5, method_id: POP_CHAR, group_id: g1, variable_name: Gestational age at sampling, sample_size: 24, statistic_type: mean_sd, value1: 34.8, value2: 4.3, source: Table 1}
+  - {measurement_id: dp6, method_id: POP_CHAR, group_id: g2, variable_name: Gestational age at sampling, sample_size: 18, statistic_type: mean_sd, value1: 33.3, value2: 3.7, source: Table 1}

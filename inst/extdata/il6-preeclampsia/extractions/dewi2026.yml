@@ -1,0 +1,28 @@
+metadata:
+  title: "Comparison of interleukin-6 and serum creatinine levels in preeclampsia and normal pregnancy patients: A cross-sectional study in Indonesia"
+  authors: [Dewi SR, Yeni CM, Munizar M, Dewi TP, Utami NA, Rusnaidi R]
+  year: 2026
+  journal: Narra J
+  doi: 10.52225/narra.v6i1.3016
+  pmid: "42137839"
+  country: [Indonesia]
+  study_design: Cross-sectional
+  population: Women with preeclampsia and normotensive pregnant women at 24-42 weeks, Banda Aceh
+  methods:
+    - method_id: m1
+      name: Serum IL-6, electrochemiluminescence immunoassay (ECLIA)
+      unit: pg/mL
+  groups:
+    - group_id: g1
+      name: Preeclampsia
+      sample_size: 34
+      category: PE
+    - group_id: g2
+      name: Normotensive pregnancy
+      sample_size: 34
+      category: Control
+data_points:
+  - {measurement_id: dp1, method_id: m1, group_id: g1, variable_name: IL-6, timepoint: Antepartum, sample_size: 34, statistic_type: median_range, value1: 16.05, value2: 1.91, value3: 85.20, source: Table 2, p_value: "<0.001"}
+  - {measurement_id: dp2, method_id: m1, group_id: g2, variable_name: IL-6, timepoint: Antepartum, sample_size: 34, statistic_type: median_range, value1: 3.71, value2: 1.50, value3: 36.70, source: Table 2, p_value: "<0.001"}
+  - {measurement_id: dp3, method_id: POP_CHAR, group_id: g1, variable_name: Maternal age, sample_size: 34, statistic_type: mean_sd, value1: 33.26, value2: 5.8, source: Table 1}
+  - {measurement_id: dp4, method_id: POP_CHAR, group_id: g2, variable_name: Maternal age, sample_size: 34, statistic_type: mean_sd, value1: 30.57, value2: 4.6, source: Table 1}

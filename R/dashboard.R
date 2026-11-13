@@ -28,7 +28,7 @@ generate_dashboard <- function(path = ".", max_variables = 40) {
   results <- if (has_metafor) run_all_meta_analyses(proj_path, world) else list()
 
   # ---- analyses.qmd
-  lines <- c("---", "title: Meta-analyses", "format:", "  dashboard:", "    scrolling: true", "---", "")
+  lines <- c("---", "title: Meta-analyses", "format:", "  dashboard:", "    scrolling: true", "    css: styles.css", "---", "")
   if (!length(analyses)) {
     lines <- c(lines, "# Meta-analyses", "", "::: {.card title=\"No meta-analyses defined yet\"}",
                "Define meta-analyses in `_analyses.yml` (see the comments in that file) and rebuild the site.", ":::")
@@ -44,7 +44,7 @@ generate_dashboard <- function(path = ".", max_variables = 40) {
   # ---- results.qmd
   vars <- .variables_by_studies(world, read_rules(proj_path))
   vars <- utils::head(vars, max_variables)
-  lines <- c("---", "title: Results by variable", "format:", "  dashboard:", "    scrolling: true", "---", "")
+  lines <- c("---", "title: Results by variable", "format:", "  dashboard:", "    scrolling: true", "    css: styles.css", "---", "")
   if (!length(vars)) {
     lines <- c(lines, "::: {.card}", "No continuous results yet.", ":::")
   } else {

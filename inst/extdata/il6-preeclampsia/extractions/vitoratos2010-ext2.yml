@@ -1,0 +1,28 @@
+metadata:
+  title: Maternal Serum Levels of TNF-Alpha and IL-6 Long after Delivery in Preeclamptic and Normotensive Pregnant Women
+  authors: [Vitoratos N, Economou E, Iavazzo C, Panoulis K, Creatsas G]
+  year: 2010
+  journal: Mediators of Inflammation
+  doi: 10.1155/2010/908649
+  pmid: "21253506"
+  country: [Greece]
+  study_design: Prospective cohort
+  population: Women who developed preeclampsia and gestation-age-matched normotensive pregnant women, Athens; sampled at diagnosis and 12-14 weeks postpartum
+  methods:
+    - method_id: m1
+      name: Plasma IL-6, high-sensitivity ELISA (Bender MedSystems BMS213HS)
+      unit: pg/mL
+  groups:
+    - group_id: g1
+      name: Preeclampsia
+      sample_size: 17
+      category: PE
+    - group_id: g2
+      name: Normotensive controls
+      sample_size: 16
+      category: Control
+data_points:
+  - {measurement_id: v1, method_id: m1, group_id: g1, variable_name: IL-6, timepoint: Antepartum, sample_size: 17, statistic_type: mean_se, value1: 2.66, value2: 1.37, source: Table 2}
+  - {measurement_id: v2, method_id: m1, group_id: g2, variable_name: IL-6, timepoint: Antepartum, sample_size: 16, statistic_type: mean_se, value1: 2.44, value2: 0.85, source: Table 2}
+  - {measurement_id: v3, method_id: m1, group_id: g1, variable_name: IL-6, timepoint: 12-14 weeks postpartum, sample_size: 17, statistic_type: mean_sd, value1: 3.53, value2: 0.52, source: Results text}
+  - {measurement_id: v4, method_id: m1, group_id: g2, variable_name: IL-6, timepoint: 12-14 weeks postpartum, sample_size: 16, statistic_type: mean_sd, value1: 1.69, value2: 0.48, source: Results text}

@@ -26,5 +26,5 @@ test_that("generate_website wires the dashboard into the site", {
   generate_website(p, render = FALSE)
   q <- yaml::read_yaml(file.path(p, "_quarto.yml"))
   expect_true(all(c("index.qmd", "analyses.qmd", "results.qmd") %in% q$project$render))
-  expect_match(readLines(file.path(p, "index.qmd"))[3], "format: dashboard")
+  expect_equal(readLines(file.path(p, "index.qmd"))[3:5], c("format:", "  dashboard:", "    css: styles.css"))
 })
