@@ -23,7 +23,7 @@ test_that("analysis data: categories, units, subgroup combination and exclusions
   expect_equal(cc$n1, 20); expect_equal(cc$mean1, 5)               # combined mild + severe
   expect_equal(cc$sd1, sqrt((9 * 1 + 9 * 1 + 10 * 10 / 20 * (16 + 36 - 48)) / 19))
   expect_equal(cc$sd2, 0.2 * 5)                                     # SE -> SD
-  expect_match(cc$note, "combined 2 groups")
+  expect_match(cc$note, "combined groups: g1 \\(reported\\), g2 \\(reported\\)")
   expect_equal(ad$excluded$study_id, "study-d")
   expect_match(ad$excluded$reason, "no usable data for: PE")
 })

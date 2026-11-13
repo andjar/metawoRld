@@ -7,7 +7,9 @@
 #' the README there for the sources). It runs the whole workflow: people, a
 #' search log, records, screening by two people with a consensus decision,
 #' submissions, acceptance, dual extraction of one study with
-#' reconciliation, and some verified values. Use it to try the package, the
+#' reconciliation, a refinement of groups during the review (onset of
+#' preeclampsia added as a group fact; one study's early/late-onset groups
+#' linked to its total with [amend_study()]), and some verified values. Use it to try the package, the
 #' review app and the dashboard.
 #'
 #' This is a documentation example, not a systematic review. The people are
@@ -123,6 +125,21 @@ example_project <- function(path, website = TRUE) {
 
   # The Gencheva report has no DOI or PMID to match on, so link it by hand
   link_record(path, rid[3], "gencheva2022")
+
+  # Refining groups during the review: onset of preeclampsia becomes a group
+  # fact, and Gencheva's early/late-onset groups are linked to its PE total
+  add_group_fact(path, "onset", c("early", "late", "not reported"),
+                 "Onset of preeclampsia as defined by the study (early or late onset).")
+  rules <- read_rules(path)
+  rules$group_categories$PE_early <- list(description = "Early-onset preeclampsia",
+                                          where = list(category = "PE", onset = "early"))
+  rules$group_categories$PE_late <- list(description = "Late-onset preeclampsia",
+                                         where = list(category = "PE", onset = "late"))
+  .write_rules(fs::path(path, "_rules.yml"), rules)
+  am <- q(amend_study(path, "gencheva2022", person = "ext1", note = "Onset subgroups linked to the PE total.",
+                      groups = list(list(group_id = "pe_early", parent_group_id = "pe", onset = "early"),
+                                    list(group_id = "pe_late", parent_group_id = "pe", onset = "late"))))
+  q(accept_submission(path, "gencheva2022", am, person = "arb"))
 
   # Some values verified against the papers; the rest wait in review_values()
   set_verification(path, "afshari2005", c("dp1", "dp2"), reviewer = "ext2")

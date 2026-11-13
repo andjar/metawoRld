@@ -113,12 +113,19 @@ reference:
   - hash_file
   - validate_study
   - validate_world
+- title: Groups, subgroups and categories
+  desc: Groups as reported, facts inherited by subgroups, categories as rules, and refinement during the review.
+  contents:
+  - group_memberships
+  - group_category
+  - add_group_fact
+  - refinement_queue
+  - amend_study
 - title: Vocabulary and value rules
   contents:
   - read_rules
   - add_variable_synonym
   - canonical_variable
-  - group_category
   - rules_for_prompt
 - title: Living meta-analysis
   contents:

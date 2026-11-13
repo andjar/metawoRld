@@ -266,7 +266,8 @@ validate_world <- function(path = ".", check_links = TRUE) {
   c(
     validate_against_schema(metadata, schema$metadata, path = "metadata"),
     validate_against_schema(data, schema$data_points, path = "data_points"),
-    if (check_links) validate_links(metadata, data, schema)
+    if (check_links) validate_links(metadata, data, schema),
+    if (check_links) .group_tree_errors(metadata$groups)
   )
 }
 

@@ -39,6 +39,9 @@ read_analyses <- function(path = ".") {
     if (!rlang::is_scalar_character(a$group)) rlang::abort(paste0(where, ": `group` (one group category) is required for ", a$measure, "."))
   }
   a$timepoint <- a$timepoint %||% NA_character_
+  a$subgroups <- as.character(unlist(a$subgroups))
+  a$levels <- a$levels %||% "reported"
+  if (!a$levels %in% c("reported", "pool")) rlang::abort(paste0(where, ": `levels` must be 'reported' or 'pool'."))
   a$verified_only <- isTRUE(a$verified_only)
   a$method <- a$method %||% "REML"
   a
@@ -109,16 +112,12 @@ analysis_data <- function(path = ".", analysis, world = NULL) {
   }
   binary <- analysis$measure %in% .measures_binary
   cats <- if (analysis$measure %in% .measures_two) analysis$compare else analysis$group
-  empty <- list(data = .empty_analysis_rows(analysis), excluded = dplyr::tibble(study_id = character(0), reason = character(0)))
+  empty <- list(data = .empty_analysis_rows(analysis), excluded = dplyr::tibble(study_id = character(0), reason = character(0)),
+                selection = dplyr::tibble(study_id = character(0), subgroup = character(0), arm = character(0), groups = character(0),
+                                          group_names = character(0), how = character(0), n = numeric(0), timepoint = character(0),
+                                          statistic = character(0), conversion = character(0)))
   if (!nrow(d)) return(empty)
 
-  # categories
-  d$category <- NA_character_
-  for (sid in unique(d$study_id)) {
-    gc <- group_category(world$studies_metadata[[sid]]$groups, rules)
-    i <- d$study_id == sid
-    d$category[i] <- unname(gc[as.character(d$group_id[i])])
-  }
   # values
   for (c in c("unit", "method_unit", "timepoint", "value3")) if (!c %in% names(d)) d[[c]] <- NA
   if (binary) {
@@ -140,43 +139,103 @@ analysis_data <- function(path = ".", analysis, world = NULL) {
   }
   d$verified <- d$verification_status == "verified"
 
-  rows <- list(); excluded <- list()
+  two <- analysis$measure %in% .measures_two
+  # the arms: one set of categories per row the study can contribute
+  arm_sets <- if (length(analysis$subgroups)) {
+    lapply(analysis$subgroups, function(s) list(subgroup = s, cats = if (two) c(s, cats[2]) else s))
+  } else list(list(subgroup = NA_character_, cats = cats))
+
+  rows <- list(); excluded <- list(); selection <- list()
   for (sid in unique(d$study_id)) {
     ds <- d[d$study_id == sid, , drop = FALSE]
+    meta <- world$studies_metadata[[sid]]
+    gdf <- .groups_df(meta$groups)
+    mem <- group_memberships(meta$groups, rules)
     tps <- unique(ifelse(is.na(ds$timepoint), "", ds$timepoint))
-    picked <- NULL
+    picked <- NULL; reason <- NULL
     for (tp in tps) {
       dt <- ds[ifelse(is.na(ds$timepoint), "", ds$timepoint) == tp & ds$usable, , drop = FALSE]
-      parts <- lapply(cats, function(cg) dt[!is.na(dt$category) & dt$category == cg, , drop = FALSE])
-      if (all(vapply(parts, nrow, integer(1)) > 0)) { picked <- list(tp = tp, parts = parts); break }
+      found <- list()
+      for (as in arm_sets) {
+        arms <- lapply(as$cats, function(cg) {
+          sel <- .select_level(gdf, mem$group_id[mem$category == cg], unique(dt$group_id), analysis$levels)
+          if (length(sel$units)) return(.arm_rows(dt, sel$units))
+          part <- intersect(unlist(lapply(sel$missing, function(g) .descendants(gdf, g))), dt$group_id)
+          if (length(part)) {
+            reason <<- paste0(cg, ": '", paste(sel$missing, collapse = "', '"), "' has no usable value and its subgroups (",
+                              paste(part, collapse = ", "), ") do not add up to it, so they cannot stand in for it")
+          }
+          NULL
+        })
+        if (any(vapply(arms, is.null, logical(1)))) next
+        if (length(arms) == 2 && any(outer(arms[[1]]$groups, arms[[2]]$groups, Vectorize(function(a, b) .overlap(gdf, a, b))))) {
+          reason <- paste0("the groups for ", as$cats[1], " and ", as$cats[2], " overlap (",
+                           paste(arms[[1]]$groups, collapse = ", "), " vs ", paste(arms[[2]]$groups, collapse = ", "), ")")
+          next
+        }
+        found[[length(found) + 1]] <- list(subgroup = as$subgroup, cats = as$cats, arms = arms)
+      }
+      # subgroups of one study must not overlap each other
+      if (length(found) > 1) {
+        g1 <- lapply(found, function(f) f$arms[[1]]$groups)
+        clash <- FALSE
+        for (x in seq_along(g1)) for (y in seq_along(g1)) if (x < y && any(outer(g1[[x]], g1[[y]], Vectorize(function(a, b) .overlap(gdf, a, b))))) clash <- TRUE
+        if (clash) { reason <- "its subgroups overlap, so participants would be counted twice"; found <- list() }
+      }
+      if (length(found)) { picked <- list(tp = tp, found = found); break }
     }
     if (is.null(picked)) {
-      have <- unique(stats::na.omit(ds$category[ds$usable]))
-      reason <- if (!any(ds$usable)) paste(unique(stats::na.omit(ds$why)), collapse = "; ")
-      else if (all(is.na(ds$category))) "groups not assigned to a category (set `category` or add synonyms in _rules.yml)"
-      else paste0("no usable data for: ", paste(setdiff(cats, have), collapse = ", "))
+      if (is.null(reason)) {
+        have <- unique(mem$category[mem$group_id %in% ds$group_id[ds$usable]])
+        need <- unique(unlist(lapply(arm_sets, `[[`, "cats")))
+        reason <- if (!any(ds$usable)) paste(unique(stats::na.omit(ds$why)), collapse = "; ")
+        else if (!nrow(mem)) "groups not assigned to a category (set `category` or add synonyms in _rules.yml)"
+        else paste0("no usable data for: ", paste(setdiff(need, have), collapse = ", "))
+      }
       excluded[[length(excluded) + 1]] <- list(study_id = sid, reason = reason)
       next
     }
-    meta <- world$studies_metadata[[sid]]
-    combined <- lapply(picked$parts, function(p) .combine_groups(p, binary))
-    row <- list(study_id = sid, label = .study_label(meta, sid), year = suppressWarnings(as.integer(.val(meta$year, NA))),
-                timepoint = picked$tp,
-                converted = any(unlist(lapply(picked$parts, function(p) !p$conversion %in% c("reported", NA)))),
-                verified = all(unlist(lapply(picked$parts, `[[`, "verified"))),
-                measurement_ids = paste(unlist(lapply(picked$parts, `[[`, "measurement_id")), collapse = ", "),
-                note = paste(stats::na.omit(vapply(combined, `[[`, character(1), "note")), collapse = "; "))
-    for (j in seq_along(combined)) {
-      sfx <- if (length(combined) == 2) j else ""
-      row[[paste0("n", sfx)]] <- combined[[j]]$n
-      if (binary) row[[paste0("events", sfx)]] <- combined[[j]]$events
-      else { row[[paste0("mean", sfx)]] <- combined[[j]]$mean; row[[paste0("sd", sfx)]] <- combined[[j]]$sd }
+    k <- length(picked$found)
+    for (f in picked$found) {
+      combined <- lapply(f$arms, function(arm) .combine_groups(arm$rows, binary))
+      shared <- two && k > 1
+      notes <- c(vapply(seq_along(f$arms), function(j) {
+        h <- f$arms[[j]]$how
+        if (identical(h, "reported")) NA_character_ else paste0(f$cats[j], ": ", h)
+      }, character(1)),
+      if (shared) paste0(f$cats[2], " group shared by ", k, " subgroups: its n is split ", k, " ways"))
+      row <- list(study_id = sid, label = .study_label(meta, sid), year = suppressWarnings(as.integer(.val(meta$year, NA))),
+                  subgroup = f$subgroup, timepoint = picked$tp,
+                  converted = any(unlist(lapply(f$arms, function(a) !a$rows$conversion %in% c("reported", NA)))),
+                  verified = all(unlist(lapply(f$arms, function(a) a$rows$verified))),
+                  measurement_ids = paste(unlist(lapply(f$arms, function(a) a$rows$measurement_id)), collapse = ", "),
+                  note = paste(stats::na.omit(notes), collapse = "; "))
+      for (j in seq_along(combined)) {
+        sfx <- if (length(combined) == 2) j else ""
+        n <- combined[[j]]$n
+        if (shared && j == 2) n <- n / k
+        row[[paste0("n", sfx)]] <- n
+        if (binary) row[[paste0("events", sfx)]] <- combined[[j]]$events * (if (shared && j == 2) 1 / k else 1)
+        else { row[[paste0("mean", sfx)]] <- combined[[j]]$mean; row[[paste0("sd", sfx)]] <- combined[[j]]$sd }
+        selection[[length(selection) + 1]] <- list(
+          study_id = sid, subgroup = f$subgroup, arm = f$cats[j],
+          groups = paste(f$arms[[j]]$groups, collapse = ", "),
+          group_names = paste(gdf$name[match(f$arms[[j]]$groups, gdf$group_id)], collapse = "; "),
+          how = f$arms[[j]]$how, n = n, timepoint = picked$tp,
+          statistic = paste(unique(f$arms[[j]]$rows$statistic_type), collapse = ", "),
+          conversion = paste(unique(stats::na.omit(f$arms[[j]]$rows$conversion)), collapse = ", ")
+        )
+      }
+      rows[[length(rows) + 1]] <- row
     }
-    rows[[length(rows) + 1]] <- row
   }
+  sel_empty <- dplyr::tibble(study_id = character(0), subgroup = character(0), arm = character(0), groups = character(0),
+                             group_names = character(0), how = character(0), n = numeric(0), timepoint = character(0),
+                             statistic = character(0), conversion = character(0))
   list(
     data = dplyr::bind_rows(.empty_analysis_rows(analysis), dplyr::bind_rows(rows)),
-    excluded = dplyr::bind_rows(dplyr::tibble(study_id = character(0), reason = character(0)), dplyr::bind_rows(excluded))
+    excluded = dplyr::bind_rows(dplyr::tibble(study_id = character(0), reason = character(0)), dplyr::bind_rows(excluded)),
+    selection = dplyr::bind_rows(sel_empty, dplyr::bind_rows(selection))
   )
 }
 
@@ -188,9 +247,12 @@ analysis_data <- function(path = ".", analysis, world = NULL) {
 #'
 #' @inheritParams analysis_data
 #' @return An object of class `metawoRld_meta`: a list with `analysis`,
-#'   `data` (with effect sizes `yi`, `vi`), `excluded`, `model` (the `rma`
-#'   fit, or `NULL` with fewer than two studies), `summary` (one-row tibble)
-#'   and `cumulative` (pooled estimate after each publication year).
+#'   `data` (with effect sizes `yi`, `vi`), `excluded`, `selection` (how each
+#'   study contributes: which groups, at which level, and whether subgroups
+#'   were pooled), `model` (the `rma` fit, or `NULL` with fewer than two
+#'   studies), `summary` (one-row tibble), `subgroups` and `subgroup_test`
+#'   (for analyses with `subgroups`), and `cumulative` (pooled estimate after
+#'   each publication year).
 #' @export
 run_meta_analysis <- function(path = ".", analysis, world = NULL) {
   rlang::check_installed("metafor", reason = "to run meta-analyses.")
@@ -212,19 +274,28 @@ run_meta_analysis <- function(path = ".", analysis, world = NULL) {
   } else {
     dat$yi <- numeric(0); dat$vi <- numeric(0)
   }
-  dat <- dat[order(dat$year, dat$label), , drop = FALSE]
+  if (length(analysis$subgroups) && nrow(dat)) {
+    dat$label <- paste0(dat$label, " [", dat$subgroup, "]")
+    dat <- dat[order(match(dat$subgroup, analysis$subgroups), dat$year, dat$label), , drop = FALSE]
+  } else {
+    dat <- dat[order(dat$year, dat$label), , drop = FALSE]
+  }
   model <- if (nrow(dat) >= 2) {
     tryCatch(metafor::rma(yi = dat$yi, vi = dat$vi, method = analysis$method, slab = dat$label),
              error = function(e) { rlang::warn(paste0(analysis$name, ": ", conditionMessage(e))); NULL })
   }
   tf <- .measure_transf(m)
   summ <- .summarise_model(model, dat, tf, analysis)
+  sg <- .subgroup_models(dat, analysis, tf)
   cumulative <- if (!is.null(model)) {
-    cm <- metafor::cumul(model, order = seq_len(nrow(dat)))
-    cdf <- data.frame(year = dat$year, k = seq_len(nrow(dat)), estimate = tf(cm$estimate), ci_lb = tf(cm$ci.lb), ci_ub = tf(cm$ci.ub))
+    by_year <- order(dat$year, dat$label)
+    cm <- metafor::cumul(model, order = by_year)
+    dat_c <- dat[by_year, , drop = FALSE]
+    cdf <- data.frame(year = dat_c$year, k = seq_len(nrow(dat_c)), estimate = tf(cm$estimate), ci_lb = tf(cm$ci.lb), ci_ub = tf(cm$ci.ub))
     cdf[!duplicated(cdf$year, fromLast = TRUE) & !is.na(cdf$year), , drop = FALSE]
   } else data.frame(year = integer(0), k = integer(0), estimate = numeric(0), ci_lb = numeric(0), ci_ub = numeric(0))
   structure(list(analysis = analysis, data = dplyr::as_tibble(dat), excluded = ad$excluded,
+                 selection = ad$selection, subgroups = sg$table, subgroup_test = sg$test,
                  model = model, summary = summ, cumulative = cumulative,
                  unit = read_rules(proj_path)$variables[[analysis$variable]]$unit %||% ""),
             class = "metawoRld_meta")
@@ -405,7 +476,7 @@ plot_variable <- function(path = ".", variable, world = NULL) {
 }
 
 .empty_analysis_rows <- function(analysis) {
-  base <- dplyr::tibble(study_id = character(0), label = character(0), year = integer(0), timepoint = character(0),
+  base <- dplyr::tibble(study_id = character(0), label = character(0), year = integer(0), subgroup = character(0), timepoint = character(0),
                         converted = logical(0), verified = logical(0), measurement_ids = character(0), note = character(0))
   m <- analysis$measure
   extra <- if (m %in% c("SMD", "MD", "ROM")) c("n1", "mean1", "sd1", "n2", "mean2", "sd2")
@@ -512,4 +583,31 @@ plot_variable <- function(path = ".", variable, world = NULL) {
   d$unit_lab <- if (!is.null(target)) target else ifelse(is.na(unit), "", unit)
   d$year <- vapply(d$study_id, function(s) suppressWarnings(as.integer(.val(world$studies_metadata[[s]]$year, NA))), integer(1))
   d[order(d$year, d$study_id), , drop = FALSE]
+}
+
+# Separate estimates per subgroup and a test for subgroup differences.
+.subgroup_models <- function(dat, analysis, tf) {
+  empty <- dplyr::tibble(subgroup = character(0), studies = integer(0), estimate = character(0), I2 = character(0))
+  if (!length(analysis$subgroups) || !nrow(dat)) return(list(table = empty, test = NA_character_))
+  f <- function(x) formatC(x, digits = 2, format = "f")
+  tab <- lapply(analysis$subgroups, function(s) {
+    ds <- dat[dat$subgroup == s, , drop = FALSE]
+    if (!nrow(ds)) return(dplyr::tibble(subgroup = s, studies = 0L, estimate = "No studies", I2 = NA_character_))
+    if (nrow(ds) == 1) {
+      return(dplyr::tibble(subgroup = s, studies = 1L, I2 = NA_character_,
+                           estimate = paste0(f(tf(ds$yi)), " [", f(tf(ds$yi - 1.96 * sqrt(ds$vi))), ", ", f(tf(ds$yi + 1.96 * sqrt(ds$vi))), "] (single study)")))
+    }
+    m <- tryCatch(metafor::rma(yi = ds$yi, vi = ds$vi, method = analysis$method), error = function(e) NULL)
+    if (is.null(m)) return(dplyr::tibble(subgroup = s, studies = nrow(ds), estimate = "Model failed", I2 = NA_character_))
+    pr <- stats::predict(m, transf = tf)
+    dplyr::tibble(subgroup = s, studies = nrow(ds), estimate = paste0(f(pr$pred), " [", f(pr$ci.lb), ", ", f(pr$ci.ub), "]"),
+                  I2 = paste0(formatC(m$I2, digits = 0, format = "f"), "%"))
+  })
+  test <- NA_character_
+  if (length(unique(dat$subgroup)) > 1 && nrow(dat) > length(unique(dat$subgroup))) {
+    m <- tryCatch(metafor::rma(yi = dat$yi, vi = dat$vi, mods = ~ factor(dat$subgroup), method = analysis$method), error = function(e) NULL)
+    if (!is.null(m)) test <- sprintf("Test for subgroup differences: Q = %.2f, df = %d, p = %s", m$QM, m$QMdf[1],
+                                     format.pval(m$QMp, digits = 2, eps = 0.001))
+  }
+  list(table = dplyr::bind_rows(c(list(empty), tab)), test = test)
 }

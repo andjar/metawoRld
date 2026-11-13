@@ -10,7 +10,15 @@ test_that("example_project builds a clean, complete project", {
   v <- read_study(p, "vitoratos2010")
   expect_equal(unique(v$data$statistic_type), "mean_se")
   expect_true(all(nzchar(v$provenance$agreed_with[v$provenance$measurement_id %in% c("dp1", "dp2")])))
-  expect_equal(nrow(suppressMessages(check_values(p))), 0)
+  expect_equal(nrow(suppressMessages(check_values(p))), 0)          # incl. Gencheva subgroups vs total
+  # refinement: Gencheva's subgroups are linked; the main analysis still uses its total
+  g <- read_study(p, "gencheva2022")$metadata$groups
+  expect_equal(vapply(g, function(x) x$parent_group_id %||% NA_character_, "")[4:5], c("pe", "pe"))
+  ma <- run_meta_analysis(p, "IL-6 in preeclampsia vs normotensive pregnancy")
+  sel <- ma$selection[ma$selection$study_id == "gencheva2022", ]
+  expect_equal(sel$how, c("reported", "reported"))
+  expect_equal(sel$n, c(37, 50))
+  expect_equal(get_schema(p)$`_form`$version, "1.1.0")
 })
 
 test_that("example values match the published articles", {

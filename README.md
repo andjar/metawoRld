@@ -88,6 +88,7 @@ generate_website("my-review")       # living meta-analysis dashboard
 | Load | `load_metawoRld()`, `read_study()`, `list_studies()` |
 | Verify values against the papers | `review_values()`, `check_values()`, `verification_status()`, `set_verification()`, `update_data_point()` |
 | Integrity | `check_project()`, `use_github_action_check()`, `hash_file()`, `validate_study()`, `validate_world()` |
+| Groups and subgroups | `group_memberships()`, `add_group_fact()`, `refinement_queue()`, `amend_study()` |
 | Value rules (`_rules.yml`) | `read_rules()`, `add_variable_synonym()`, `canonical_variable()` |
 | Living meta-analysis (`_analyses.yml`) | `read_analyses()`, `run_meta_analysis()`, `run_all_meta_analyses()`, `summary_of_findings()`, `plot_forest()`, `plot_cumulative()`, `plot_variable()`, `to_mean_sd()` |
 | Website dashboard | `generate_website()`, `generate_dashboard()`, `use_github_action_quarto()` |

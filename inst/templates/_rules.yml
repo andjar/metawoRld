@@ -14,8 +14,15 @@
 #
 # group_categories: categories that study groups are mapped to, e.g. for
 #   meta-analyses comparing cases with controls (see _analyses.yml). Each can
-#   have synonyms (matched case-insensitively against group names) and a
-#   description. DataFindR asks the LLM to assign groups to these categories.
+#   have synonyms (matched case-insensitively against a group's `category`
+#   or name) and a description. DataFindR asks the LLM to assign groups to
+#   these categories.
+#   A category can instead be a rule over group facts (fields of `groups` in
+#   forms/extraction.yml; subgroups inherit them from their parent group):
+#     PE_early: {where: {category: PE, onset: early}}
+#   A group can belong to several categories (an early-onset PE subgroup is
+#   both PE and PE_early). Each analysis uses one level per study, so no
+#   participant is counted twice; see _analyses.yml.
 #
 # Variables and group categories are given to the LLM during extraction, so
 # extracted names follow this vocabulary.
