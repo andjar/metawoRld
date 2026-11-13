@@ -35,11 +35,13 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="articles/getting_started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/app.html">The app</a></li>
 <li class="nav-item"><a class="nav-link" href="articles/worked-example.html">Worked example</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/conceptual_overview.html">Concepts and workflow</a></li>
+<li><a class="dropdown-item" href="articles/app.html">The metawoRld app</a></li>
+    <li><a class="dropdown-item" href="articles/conceptual_overview.html">Concepts and workflow</a></li>
     <li><a class="dropdown-item" href="articles/worked-example.html">Worked example (IL-6 in preeclampsia)</a></li>
     <li><a class="dropdown-item" href="SPEC.html">Project specification (SPEC v1)</a></li>
   </ul>
@@ -73,6 +75,10 @@
 <li>meta-analyses defined in <code>_analyses.yml</code> and a Quarto <strong>dashboard</strong> website, rebuilt whenever data change.</li>
 </ul>
 <p><code><a href="reference/check_project.html">check_project()</a></code> checks all of it, locally or in CI, and catches data edited outside metawoRld.</p>
+<p><strong>No R code needed to get going:</strong> <code><a href="reference/launch.html">metawoRld::launch()</a></code> opens an app to start a review, accept and reconcile submissions, verify values, check, publish and share the project with a team (Git, without Git commands):</p>
+<div class="float">
+<img src="reference/figures/app.gif" alt="The metawoRld app"><div class="figcaption">The metawoRld app</div>
+</div>
 <p><strong>Documentation:</strong> <a href="https://andjar.github.io/metawoRld/" class="uri">https://andjar.github.io/metawoRld/</a>, including a <a href="https://andjar.github.io/metawoRld/articles/worked-example.html">worked example</a> with real data from four open-access studies of IL-6 in preeclampsia.</p>
 <div class="float">
 <img src="reference/figures/dashboard-analysis.png" alt="The living meta-analysis dashboard built from the worked example"><div class="figcaption">The living meta-analysis dashboard built from the worked example</div>
@@ -92,14 +98,17 @@
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>Try the worked example in one call:</p>
+<p>Open the app (start a review, or explore the worked example):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">metawoRld</span><span class="fu">::</span><span class="fu"><a href="reference/launch.html">launch</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>Or try the worked example from R:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://andjar.github.io/metawoRld/">metawoRld</a></span><span class="op">)</span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/example_project.html">example_project</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"il6"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/review_values.html">review_values</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>       <span class="co"># verify values</span></span>
 <span><span class="fu"><a href="reference/generate_website.html">generate_website</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>    <span class="co"># build the dashboard (needs Quarto)</span></span></code></pre></div>
 <p>Or start your own review:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://andjar.github.io/metawoRld/">metawoRld</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/create_metawoRld.html">create_metawoRld</a></span><span class="op">(</span></span>
@@ -132,9 +141,13 @@
 </tr></thead>
 <tbody>
 <tr>
+<td>The app</td>
+<td><code><a href="reference/launch.html">launch()</a></code></td>
+</tr>
+<tr>
 <td>Create a project</td>
 <td>
-<code><a href="reference/create_metawoRld.html">create_metawoRld()</a></code>, <code><a href="reference/use_templates.html">use_templates()</a></code>, <code><a href="reference/read_people.html">add_person()</a></code>, <code><a href="reference/read_people.html">read_people()</a></code>
+<code><a href="reference/new_review.html">new_review()</a></code>, <code><a href="reference/create_metawoRld.html">create_metawoRld()</a></code>, <code><a href="reference/use_templates.html">use_templates()</a></code>, <code><a href="reference/read_people.html">add_person()</a></code>, <code><a href="reference/read_people.html">read_people()</a></code>
 </td>
 </tr>
 <tr>
@@ -158,7 +171,7 @@
 <tr>
 <td>Accept</td>
 <td>
-<code><a href="reference/accept_submission.html">accept_submission()</a></code>, <code><a href="reference/reject_submission.html">reject_submission()</a></code>, <code><a href="reference/compare_extractions.html">compare_extractions()</a></code>, <code><a href="reference/reconcile.html">reconcile()</a></code>
+<code><a href="reference/accept_submission.html">accept_submission()</a></code>, <code><a href="reference/reject_submission.html">reject_submission()</a></code>, <code><a href="reference/compare_with_accepted.html">compare_with_accepted()</a></code>, <code><a href="reference/compare_extractions.html">compare_extractions()</a></code>, <code><a href="reference/reconcile.html">reconcile()</a></code>
 </td>
 </tr>
 <tr>
@@ -186,6 +199,12 @@
 </td>
 </tr>
 <tr>
+<td>Groups and subgroups</td>
+<td>
+<code><a href="reference/group_memberships.html">group_memberships()</a></code>, <code><a href="reference/add_group_fact.html">add_group_fact()</a></code>, <code><a href="reference/refinement_queue.html">refinement_queue()</a></code>, <code><a href="reference/amend_study.html">amend_study()</a></code>
+</td>
+</tr>
+<tr>
 <td>Value rules (<code>_rules.yml</code>)</td>
 <td>
 <code><a href="reference/read_rules.html">read_rules()</a></code>, <code><a href="reference/add_variable_synonym.html">add_variable_synonym()</a></code>, <code><a href="reference/canonical_variable.html">canonical_variable()</a></code>
@@ -195,6 +214,12 @@
 <td>Living meta-analysis (<code>_analyses.yml</code>)</td>
 <td>
 <code><a href="reference/read_analyses.html">read_analyses()</a></code>, <code><a href="reference/run_meta_analysis.html">run_meta_analysis()</a></code>, <code><a href="reference/run_all_meta_analyses.html">run_all_meta_analyses()</a></code>, <code><a href="reference/summary_of_findings.html">summary_of_findings()</a></code>, <code><a href="reference/plot_forest.html">plot_forest()</a></code>, <code><a href="reference/plot_cumulative.html">plot_cumulative()</a></code>, <code><a href="reference/plot_variable.html">plot_variable()</a></code>, <code><a href="reference/to_mean_sd.html">to_mean_sd()</a></code>
+</td>
+</tr>
+<tr>
+<td>Team work (Git)</td>
+<td>
+<code><a href="reference/sync_project.html">sync_project()</a></code>, <code><a href="reference/sync_status.html">sync_status()</a></code>, <code><a href="reference/commit_project.html">commit_project()</a></code>
 </td>
 </tr>
 <tr>

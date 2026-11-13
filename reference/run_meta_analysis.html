@@ -20,10 +20,12 @@ showing how the pooled estimate has evolved."></head><body>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/getting_started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/app.html">The app</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/worked-example.html">Worked example</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/conceptual_overview.html">Concepts and workflow</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app.html">The metawoRld app</a></li>
+    <li><a class="dropdown-item" href="../articles/conceptual_overview.html">Concepts and workflow</a></li>
     <li><a class="dropdown-item" href="../articles/worked-example.html">Worked example (IL-6 in preeclampsia)</a></li>
     <li><a class="dropdown-item" href="../SPEC.html">Project specification (SPEC v1)</a></li>
   </ul></li>
@@ -75,9 +77,12 @@ showing how the pooled estimate has evolved.</p>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>An object of class <code>metawoRld_meta</code>: a list with <code>analysis</code>,
-<code>data</code> (with effect sizes <code>yi</code>, <code>vi</code>), <code>excluded</code>, <code>model</code> (the <code>rma</code>
-fit, or <code>NULL</code> with fewer than two studies), <code>summary</code> (one-row tibble)
-and <code>cumulative</code> (pooled estimate after each publication year).</p>
+<code>data</code> (with effect sizes <code>yi</code>, <code>vi</code>), <code>excluded</code>, <code>selection</code> (how each
+study contributes: which groups, at which level, and whether subgroups
+were pooled), <code>model</code> (the <code>rma</code> fit, or <code>NULL</code> with fewer than two
+studies), <code>summary</code> (one-row tibble), <code>subgroups</code> and <code>subgroup_test</code>
+(for analyses with <code>subgroups</code>), and <code>cumulative</code> (pooled estimate after
+each publication year).</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

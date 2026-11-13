@@ -1,8 +1,8 @@
 # Assign study groups to group categories
 
-Uses a group's `category` field if it names a known category (or one of
-its synonyms); otherwise matches the group's `name` against the category
-names and synonyms in `_rules.yml` (case-insensitive).
+The most specific category of each group (see
+[`group_memberships()`](https://andjar.github.io/metawoRld/reference/group_memberships.md)):
+a category defined with more conditions wins.
 
 ## Usage
 

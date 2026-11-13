@@ -20,7 +20,7 @@ create_metawoRld(
   exclusion_criteria = c("Case report", "Animal study", "Fewer than five participants"),
   git_init = FALSE
 )
-#> Created metawoRld project at /tmp/RtmppAyUEc/neoflow
+#> Created metawoRld project at /tmp/Rtmpppt8fO/neoflow
 list.files(path)
 #>  [1] "_analyses.yml"  "_metawoRld.yml" "_quarto.yml"    "_rules.yml"    
 #>  [5] "data"           "data.qmd"       "forms"          "index.qmd"     
@@ -93,12 +93,12 @@ id <- submit_study(
     value1 = c(35.2, 0.72), value2 = c(6.1, 0.06), source = "Table 2"
   )
 )
-#> Submitted smith2021 (20261113T070553-ahj-extraction): 2 data point(s).
+#> Submitted smith2021 (20261113T095413-ahj-extraction): 2 data point(s).
 list_submissions(path)[, c("study_id", "extraction_id", "status", "n_warnings")]
 #> # A tibble: 1 × 4
 #>   study_id  extraction_id                  status  n_warnings
 #>   <chr>     <chr>                          <chr>        <int>
-#> 1 smith2021 20261113T070553-ahj-extraction pending          0
+#> 1 smith2021 20261113T095413-ahj-extraction pending          0
 ```
 
 Problems are reported all at once and nothing is written. For example,
@@ -133,7 +133,7 @@ file hashes, and links the record with the same DOI to the study:
 ``` r
 
 accept_submission(path, "smith2021", id)
-#> Accepted 20261113T070553-ahj-extraction into data/smith2021.
+#> Accepted 20261113T095413-ahj-extraction into data/smith2021.
 read_study(path, "smith2021")$provenance[, c("measurement_id", "person", "channel")]
 #> # A tibble: 3 × 3
 #>   measurement_id person channel
@@ -210,8 +210,8 @@ verification_status(path)
 #> # A tibble: 2 × 6
 #>   study_id  measurement_id status   reviewer timestamp            note          
 #>   <chr>     <chr>          <chr>    <chr>    <chr>                <chr>         
-#> 1 smith2021 dp1            verified ahj      2026-11-13T07:05:53Z ""            
-#> 2 smith2021 dp2            verified ahj      2026-11-13T07:05:53Z "Corrected: v…
+#> 1 smith2021 dp1            verified ahj      2026-11-13T09:54:14Z ""            
+#> 2 smith2021 dp2            verified ahj      2026-11-13T09:54:14Z "Corrected: v…
 ```
 
 If a value changes after review (for example after re-extraction) its

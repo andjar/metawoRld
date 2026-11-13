@@ -2,6 +2,7 @@
 <url><loc>https://andjar.github.io/metawoRld/404.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/LICENSE.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/SPEC.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/articles/app.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/articles/conceptual_overview.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/articles/getting_started.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/articles/index.html</loc></url>
@@ -9,16 +10,20 @@
 <url><loc>https://andjar.github.io/metawoRld/authors.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/index.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/accept_submission.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/add_group_fact.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/add_screening.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/add_search.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/add_study_data.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/add_variable_synonym.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/amend_study.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/analysis_data.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/canonical_variable.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/check_project.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/check_submission.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/check_values.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/commit_project.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/compare_extractions.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/compare_with_accepted.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/create_metawoRld.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/example_project.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/export_schemas.html</loc></url>
@@ -27,15 +32,18 @@
 <url><loc>https://andjar.github.io/metawoRld/reference/generate_website.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/get_schema.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/group_category.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/group_memberships.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/hash_file.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/identifier_type.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/index.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/is_study_id.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/launch.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/list_forms.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/list_studies.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/list_submissions.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/load_metawoRld.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/metawoRld-package.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/new_review.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/normalize_identifier.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/plot_cumulative.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/plot_forest.html</loc></url>
@@ -50,6 +58,7 @@
 <url><loc>https://andjar.github.io/metawoRld/reference/read_submission.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/reconcile.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/record_id.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/refinement_queue.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/reject_submission.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/review_values.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/rules_for_prompt.html</loc></url>
@@ -62,6 +71,8 @@
 <url><loc>https://andjar.github.io/metawoRld/reference/submission_template.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/submit_study.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/summary_of_findings.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/sync_project.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/sync_status.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/table_schema.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/to_mean_sd.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/update_data_point.html</loc></url>
@@ -73,5 +84,6 @@
 <url><loc>https://andjar.github.io/metawoRld/reference/validate_study.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/validate_world.html</loc></url>
 <url><loc>https://andjar.github.io/metawoRld/reference/verification_status.html</loc></url>
+<url><loc>https://andjar.github.io/metawoRld/reference/write_analyses.html</loc></url>
 </urlset>
 

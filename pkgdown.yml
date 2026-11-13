@@ -2,10 +2,11 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
+  articles/app: app.html
   conceptual_overview: conceptual_overview.html
   getting_started: getting_started.html
   articles/worked-example: worked-example.html
-last_built: 2026-11-13T07:05Z
+last_built: 2026-11-13T09:53Z
 urls:
   reference: https://andjar.github.io/metawoRld/reference
   article: https://andjar.github.io/metawoRld/articles

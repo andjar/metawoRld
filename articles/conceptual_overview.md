@@ -77,6 +77,27 @@ group_id:
 writes JSON Schemas and Frictionless Table Schemas, so channels written
 in other languages can validate their output.
 
+## Groups and subgroups
+
+Groups are recorded as the paper reports them. A subgroup points to the
+larger group it is part of (`parent_group_id`) and inherits its facts
+(`category`, and fields you add such as `onset`). Categories in
+`_rules.yml` are rules over these facts
+(`PE_early: {where: {category: PE, onset: early}}`), so a new category
+never needs re-extraction, and a group can belong to several categories.
+
+Every analysis uses one level per study and arm: a study that reports
+both a total and its subgroups contributes the total (or, with
+`levels: pool`, its complete subgroups pooled), never both. Subgroup
+analyses split a shared reference group between the subgroups. The
+analysis result and the dashboard show which groups each study
+contributed, so you can check that the comparison is apples to apples.
+Refinements during the review
+([`add_group_fact()`](https://andjar.github.io/metawoRld/reference/add_group_fact.md),
+[`refinement_queue()`](https://andjar.github.io/metawoRld/reference/refinement_queue.md),
+[`amend_study()`](https://andjar.github.io/metawoRld/reference/amend_study.md))
+go through the same door as extractions.
+
 ## One door, then review
 
 1.  **Set up** with

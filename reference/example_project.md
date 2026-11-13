@@ -7,8 +7,12 @@ values from four open-access studies shipped with the package
 see the README there for the sources). It runs the whole workflow:
 people, a search log, records, screening by two people with a consensus
 decision, submissions, acceptance, dual extraction of one study with
-reconciliation, and some verified values. Use it to try the package, the
-review app and the dashboard.
+reconciliation, a refinement of groups during the review (onset of
+preeclampsia added as a group fact; one study's early/late-onset groups
+linked to its total with
+[`amend_study()`](https://andjar.github.io/metawoRld/reference/amend_study.md)),
+and some verified values. Use it to try the package, the review app and
+the dashboard.
 
 ## Usage
 

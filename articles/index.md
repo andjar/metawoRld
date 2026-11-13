@@ -8,6 +8,12 @@
 - [Conceptual overview: the living review
   pipeline](https://andjar.github.io/metawoRld/articles/conceptual_overview.md):
 
+- [The metawoRld
+  app](https://andjar.github.io/metawoRld/articles/app.md):
+
+  Run a whole review without writing R: start a project, accept and
+  reconcile submissions, verify values, check, publish and share.
+
 - [Worked example: IL-6 in
   preeclampsia](https://andjar.github.io/metawoRld/articles/worked-example.md):
 

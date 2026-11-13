@@ -16,10 +16,12 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/getting_started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/app.html">The app</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/worked-example.html">Worked example</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/conceptual_overview.html">Concepts and workflow</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app.html">The metawoRld app</a></li>
+    <li><a class="dropdown-item" href="../articles/conceptual_overview.html">Concepts and workflow</a></li>
     <li><a class="dropdown-item" href="../articles/worked-example.html">Worked example (IL-6 in preeclampsia)</a></li>
     <li><a class="dropdown-item" href="../SPEC.html">Project specification (SPEC v1)</a></li>
   </ul></li>
@@ -39,6 +41,22 @@
     </div>
 
     <div class="section level2">
+      <h2 id="the-app">The app<a class="anchor" aria-label="anchor" href="#the-app"></a></h2>
+
+      <div class="section-desc"><p>Run the whole review without writing R.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="launch.html">launch()</a></code> <code><a href="launch.html">launch_app()</a></code>
+
+        </dt>
+        <dd>Open the metawoRld app</dd>
+      </dl></div><div class="section level2">
       <h2 id="create-a-project">Create a project<a class="anchor" aria-label="anchor" href="#create-a-project"></a></h2>
 
 
@@ -49,6 +67,13 @@
 
 
       <dl><dt>
+
+          <code><a href="new_review.html">new_review()</a></code>
+
+        </dt>
+        <dd>Start a new review with sensible defaults</dd>
+
+        <dt>
 
           <code><a href="create_metawoRld.html">create_metawoRld()</a></code>
 
@@ -261,6 +286,13 @@
 
         <dt>
 
+          <code><a href="compare_with_accepted.html">compare_with_accepted()</a></code>
+
+        </dt>
+        <dd>What a submission would change in an accepted study</dd>
+
+        <dt>
+
           <code><a href="compare_extractions.html">compare_extractions()</a></code>
 
         </dt>
@@ -435,6 +467,50 @@
         </dt>
         <dd>Validate all studies in a project</dd>
       </dl></div><div class="section level2">
+      <h2 id="groups-subgroups-and-categories">Groups, subgroups and categories<a class="anchor" aria-label="anchor" href="#groups-subgroups-and-categories"></a></h2>
+
+      <div class="section-desc"><p>Groups as reported, facts inherited by subgroups, categories as rules, and refinement during the review.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="group_memberships.html">group_memberships()</a></code>
+
+        </dt>
+        <dd>Which categories each study group belongs to</dd>
+
+        <dt>
+
+          <code><a href="group_category.html">group_category()</a></code>
+
+        </dt>
+        <dd>Assign study groups to group categories</dd>
+
+        <dt>
+
+          <code><a href="add_group_fact.html">add_group_fact()</a></code>
+
+        </dt>
+        <dd>Add a fact to the groups of the extraction form</dd>
+
+        <dt>
+
+          <code><a href="refinement_queue.html">refinement_queue()</a></code>
+
+        </dt>
+        <dd>Groups waiting for a fact</dd>
+
+        <dt>
+
+          <code><a href="amend_study.html">amend_study()</a></code>
+
+        </dt>
+        <dd>Amend an accepted study</dd>
+      </dl></div><div class="section level2">
       <h2 id="vocabulary-and-value-rules">Vocabulary and value rules<a class="anchor" aria-label="anchor" href="#vocabulary-and-value-rules"></a></h2>
 
 
@@ -467,17 +543,40 @@
 
         <dt>
 
-          <code><a href="group_category.html">group_category()</a></code>
-
-        </dt>
-        <dd>Assign study groups to group categories</dd>
-
-        <dt>
-
           <code><a href="rules_for_prompt.html">rules_for_prompt()</a></code>
 
         </dt>
         <dd>The project vocabulary formatted for an LLM prompt</dd>
+      </dl></div><div class="section level2">
+      <h2 id="working-as-a-team-git-">Working as a team (Git)<a class="anchor" aria-label="anchor" href="#working-as-a-team-git-"></a></h2>
+
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="sync_project.html">sync_project()</a></code>
+
+        </dt>
+        <dd>Share and fetch work with the rest of the team</dd>
+
+        <dt>
+
+          <code><a href="sync_status.html">sync_status()</a></code>
+
+        </dt>
+        <dd>Sharing status of a project</dd>
+
+        <dt>
+
+          <code><a href="commit_project.html">commit_project()</a></code>
+
+        </dt>
+        <dd>Save (commit) the project's changes</dd>
       </dl></div><div class="section level2">
       <h2 id="living-meta-analysis">Living meta-analysis<a class="anchor" aria-label="anchor" href="#living-meta-analysis"></a></h2>
 
@@ -494,6 +593,13 @@
 
         </dt>
         <dd>Read the project's meta-analysis definitions</dd>
+
+        <dt>
+
+          <code><a href="write_analyses.html">write_analyses()</a></code>
+
+        </dt>
+        <dd>Write the project's meta-analysis definitions</dd>
 
         <dt>
 

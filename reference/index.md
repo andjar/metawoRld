@@ -1,7 +1,17 @@
 # Package index
 
+## The app
+
+Run the whole review without writing R.
+
+- [`launch()`](https://andjar.github.io/metawoRld/reference/launch.md)
+  [`launch_app()`](https://andjar.github.io/metawoRld/reference/launch.md)
+  : Open the metawoRld app
+
 ## Create a project
 
+- [`new_review()`](https://andjar.github.io/metawoRld/reference/new_review.md)
+  : Start a new review with sensible defaults
 - [`create_metawoRld()`](https://andjar.github.io/metawoRld/reference/create_metawoRld.md)
   : Create a new metawoRld project
 - [`use_templates()`](https://andjar.github.io/metawoRld/reference/use_templates.md)
@@ -76,6 +86,8 @@ Every input channel submits through the same validated intake.
   : Accept a submission
 - [`reject_submission()`](https://andjar.github.io/metawoRld/reference/reject_submission.md)
   : Reject a submission
+- [`compare_with_accepted()`](https://andjar.github.io/metawoRld/reference/compare_with_accepted.md)
+  : What a submission would change in an accepted study
 - [`compare_extractions()`](https://andjar.github.io/metawoRld/reference/compare_extractions.md)
   : Compare extractions of the same study
 - [`reconcile()`](https://andjar.github.io/metawoRld/reference/reconcile.md)
@@ -133,6 +145,22 @@ Every input channel submits through the same validated intake.
 - [`validate_world()`](https://andjar.github.io/metawoRld/reference/validate_world.md)
   : Validate all studies in a project
 
+## Groups, subgroups and categories
+
+Groups as reported, facts inherited by subgroups, categories as rules,
+and refinement during the review.
+
+- [`group_memberships()`](https://andjar.github.io/metawoRld/reference/group_memberships.md)
+  : Which categories each study group belongs to
+- [`group_category()`](https://andjar.github.io/metawoRld/reference/group_category.md)
+  : Assign study groups to group categories
+- [`add_group_fact()`](https://andjar.github.io/metawoRld/reference/add_group_fact.md)
+  : Add a fact to the groups of the extraction form
+- [`refinement_queue()`](https://andjar.github.io/metawoRld/reference/refinement_queue.md)
+  : Groups waiting for a fact
+- [`amend_study()`](https://andjar.github.io/metawoRld/reference/amend_study.md)
+  : Amend an accepted study
+
 ## Vocabulary and value rules
 
 - [`read_rules()`](https://andjar.github.io/metawoRld/reference/read_rules.md)
@@ -141,15 +169,24 @@ Every input channel submits through the same validated intake.
   : Add a variable or synonym to the project's rules
 - [`canonical_variable()`](https://andjar.github.io/metawoRld/reference/canonical_variable.md)
   : Map variable names to their canonical names
-- [`group_category()`](https://andjar.github.io/metawoRld/reference/group_category.md)
-  : Assign study groups to group categories
 - [`rules_for_prompt()`](https://andjar.github.io/metawoRld/reference/rules_for_prompt.md)
   : The project vocabulary formatted for an LLM prompt
+
+## Working as a team (Git)
+
+- [`sync_project()`](https://andjar.github.io/metawoRld/reference/sync_project.md)
+  : Share and fetch work with the rest of the team
+- [`sync_status()`](https://andjar.github.io/metawoRld/reference/sync_status.md)
+  : Sharing status of a project
+- [`commit_project()`](https://andjar.github.io/metawoRld/reference/commit_project.md)
+  : Save (commit) the project's changes
 
 ## Living meta-analysis
 
 - [`read_analyses()`](https://andjar.github.io/metawoRld/reference/read_analyses.md)
   : Read the project's meta-analysis definitions
+- [`write_analyses()`](https://andjar.github.io/metawoRld/reference/write_analyses.md)
+  : Write the project's meta-analysis definitions
 - [`run_meta_analysis()`](https://andjar.github.io/metawoRld/reference/run_meta_analysis.md)
   : Run a meta-analysis
 - [`run_all_meta_analyses()`](https://andjar.github.io/metawoRld/reference/run_all_meta_analyses.md)

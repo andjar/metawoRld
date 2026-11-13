@@ -43,7 +43,7 @@ create_metawoRld(
                          "Group sizes or IL-6 values not reported"),
   git_init = FALSE
 )
-#> Created metawoRld project at /tmp/RtmpyG51Pm/il6-preeclampsia
+#> Created metawoRld project at /tmp/RtmpPwPINK/il6-preeclampsia
 ```
 
 Everyone who screens, extracts or verifies is registered once. Every
@@ -170,7 +170,7 @@ e$data_points[[1]][c("variable_name", "group_id", "statistic_type", "value1", "v
 #> [1] "Abstract (p. 1); Results (p. 2-3)"
 id <- submit_study(path, "afshari2005", e$metadata, e$data_points, person = "ext1",
                    channel = "entry_form")
-#> Submitted afshari2005 (20261113T070558-ext1-extraction): 6 data point(s).
+#> Submitted afshari2005 (20261113T095419-ext1-extraction): 6 data point(s).
 ```
 
 Invalid data are refused with every problem listed, and nothing is
@@ -194,28 +194,28 @@ with a record of where each one came from:
 ``` r
 
 accept_submission(path, "afshari2005", id, person = "arb")
-#> Accepted 20261113T070558-ext1-extraction into data/afshari2005.
+#> Accepted 20261113T095419-ext1-extraction into data/afshari2005.
 read_study(path, "afshari2005")$provenance[, c("measurement_id", "person", "channel", "timestamp")]
 #> # A tibble: 7 × 4
 #>   measurement_id person channel    timestamp           
 #>   <chr>          <chr>  <chr>      <chr>               
-#> 1 _metadata      ext1   entry_form 2026-11-13T07:05:58Z
-#> 2 dp1            ext1   entry_form 2026-11-13T07:05:58Z
-#> 3 dp2            ext1   entry_form 2026-11-13T07:05:58Z
-#> 4 dp3            ext1   entry_form 2026-11-13T07:05:58Z
-#> 5 dp4            ext1   entry_form 2026-11-13T07:05:58Z
-#> 6 dp5            ext1   entry_form 2026-11-13T07:05:58Z
-#> 7 dp6            ext1   entry_form 2026-11-13T07:05:58Z
+#> 1 _metadata      ext1   entry_form 2026-11-13T09:54:19Z
+#> 2 dp1            ext1   entry_form 2026-11-13T09:54:19Z
+#> 3 dp2            ext1   entry_form 2026-11-13T09:54:19Z
+#> 4 dp3            ext1   entry_form 2026-11-13T09:54:19Z
+#> 5 dp4            ext1   entry_form 2026-11-13T09:54:19Z
+#> 6 dp5            ext1   entry_form 2026-11-13T09:54:19Z
+#> 7 dp6            ext1   entry_form 2026-11-13T09:54:19Z
 
 for (s in c("gencheva2022", "dewi2026")) {
   e <- extraction(s)
   id <- submit_study(path, s, e$metadata, e$data_points, person = "ext1", channel = "entry_form")
   accept_submission(path, s, id, person = "arb")
 }
-#> Submitted gencheva2022 (20261113T070558-ext1-extraction): 5 data point(s).
-#> Accepted 20261113T070558-ext1-extraction into data/gencheva2022.
-#> Submitted dewi2026 (20261113T070558-ext1-extraction): 4 data point(s).
-#> Accepted 20261113T070558-ext1-extraction into data/dewi2026.
+#> Submitted gencheva2022 (20261113T095419-ext1-extraction): 5 data point(s).
+#> Accepted 20261113T095419-ext1-extraction into data/gencheva2022.
+#> Submitted dewi2026 (20261113T095419-ext1-extraction): 4 data point(s).
+#> Accepted 20261113T095419-ext1-extraction into data/dewi2026.
 link_record(path, rid[3], "gencheva2022")   # this report has no DOI/PMID to match on
 ```
 
@@ -236,10 +236,10 @@ e1 <- extraction("vitoratos2010-ext1")
 e2 <- extraction("vitoratos2010-ext2")
 s1 <- submit_study(path, "vitoratos2010", e1$metadata, e1$data_points, person = "ext1",
                    channel = "entry_form")
-#> Submitted vitoratos2010 (20261113T070558-ext1-extraction): 4 data point(s).
+#> Submitted vitoratos2010 (20261113T095420-ext1-extraction): 4 data point(s).
 s2 <- submit_study(path, "vitoratos2010", e2$metadata, e2$data_points, person = "ext2",
                    channel = "csv_import")
-#> Submitted vitoratos2010 (20261113T070558-ext2-extraction): 4 data point(s).
+#> Submitted vitoratos2010 (20261113T095420-ext2-extraction): 4 data point(s).
 cmp <- compare_extractions(path, "vitoratos2010", c(s1, s2))
 names(cmp)[4:5] <- c("ext1", "ext2")
 table(agree = cmp$agree, part = cmp$part)
@@ -306,7 +306,82 @@ pr[, c("measurement_id", "person", "channel", "agreed")]
 #> 5 dp4            ext1   entry_form FALSE
 ```
 
-## 5. Verify values against the papers
+## 5. Refine groups during the review
+
+Halfway through, onset of preeclampsia turns out to matter. Gencheva et
+al. report IL-6 for all women with preeclampsia **and** for the early-
+and late-onset subgroups, so the same women appear twice. Both levels
+are kept: the subgroups are linked to their total with
+`parent_group_id`, and onset becomes a fact of groups in the form.
+Subgroups inherit the facts of their parent, so the early-onset group is
+also preeclampsia.
+
+``` r
+
+add_group_fact(path, "onset", c("early", "late", "not reported"),
+               "Onset of preeclampsia as defined by the study (early or late onset).")
+rules <- read_rules(path)
+rules$group_categories$PE_early <- list(where = list(category = "PE", onset = "early"))
+rules$group_categories$PE_late <- list(where = list(category = "PE", onset = "late"))
+metawoRld:::.write_rules(file.path(path, "_rules.yml"), rules)
+```
+
+Studies accepted before the change are still valid.
+[`refinement_queue()`](https://andjar.github.io/metawoRld/reference/refinement_queue.md)
+lists the preeclampsia groups where onset has not been assessed:
+
+``` r
+
+refinement_queue(path, "onset", category = "PE")
+#> # A tibble: 4 × 4
+#>   study_id      group_id name          parent_group_id
+#>   <chr>         <chr>    <chr>         <chr>          
+#> 1 afshari2005   g1       Preeclampsia  NA             
+#> 2 dewi2026      g1       Preeclampsia  NA             
+#> 3 gencheva2022  pe       Pre-eclampsia NA             
+#> 4 vitoratos2010 g1       Preeclampsia  NA
+```
+
+Refinements go through the same door as extractions: an amendment that
+an arbiter accepts. Provenance and verification of everything that did
+not change are kept.
+
+``` r
+
+am <- amend_study(path, "gencheva2022", person = "ext1", note = "Onset subgroups linked to the PE total.",
+                  groups = list(list(group_id = "pe_early", parent_group_id = "pe", onset = "early"),
+                                list(group_id = "pe_late", parent_group_id = "pe", onset = "late")))
+#> Submitted gencheva2022 (20261113T095420-ext1-extraction): 5 data point(s).
+accept_submission(path, "gencheva2022", am, person = "arb")
+#> Accepted 20261113T095420-ext1-extraction into data/gencheva2022.
+group_memberships(read_study(path, "gencheva2022")$metadata$groups, read_rules(path))
+#> # A tibble: 7 × 2
+#>   group_id category
+#>   <chr>    <chr>   
+#> 1 pe       PE      
+#> 2 pe_early PE      
+#> 3 pe_late  PE      
+#> 4 ctrl     Control 
+#> 5 gh       GH      
+#> 6 pe_early PE_early
+#> 7 pe_late  PE_late
+```
+
+The early-onset group belongs to both PE and PE_early. The subgroups are
+also checked against their total: 31 + 6 = 37 women, and pooling the
+subgroups’ means and SDs gives 8.06 (SD 12.48), exactly the reported
+total, so
+[`check_values()`](https://andjar.github.io/metawoRld/reference/check_values.md)
+raises nothing.
+
+``` r
+
+check_values(path, "gencheva2022")
+#> # A tibble: 0 × 5
+#> # ℹ 5 variables: study_id <chr>, measurement_id <chr>, check <chr>, severity <chr>, message <chr>
+```
+
+## 6. Verify values against the papers
 
 [`review_values()`](https://andjar.github.io/metawoRld/reference/review_values.md)
 opens a Shiny app that shows each value in plain language, with its
@@ -328,7 +403,7 @@ table(verification_status(path)$status)
 #>         15          4
 ```
 
-## 6. Check the project
+## 7. Check the project
 
 [`check_project()`](https://andjar.github.io/metawoRld/reference/check_project.md)
 checks forms, schemas, links, provenance, people, records and screening,
@@ -368,7 +443,7 @@ check_project(path)$message
 #> [1] "data.csv changed outside metawoRld (hash differs from datapackage.json)."
 ```
 
-## 7. Living meta-analysis
+## 8. Living meta-analysis
 
 Medians with ranges and SEs are converted to means and SDs (Wan et al.
 2014), group names are mapped to the categories in `_rules.yml`, and
@@ -405,7 +480,72 @@ With four small, heterogeneous studies, the estimate is uncertain (the
 prediction interval includes zero), as it should be for an example this
 size.
 
-## 8. The dashboard
+### Apples to apples: one level per study
+
+Every analysis states the level it compares, and each study contributes
+exactly one set of participants per arm. `selection` (also shown on the
+dashboard) records which groups each study contributed and how:
+
+``` r
+
+ma$selection[, c("study_id", "arm", "group_names", "how", "n")]
+#> # A tibble: 8 × 5
+#>   study_id      arm     group_names               how          n
+#>   <chr>         <chr>   <chr>                     <chr>    <dbl>
+#> 1 afshari2005   PE      Preeclampsia              reported    24
+#> 2 afshari2005   Control Normal pregnant           reported    18
+#> 3 dewi2026      PE      Preeclampsia              reported    34
+#> 4 dewi2026      Control Normotensive pregnancy    reported    34
+#> 5 gencheva2022  PE      Pre-eclampsia             reported    37
+#> 6 gencheva2022  Control Healthy pregnant controls reported    50
+#> 7 vitoratos2010 PE      Preeclampsia              reported    17
+#> 8 vitoratos2010 Control Normotensive controls     reported    16
+```
+
+Gencheva contributes its reported preeclampsia total (n = 37), not the
+total plus its subgroups. As a sensitivity analysis, `levels: pool` uses
+the subgroups pooled instead; here that gives the same numbers, because
+they reproduce the total:
+
+``` r
+
+a <- read_analyses(path)[[1]]
+pooled <- run_meta_analysis(path, modifyList(a, list(name = "Subgroups pooled", levels = "pool")))
+pooled$selection[pooled$selection$study_id == "gencheva2022", c("arm", "how", "n")]
+#> # A tibble: 2 × 3
+#>   arm     how                                       n
+#>   <chr>   <chr>                                 <dbl>
+#> 1 PE      pooled subgroups (pe_early + pe_late)    37
+#> 2 Control reported                                 50
+pooled$summary$estimate == ma$summary$estimate
+#> [1] TRUE
+```
+
+A subgroup analysis compares the subgroups instead. Each study
+contributes one row per subgroup it reports; the 50 controls shared by
+Gencheva’s two subgroups are split 25/25, so no control is counted
+twice. Only one study reports onset here, so this only illustrates the
+mechanics:
+
+``` r
+
+by_onset <- run_meta_analysis(path, modifyList(a, list(name = "IL-6 by onset", subgroups = c("PE_early", "PE_late"))))
+by_onset$data[, c("label", "n1", "n2", "note")]
+#> # A tibble: 2 × 4
+#>   label                              n1    n2 note                                                  
+#>   <chr>                           <dbl> <dbl> <chr>                                                 
+#> 1 Gencheva et al. 2022 [PE_early]    31    25 Control group shared by 2 subgroups: its n is split 2…
+#> 2 Gencheva et al. 2022 [PE_late]      6    25 Control group shared by 2 subgroups: its n is split 2…
+by_onset$excluded
+#> # A tibble: 3 × 2
+#>   study_id      reason                               
+#>   <chr>         <chr>                                
+#> 1 afshari2005   no usable data for: PE_early, PE_late
+#> 2 dewi2026      no usable data for: PE_early, PE_late
+#> 3 vitoratos2010 no usable data for: PE_early, PE_late
+```
+
+## 9. The dashboard
 
 [`generate_website()`](https://andjar.github.io/metawoRld/reference/generate_website.md)
 builds a Quarto dashboard that is rebuilt on every change

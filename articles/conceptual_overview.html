@@ -31,11 +31,13 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../articles/getting_started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/app.html">The app</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/worked-example.html">Worked example</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/conceptual_overview.html">Concepts and workflow</a></li>
+<li><a class="dropdown-item" href="../articles/app.html">The metawoRld app</a></li>
+    <li><a class="dropdown-item" href="../articles/conceptual_overview.html">Concepts and workflow</a></li>
     <li><a class="dropdown-item" href="../articles/worked-example.html">Worked example (IL-6 in preeclampsia)</a></li>
     <li><a class="dropdown-item" href="../SPEC.html">Project specification (SPEC v1)</a></li>
   </ul>
@@ -147,6 +149,27 @@ form’s <code>version</code> when you change it.</p>
 <p><code><a href="../reference/export_schemas.html">export_schemas()</a></code> writes JSON Schemas and Frictionless
 Table Schemas, so channels written in other languages can validate their
 output.</p>
+</div>
+<div class="section level2">
+<h2 id="groups-and-subgroups">Groups and subgroups<a class="anchor" aria-label="anchor" href="#groups-and-subgroups"></a>
+</h2>
+<p>Groups are recorded as the paper reports them. A subgroup points to
+the larger group it is part of (<code>parent_group_id</code>) and
+inherits its facts (<code>category</code>, and fields you add such as
+<code>onset</code>). Categories in <code>_rules.yml</code> are rules
+over these facts
+(<code>PE_early: {where: {category: PE, onset: early}}</code>), so a new
+category never needs re-extraction, and a group can belong to several
+categories.</p>
+<p>Every analysis uses one level per study and arm: a study that reports
+both a total and its subgroups contributes the total (or, with
+<code>levels: pool</code>, its complete subgroups pooled), never both.
+Subgroup analyses split a shared reference group between the subgroups.
+The analysis result and the dashboard show which groups each study
+contributed, so you can check that the comparison is apples to apples.
+Refinements during the review (<code><a href="../reference/add_group_fact.html">add_group_fact()</a></code>,
+<code><a href="../reference/refinement_queue.html">refinement_queue()</a></code>, <code><a href="../reference/amend_study.html">amend_study()</a></code>) go through
+the same door as extractions.</p>
 </div>
 <div class="section level2">
 <h2 id="one-door-then-review">One door, then review<a class="anchor" aria-label="anchor" href="#one-door-then-review"></a>

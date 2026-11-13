@@ -31,11 +31,13 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="active nav-item"><a class="nav-link" href="../articles/getting_started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/app.html">The app</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/worked-example.html">Worked example</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/conceptual_overview.html">Concepts and workflow</a></li>
+<li><a class="dropdown-item" href="../articles/app.html">The metawoRld app</a></li>
+    <li><a class="dropdown-item" href="../articles/conceptual_overview.html">Concepts and workflow</a></li>
     <li><a class="dropdown-item" href="../articles/worked-example.html">Worked example (IL-6 in preeclampsia)</a></li>
     <li><a class="dropdown-item" href="../SPEC.html">Project specification (SPEC v1)</a></li>
   </ul>
@@ -86,7 +88,7 @@
 <span>  exclusion_criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Case report"</span>, <span class="st">"Animal study"</span>, <span class="st">"Fewer than five participants"</span><span class="op">)</span>,</span>
 <span>  git_init <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Created metawoRld project at /tmp/RtmppAyUEc/neoflow</span></span>
+<span><span class="co">#&gt; Created metawoRld project at /tmp/Rtmpppt8fO/neoflow</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "_analyses.yml"  "_metawoRld.yml" "_quarto.yml"    "_rules.yml"    </span></span>
 <span><span class="co">#&gt;  [5] "data"           "data.qmd"       "forms"          "index.qmd"     </span></span>
@@ -151,12 +153,12 @@ R:</p>
 <span>    value1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">35.2</span>, <span class="fl">0.72</span><span class="op">)</span>, value2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6.1</span>, <span class="fl">0.06</span><span class="op">)</span>, source <span class="op">=</span> <span class="st">"Table 2"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Submitted smith2021 (20261113T070553-ahj-extraction): 2 data point(s).</span></span>
+<span><span class="co">#&gt; Submitted smith2021 (20261113T095413-ahj-extraction): 2 data point(s).</span></span>
 <span><span class="fu"><a href="../reference/list_submissions.html">list_submissions</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"study_id"</span>, <span class="st">"extraction_id"</span>, <span class="st">"status"</span>, <span class="st">"n_warnings"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 4</span></span></span>
 <span><span class="co">#&gt;   study_id  extraction_id                  status  n_warnings</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> smith2021 20261113T070553-ahj-extraction pending          0</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> smith2021 20261113T095413-ahj-extraction pending          0</span></span></code></pre></div>
 <p>Problems are reported all at once and nothing is written. For
 example, using a group that is not defined:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -184,7 +186,7 @@ provenance and file hashes, and links the record with the same DOI to
 the study:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/accept_submission.html">accept_submission</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"smith2021"</span>, <span class="va">id</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Accepted 20261113T070553-ahj-extraction into data/smith2021.</span></span>
+<span><span class="co">#&gt; Accepted 20261113T095413-ahj-extraction into data/smith2021.</span></span>
 <span><span class="fu"><a href="../reference/read_study.html">read_study</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"smith2021"</span><span class="op">)</span><span class="op">$</span><span class="va">provenance</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"measurement_id"</span>, <span class="st">"person"</span>, <span class="st">"channel"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 3</span></span></span>
 <span><span class="co">#&gt;   measurement_id person channel</span></span>
@@ -252,8 +254,8 @@ logged:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 6</span></span></span>
 <span><span class="co">#&gt;   study_id  measurement_id status   reviewer timestamp            note          </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> smith2021 dp1            verified ahj      2026-11-13T07:05:53Z <span style="color: #949494;">""</span>            </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> smith2021 dp2            verified ahj      2026-11-13T07:05:53Z <span style="color: #949494;">"</span>Corrected: v…</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> smith2021 dp1            verified ahj      2026-11-13T09:54:14Z <span style="color: #949494;">""</span>            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> smith2021 dp2            verified ahj      2026-11-13T09:54:14Z <span style="color: #949494;">"</span>Corrected: v…</span></span></code></pre></div>
 <p>If a value changes after review (for example after re-extraction) its
 status becomes <code>"changed"</code> and it returns to the review
 queue. <code><a href="../reference/load_metawoRld.html">load_metawoRld()</a></code> leaves out rejected values and can
