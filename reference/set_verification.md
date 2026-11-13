@@ -36,8 +36,9 @@ set_verification(
 
 - reviewer:
 
-  Reviewer name or initials. Defaults to the `metawoRld.reviewer`
-  option, then the system user name.
+  Reviewer id from `people.yml` (see
+  [`add_person()`](https://andjar.github.io/metawoRld/reference/read_people.md)).
+  Defaults to the `metawoRld.person` option, then the system user name.
 
 - note:
 

@@ -4,7 +4,8 @@ pkgdown_sha: ~
 articles:
   conceptual_overview: conceptual_overview.html
   getting_started: getting_started.html
-last_built: 2026-11-12T23:38Z
+  articles/worked-example: worked-example.html
+last_built: 2026-11-13T07:05Z
 urls:
   reference: https://andjar.github.io/metawoRld/reference
   article: https://andjar.github.io/metawoRld/articles

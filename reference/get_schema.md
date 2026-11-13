@@ -1,27 +1,28 @@
-# Read a schema from a metawoRld project
+# Read a form from a metawoRld project
 
-Reads `_extraction_schema.yml` or `_assessment_schema.yml` from the
-project root. See the comments at the top of the template files (created
-by
-[`create_metawoRld()`](https://andjar.github.io/metawoRld/reference/create_metawoRld.md))
-for the schema format.
+Forms live in `forms/<name>.yml` and use the node format described in
+`SPEC.md` (section 7). `forms/extraction.yml` is required; others (e.g.
+`screening`, `rob2`) are optional.
 
 ## Usage
 
 ``` r
-get_schema(path = ".", schema = c("extraction", "assessment"))
+get_schema(path = ".", form = "extraction")
+
+read_form(path = ".", form = "extraction")
 ```
 
 ## Arguments
 
 - path:
 
-  Path to the project root. Defaults to the working directory.
+  Project root. Defaults to the working directory.
 
-- schema:
+- form:
 
-  `"extraction"` (default) or `"assessment"`.
+  Form name, e.g. `"extraction"` (default) or `"screening"`.
+  `"assessment"` is accepted as an alias of `"screening"`.
 
 ## Value
 
-The schema as a nested list.
+The form as a nested list, including its `_form` header.

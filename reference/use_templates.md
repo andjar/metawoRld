@@ -1,7 +1,7 @@
-# Add or update the schema and prompt templates in a project
+# Add or update the forms, prompts and rules templates in a project
 
-Copies `_extraction_schema.yml`, `_assessment_schema.yml`,
-`_extraction_prompt.txt` and `_assessment_prompt.txt` into the project.
+Copies the default `forms/`, `prompts/`, `_rules.yml` and
+`_analyses.yml` into the project.
 
 ## Usage
 

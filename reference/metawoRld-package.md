@@ -1,39 +1,53 @@
 # metawoRld: structured, validated data for living systematic reviews
 
 A metawoRld project is a folder (usually a Git repository) holding the
-review's settings, a schema describing what is extracted from each
-study, and one folder per study with `metadata.yml` and `data.csv`.
+review's settings, forms describing what is extracted, a record registry
+and one folder per accepted study. The format is defined in `SPEC.md`.
 
 ## Details
 
 Main functions:
 
 - [`create_metawoRld()`](https://andjar.github.io/metawoRld/reference/create_metawoRld.md)
-  creates a project with generic, editable templates.
+  creates a project;
+  [`add_person()`](https://andjar.github.io/metawoRld/reference/read_people.md)
+  registers the people and tools that contribute.
 
-- [`add_study_data()`](https://andjar.github.io/metawoRld/reference/add_study_data.md)
-  validates and stores one study;
-  [`add_study_template()`](https://andjar.github.io/metawoRld/reference/add_study_template.md)
-  creates files for manual entry;
-  [`validate_study()`](https://andjar.github.io/metawoRld/reference/validate_study.md)
-  /
-  [`validate_world()`](https://andjar.github.io/metawoRld/reference/validate_world.md)
-  check edited files.
+- [`add_search()`](https://andjar.github.io/metawoRld/reference/add_search.md),
+  [`add_records()`](https://andjar.github.io/metawoRld/reference/read_records.md),
+  [`add_screening()`](https://andjar.github.io/metawoRld/reference/add_screening.md)
+  and
+  [`prisma_counts()`](https://andjar.github.io/metawoRld/reference/prisma_counts.md)
+  keep the search and screening log.
 
-- [`load_metawoRld()`](https://andjar.github.io/metawoRld/reference/load_metawoRld.md)
-  loads everything for analysis.
+- [`submit_study()`](https://andjar.github.io/metawoRld/reference/submit_study.md)
+  is the one door for data from any channel (entry form, CSV, DataFindR,
+  ...).
+  [`accept_submission()`](https://andjar.github.io/metawoRld/reference/accept_submission.md),
+  [`compare_extractions()`](https://andjar.github.io/metawoRld/reference/compare_extractions.md)
+  and
+  [`reconcile()`](https://andjar.github.io/metawoRld/reference/reconcile.md)
+  turn submissions into accepted data with provenance.
 
-- [`generate_website()`](https://andjar.github.io/metawoRld/reference/generate_website.md)
-  builds a Quarto website;
-  [`use_github_action_quarto()`](https://andjar.github.io/metawoRld/reference/use_github_action_quarto.md)
-  publishes it automatically.
+- [`review_values()`](https://andjar.github.io/metawoRld/reference/review_values.md)
+  and
+  [`set_verification()`](https://andjar.github.io/metawoRld/reference/set_verification.md)
+  record human verification.
 
-The companion package DataFindR uses LLMs to screen studies and extract
-data into a metawoRld project.
+- [`check_project()`](https://andjar.github.io/metawoRld/reference/check_project.md)
+  checks everything (schemas, hashes, provenance), locally or in CI.
+
+- [`load_metawoRld()`](https://andjar.github.io/metawoRld/reference/load_metawoRld.md),
+  [`run_all_meta_analyses()`](https://andjar.github.io/metawoRld/reference/run_all_meta_analyses.md)
+  and
+  [`generate_website()`](https://andjar.github.io/metawoRld/reference/generate_website.md)
+  analyse and publish.
 
 ## See also
 
 Useful links:
+
+- <https://andjar.github.io/metawoRld/>
 
 - <https://github.com/andjar/metawoRld>
 

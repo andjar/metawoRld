@@ -29,8 +29,9 @@ review_values_app(path = ".", fulltext_dir = NULL, reviewer = NULL)
 
 - fulltext_dir:
 
-  Optional folder with full texts named `<sanitize_id(study_id)>.pdf`
-  (or .html/.txt). Defaults to `<path>/fulltext` if it exists.
+  Optional folder with full texts named `<study_id>.pdf` or
+  `<sanitize_id(doi)>.pdf` (or .html/.txt). Defaults to
+  `<path>/fulltext` if it exists.
 
 - reviewer:
 

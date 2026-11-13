@@ -1,8 +1,9 @@
 # Create a new metawoRld project
 
-Creates the project folder with a configuration file (`_metawoRld.yml`),
-the default schema and prompt templates, a `data/` folder, a README,
-website templates and (optionally) a Git repository.
+Creates the project folder laid out as described in `SPEC.md`: settings
+(`_metawoRld.yml`), forms, prompts, rules, the people list, the search
+and screening log, `submissions/` and `data/`, a README, website
+templates and (optionally) a Git repository.
 
 ## Usage
 
@@ -15,6 +16,7 @@ create_metawoRld(
   exclusion_criteria = character(0),
   git_init = TRUE,
   website = TRUE,
+  license = "CC-BY-4.0",
   ...
 )
 ```
@@ -45,6 +47,11 @@ create_metawoRld(
 
   Add Quarto website templates? Defaults to `TRUE`.
 
+- license:
+
+  Data license, stored in `_metawoRld.yml` and in every study's
+  `datapackage.json`. Defaults to `"CC-BY-4.0"`.
+
 - ...:
 
   Further named values stored in `_metawoRld.yml` (e.g.
@@ -61,14 +68,20 @@ The project contains:
 - `_metawoRld.yml`: project name, description, criteria and other
   settings.
 
-- `_extraction_schema.yml`, `_assessment_schema.yml`: what is extracted
-  and how screening results look. Edit these to fit your review.
+- `_metawoRld.yml`: settings, criteria and `spec_version`.
 
-- `_extraction_prompt.txt`, `_assessment_prompt.txt`: LLM prompts used
-  by DataFindR. `{{placeholders}}` are filled in automatically.
+- `forms/extraction.yml` (what is extracted) and `forms/screening.yml`.
+  Edit these to fit your review.
 
-- `data/<study>/metadata.yml` and `data/<study>/data.csv` for each
-  study.
+- `prompts/`: LLM prompts used by DataFindR.
+
+- `_rules.yml`, `_analyses.yml`: vocabulary, value checks and planned
+  analyses.
+
+- `people.yml`, `searches.yml`, `records.csv`, `screening.csv`: who
+  works on the review, and the search and screening log.
+
+- `submissions/`: staged extractions; `data/<study_id>/`: accepted data.
 
 ## Examples
 

@@ -4,14 +4,18 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>A Framework for Managing Data in Living Systematic Reviews • metawoRld</title>
+<title>metawoRld: structured, validated, traceable data for living systematic reviews • metawoRld</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/Inter-0.4.10/font.css" rel="stylesheet">
+<link href="deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="A Framework for Managing Data in Living Systematic Reviews">
-<meta name="description" content="Provides a structured environment for creating, validating and managing data for living systematic reviews. Study metadata and results are stored as YAML and CSV files that are validated against a project-specific schema, can be loaded for analysis, and can be published as a Quarto website. Designed to work with the DataFindR package for AI-assisted screening and data extraction.">
-<meta property="og:description" content="Provides a structured environment for creating, validating and managing data for living systematic reviews. Study metadata and results are stored as YAML and CSV files that are validated against a project-specific schema, can be loaded for analysis, and can be published as a Quarto website. Designed to work with the DataFindR package for AI-assisted screening and data extraction.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="metawoRld: structured, validated, traceable data for living systematic reviews">
+<meta name="description" content="One validated door for every data channel, provenance and human verification for every value, file hashes, and a living meta-analysis dashboard. Plain files, open source, R.
+">
+<meta property="og:description" content="One validated door for every data channel, provenance and human verification for every value, file hashes, and a living meta-analysis dashboard. Plain files, open source, R.
+">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -21,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="index.html">metawoRld</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,17 +34,22 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/getting_started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/worked-example.html">Worked example</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/conceptual_overview.html">Conceptual overview: the living review pipeline</a></li>
-    <li><a class="dropdown-item" href="articles/getting_started.html">Getting started</a></li>
+<li><a class="dropdown-item" href="articles/conceptual_overview.html">Concepts and workflow</a></li>
+    <li><a class="dropdown-item" href="articles/worked-example.html">Worked example (IL-6 in preeclampsia)</a></li>
+    <li><a class="dropdown-item" href="SPEC.html">Project specification (SPEC v1)</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="external-link nav-link" href="https://andjar.github.io/DataFindR">DataFindR</a></li>
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
+</form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/andjar/metawoRld/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
@@ -52,17 +61,26 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="metaworld">metawoRld<a class="anchor" aria-label="anchor" href="#metaworld"></a>
 </h1></div>
-<p>Structured, validated, version-controlled data for living systematic reviews.</p>
-<p>A metawoRld project is a folder (usually a Git repository) holding:</p>
+<p>Structured, validated, traceable data for living systematic reviews.</p>
+<p>A metawoRld project is a folder (usually a Git repository) of plain YAML, CSV and JSON files, laid out as defined in <a href="SPEC.html">SPEC.md</a>:</p>
 <ul>
-<li>the review’s settings and screening criteria (<code>_metawoRld.yml</code>),</li>
-<li>a schema describing what is extracted from each study (<code>_extraction_schema.yml</code>),</li>
-<li>one folder per study with <code>metadata.yml</code> and <code>data.csv</code>,</li>
-<li>meta-analyses defined in <code>_analyses.yml</code>, re-run whenever data change,</li>
-<li>a Quarto dashboard website (summary of findings, forest plots, cumulative meta-analyses, results per variable) that can be published automatically.</li>
+<li>settings, criteria and <strong>forms</strong> describing what is extracted (<code>_metawoRld.yml</code>, <code>forms/extraction.yml</code>),</li>
+<li>the <strong>search and screening log</strong> (<code>searches.yml</code>, <code>records.csv</code>, <code>screening.csv</code>), from which PRISMA counts are computed,</li>
+<li>
+<strong>one door for data</strong>: every input channel (an entry form, CSV files, the LLM pipeline <a href="https://github.com/andjar/DataFindR" class="external-link">DataFindR</a>, scripts) calls <code><a href="reference/submit_study.html">submit_study()</a></code>, which validates the extraction and stages it in <code>submissions/</code>,</li>
+<li>
+<strong>accepted studies</strong> in <code>data/&lt;study_id&gt;/</code>, with <code>provenance.csv</code> (who or what produced each value, from which source), <code>verification.csv</code> (human checks, tied to a hash of the values) and <code>datapackage.json</code> (a Frictionless Data Package with file hashes),</li>
+<li>meta-analyses defined in <code>_analyses.yml</code> and a Quarto <strong>dashboard</strong> website, rebuilt whenever data change.</li>
 </ul>
-<p>It works on its own with manual data entry, and with <a href="https://github.com/andjar/DataFindR" class="external-link">DataFindR</a>, which uses LLMs to screen studies and extract data into the project.</p>
-<p>See <code><a href="articles/getting_started.html">vignette("getting_started")</a></code> and <code><a href="articles/conceptual_overview.html">vignette("conceptual_overview")</a></code>.</p>
+<p><code><a href="reference/check_project.html">check_project()</a></code> checks all of it, locally or in CI, and catches data edited outside metawoRld.</p>
+<p><strong>Documentation:</strong> <a href="https://andjar.github.io/metawoRld/" class="uri">https://andjar.github.io/metawoRld/</a>, including a <a href="https://andjar.github.io/metawoRld/articles/worked-example.html">worked example</a> with real data from four open-access studies of IL-6 in preeclampsia.</p>
+<div class="float">
+<img src="reference/figures/dashboard-analysis.png" alt="The living meta-analysis dashboard built from the worked example"><div class="figcaption">The living meta-analysis dashboard built from the worked example</div>
+</div>
+<p>Values are verified against the papers in a keyboard-driven review app; every decision is tied to a hash of the values it approved:</p>
+<div class="float">
+<img src="reference/figures/review-app.gif" alt="Verifying values with the keyboard in review_values()"><div class="figcaption">Verifying values with the keyboard in review_values()</div>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -74,21 +92,31 @@
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
+<p>Try the worked example in one call:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/andjar/metawoRld" class="external-link">metawoRld</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://andjar.github.io/metawoRld/">metawoRld</a></span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/example_project.html">example_project</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"il6"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/review_values.html">review_values</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>       <span class="co"># verify values</span></span>
+<span><span class="fu"><a href="reference/generate_website.html">generate_website</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>    <span class="co"># build the dashboard (needs Quarto)</span></span></code></pre></div>
+<p>Or start your own review:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://andjar.github.io/metawoRld/">metawoRld</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/create_metawoRld.html">create_metawoRld</a></span><span class="op">(</span></span>
-<span>  <span class="st">"my_review"</span>,</span>
+<span>  <span class="st">"my-review"</span>,</span>
 <span>  project_name <span class="op">=</span> <span class="st">"Biomarker X in pregnancy"</span>,</span>
 <span>  project_description <span class="op">=</span> <span class="st">"Living review of maternal serum levels of X."</span>,</span>
 <span>  inclusion_criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Human pregnancy"</span>, <span class="st">"Serum or plasma X reported"</span><span class="op">)</span>,</span>
 <span>  exclusion_criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Animal study"</span>, <span class="st">"Review or case report"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/read_people.html">add_person</a></span><span class="op">(</span><span class="st">"my-review"</span>, <span class="st">"ahj"</span>, <span class="st">"Anders Hagen Jarmund"</span>, roles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"admin"</span>, <span class="st">"extractor"</span>, <span class="st">"verifier"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="reference/add_study_data.html">add_study_data</a></span><span class="op">(</span><span class="st">"my_review"</span>, <span class="st">"10.1000/abc"</span>, metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">my_data_frame</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/validate_world.html">validate_world</a></span><span class="op">(</span><span class="st">"my_review"</span><span class="op">)</span></span>
-<span><span class="va">world</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_metawoRld.html">load_metawoRld</a></span><span class="op">(</span><span class="st">"my_review"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/generate_website.html">generate_website</a></span><span class="op">(</span><span class="st">"my_review"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/submit_study.html">submit_study</a></span><span class="op">(</span><span class="st">"my-review"</span>, <span class="st">"hansen2019"</span>, metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">my_data_frame</span>,</span>
+<span>                   person <span class="op">=</span> <span class="st">"ahj"</span>, channel <span class="op">=</span> <span class="st">"script"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/accept_submission.html">accept_submission</a></span><span class="op">(</span><span class="st">"my-review"</span>, <span class="st">"hansen2019"</span>, <span class="va">id</span>, person <span class="op">=</span> <span class="st">"ahj"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/review_values.html">review_values</a></span><span class="op">(</span><span class="st">"my-review"</span><span class="op">)</span>          <span class="co"># verify values against the papers</span></span>
+<span><span class="fu"><a href="reference/check_project.html">check_project</a></span><span class="op">(</span><span class="st">"my-review"</span><span class="op">)</span>          <span class="co"># schemas, hashes, provenance, people</span></span>
+<span><span class="fu"><a href="reference/generate_website.html">generate_website</a></span><span class="op">(</span><span class="st">"my-review"</span><span class="op">)</span>       <span class="co"># living meta-analysis dashboard</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="main-functions">Main functions<a class="anchor" aria-label="anchor" href="#main-functions"></a>
@@ -104,21 +132,39 @@
 </tr></thead>
 <tbody>
 <tr>
-<td>Create a project / refresh templates</td>
+<td>Create a project</td>
 <td>
-<code><a href="reference/create_metawoRld.html">create_metawoRld()</a></code>, <code><a href="reference/use_templates.html">use_templates()</a></code>
+<code><a href="reference/create_metawoRld.html">create_metawoRld()</a></code>, <code><a href="reference/use_templates.html">use_templates()</a></code>, <code><a href="reference/read_people.html">add_person()</a></code>, <code><a href="reference/read_people.html">read_people()</a></code>
 </td>
 </tr>
 <tr>
-<td>Add data</td>
+<td>Forms</td>
 <td>
-<code><a href="reference/add_study_data.html">add_study_data()</a></code>, <code><a href="reference/add_study_template.html">add_study_template()</a></code>
+<code><a href="reference/get_schema.html">get_schema()</a></code>, <code><a href="reference/list_forms.html">list_forms()</a></code>, <code><a href="reference/export_schemas.html">export_schemas()</a></code>, <code><a href="reference/table_schema.html">table_schema()</a></code>
 </td>
 </tr>
 <tr>
-<td>Validate</td>
+<td>Search and screening log</td>
 <td>
-<code><a href="reference/validate_study.html">validate_study()</a></code>, <code><a href="reference/validate_world.html">validate_world()</a></code>, <code><a href="reference/validate_against_schema.html">validate_against_schema()</a></code>, <code><a href="reference/validate_links.html">validate_links()</a></code>
+<code><a href="reference/add_search.html">add_search()</a></code>, <code><a href="reference/read_records.html">add_records()</a></code>, <code><a href="reference/read_records.html">read_records()</a></code>, <code><a href="reference/read_records.html">link_record()</a></code>, <code><a href="reference/add_screening.html">add_screening()</a></code>, <code><a href="reference/add_screening.html">screening_status()</a></code>, <code><a href="reference/prisma_counts.html">prisma_counts()</a></code>
+</td>
+</tr>
+<tr>
+<td>Submit (the one door)</td>
+<td>
+<code><a href="reference/submit_study.html">submit_study()</a></code>, <code><a href="reference/submission_template.html">submission_template()</a></code>, <code><a href="reference/check_submission.html">check_submission()</a></code>, <code><a href="reference/list_submissions.html">list_submissions()</a></code>, <code><a href="reference/read_submission.html">read_submission()</a></code>
+</td>
+</tr>
+<tr>
+<td>Accept</td>
+<td>
+<code><a href="reference/accept_submission.html">accept_submission()</a></code>, <code><a href="reference/reject_submission.html">reject_submission()</a></code>, <code><a href="reference/compare_extractions.html">compare_extractions()</a></code>, <code><a href="reference/reconcile.html">reconcile()</a></code>
+</td>
+</tr>
+<tr>
+<td>Study ids</td>
+<td>
+<code><a href="reference/is_study_id.html">suggest_study_id()</a></code>, <code><a href="reference/is_study_id.html">check_study_id()</a></code>, <code><a href="reference/is_study_id.html">is_study_id()</a></code>
 </td>
 </tr>
 <tr>
@@ -128,9 +174,15 @@
 </td>
 </tr>
 <tr>
-<td>Review values against the papers</td>
+<td>Verify values against the papers</td>
 <td>
 <code><a href="reference/review_values.html">review_values()</a></code>, <code><a href="reference/check_values.html">check_values()</a></code>, <code><a href="reference/verification_status.html">verification_status()</a></code>, <code><a href="reference/set_verification.html">set_verification()</a></code>, <code><a href="reference/update_data_point.html">update_data_point()</a></code>
+</td>
+</tr>
+<tr>
+<td>Integrity</td>
+<td>
+<code><a href="reference/check_project.html">check_project()</a></code>, <code><a href="reference/use_github_action_check.html">use_github_action_check()</a></code>, <code><a href="reference/hash_file.html">hash_file()</a></code>, <code><a href="reference/validate_study.html">validate_study()</a></code>, <code><a href="reference/validate_world.html">validate_world()</a></code>
 </td>
 </tr>
 <tr>
@@ -149,12 +201,6 @@
 <td>Website dashboard</td>
 <td>
 <code><a href="reference/generate_website.html">generate_website()</a></code>, <code><a href="reference/generate_dashboard.html">generate_dashboard()</a></code>, <code><a href="reference/use_github_action_quarto.html">use_github_action_quarto()</a></code>
-</td>
-</tr>
-<tr>
-<td>Identifiers</td>
-<td>
-<code><a href="reference/normalize_identifier.html">normalize_identifier()</a></code>, <code><a href="reference/sanitize_id.html">sanitize_id()</a></code>, <code><a href="reference/sanitize_id.html">desanitize_id()</a></code>
 </td>
 </tr>
 </tbody>

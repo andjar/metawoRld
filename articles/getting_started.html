@@ -7,7 +7,9 @@
 <title>Getting started • metawoRld</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
+<link href="../deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Getting started">
 </head>
@@ -19,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">metawoRld</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,17 +30,22 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="active nav-item dropdown">
+<li class="active nav-item"><a class="nav-link" href="../articles/getting_started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/worked-example.html">Worked example</a></li>
+<li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/conceptual_overview.html">Conceptual overview: the living review pipeline</a></li>
-    <li><a class="dropdown-item" href="../articles/getting_started.html">Getting started</a></li>
+<li><a class="dropdown-item" href="../articles/conceptual_overview.html">Concepts and workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/worked-example.html">Worked example (IL-6 in preeclampsia)</a></li>
+    <li><a class="dropdown-item" href="../SPEC.html">Project specification (SPEC v1)</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="external-link nav-link" href="https://andjar.github.io/DataFindR">DataFindR</a></li>
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/andjar/metawoRld/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
@@ -63,7 +70,7 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/andjar/metawoRld" class="external-link">metawoRld</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://andjar.github.io/metawoRld/">metawoRld</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="create-a-project">Create a project<a class="anchor" aria-label="anchor" href="#create-a-project"></a>
 </h2>
@@ -79,29 +86,63 @@
 <span>  exclusion_criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Case report"</span>, <span class="st">"Animal study"</span>, <span class="st">"Fewer than five participants"</span><span class="op">)</span>,</span>
 <span>  git_init <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Created metawoRld project at /tmp/Rtmp8WL2oL/neoflow</span></span>
+<span><span class="co">#&gt; Created metawoRld project at /tmp/RtmppAyUEc/neoflow</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "_analyses.yml"          "_assessment_prompt.txt" "_assessment_schema.yml"</span></span>
-<span><span class="co">#&gt;  [4] "_extraction_prompt.txt" "_extraction_schema.yml" "_metawoRld.yml"        </span></span>
-<span><span class="co">#&gt;  [7] "_quarto.yml"            "_rules.yml"             "data"                  </span></span>
-<span><span class="co">#&gt; [10] "data.qmd"               "index.qmd"              "README.md"             </span></span>
-<span><span class="co">#&gt; [13] "studies.qmd"            "study.qmd.tmpl"         "styles.css"</span></span></code></pre></div>
-<p>Open <code>_extraction_schema.yml</code> and adapt it to your review
+<span><span class="co">#&gt;  [1] "_analyses.yml"  "_metawoRld.yml" "_quarto.yml"    "_rules.yml"    </span></span>
+<span><span class="co">#&gt;  [5] "data"           "data.qmd"       "forms"          "index.qmd"     </span></span>
+<span><span class="co">#&gt;  [9] "NEWS.md"        "people.yml"     "prompts"        "README.md"     </span></span>
+<span><span class="co">#&gt; [13] "records.csv"    "screening.csv"  "searches.yml"   "studies.qmd"   </span></span>
+<span><span class="co">#&gt; [17] "study.qmd.tmpl" "styles.css"     "submissions"</span></span></code></pre></div>
+<p>Open <code>forms/extraction.yml</code> and adapt it to your review
 before extracting data. The default is generic.</p>
+<p>Register the people (and tools) who work on the review. Every
+screening decision, extraction and verification refers to one of
+them:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/read_people.html">add_person</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"ahj"</span>, <span class="st">"Anders Hagen Jarmund"</span>,</span>
+<span>           roles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"admin"</span>, <span class="st">"screener"</span>, <span class="st">"extractor"</span>, <span class="st">"verifier"</span>, <span class="st">"arbiter"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/read_people.html">add_person</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"kb"</span>, <span class="st">"Kari Berg"</span>, roles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"screener"</span>, <span class="st">"extractor"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/read_people.html">add_person</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"datafindr"</span>, <span class="st">"DataFindR"</span>, tool <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>metawoRld.person <span class="op">=</span> <span class="st">"ahj"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="add-a-study-by-hand">Add a study by hand<a class="anchor" aria-label="anchor" href="#add-a-study-by-hand"></a>
+<h2 id="searches-records-and-screening">Searches, records and screening<a class="anchor" aria-label="anchor" href="#searches-records-and-screening"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/add_study_data.html">add_study_data</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/add_search.html">add_search</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"pubmed-2026-11"</span>, <span class="st">"PubMed"</span>, <span class="st">"neonat* AND Doppler AND cerebral"</span>,</span>
+<span>           results <span class="op">=</span> <span class="fl">2</span>, person <span class="op">=</span> <span class="st">"ahj"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/read_records.html">add_records</a></span><span class="op">(</span><span class="va">path</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cerebral blood flow in term neonates"</span>, <span class="st">"Doppler in piglets"</span><span class="op">)</span>,</span>
+<span>  doi <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"10.1000/example.1"</span>, <span class="st">"10.1000/example.2"</span><span class="op">)</span>, year <span class="op">=</span> <span class="fl">2021</span></span>
+<span><span class="op">)</span>, search <span class="op">=</span> <span class="st">"pubmed-2026-11"</span><span class="op">)</span></span>
+<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_records.html">read_records</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">$</span><span class="va">record_id</span></span>
+<span><span class="fu"><a href="../reference/add_screening.html">add_screening</a></span><span class="op">(</span><span class="va">path</span>, <span class="va">rec</span>, <span class="st">"title_abstract"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"include"</span>, <span class="st">"exclude"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"Animal study"</span><span class="op">)</span>, person <span class="op">=</span> <span class="st">"ahj"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/add_screening.html">add_screening</a></span><span class="op">(</span><span class="va">path</span>, <span class="va">rec</span>, <span class="st">"title_abstract"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"include"</span>, <span class="st">"exclude"</span><span class="op">)</span>, person <span class="op">=</span> <span class="st">"kb"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/add_screening.html">screening_status</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 5</span></span></span>
+<span><span class="co">#&gt;   record_id         stage          outcome reason         n_decisions</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 10.1000/example.1 title_abstract include <span style="color: #949494;">""</span>                       2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 10.1000/example.2 title_abstract exclude <span style="color: #949494;">"</span>Animal study<span style="color: #949494;">"</span>           2</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="submit-and-accept-a-study">Submit and accept a study<a class="anchor" aria-label="anchor" href="#submit-and-accept-a-study"></a>
+</h2>
+<p>Every channel (the entry form, CSV files, DataFindR, scripts) submits
+through <code><a href="../reference/submit_study.html">submit_study()</a></code>. Here a study is submitted from
+R:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/submit_study.html">submit_study</a></span><span class="op">(</span></span>
 <span>  <span class="va">path</span>,</span>
-<span>  study_id <span class="op">=</span> <span class="st">"10.1000/example.1"</span>,</span>
+<span>  study_id <span class="op">=</span> <span class="fu"><a href="../reference/is_study_id.html">suggest_study_id</a></span><span class="op">(</span><span class="st">"Smith J"</span>, <span class="fl">2021</span>, <span class="va">path</span><span class="op">)</span>,</span>
+<span>  person <span class="op">=</span> <span class="st">"ahj"</span>, channel <span class="op">=</span> <span class="st">"script"</span>,</span>
 <span>  metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Cerebral blood flow in term neonates"</span>,</span>
 <span>    authors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Smith J"</span>, <span class="st">"Doe A"</span><span class="op">)</span>, year <span class="op">=</span> <span class="fl">2021L</span>, country <span class="op">=</span> <span class="st">"Norway"</span>,</span>
 <span>    study_design <span class="op">=</span> <span class="st">"Prospective cohort"</span>, population <span class="op">=</span> <span class="st">"Healthy term neonates"</span>,</span>
 <span>    methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>method_id <span class="op">=</span> <span class="st">"m1"</span>, name <span class="op">=</span> <span class="st">"Pulsed Doppler, middle cerebral artery"</span>, unit <span class="op">=</span> <span class="st">"cm/s"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>group_id <span class="op">=</span> <span class="st">"g1"</span>, name <span class="op">=</span> <span class="st">"Term neonates"</span>, sample_size <span class="op">=</span> <span class="fl">40L</span><span class="op">)</span><span class="op">)</span></span>
+<span>    groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>group_id <span class="op">=</span> <span class="st">"g1"</span>, name <span class="op">=</span> <span class="st">"Term neonates"</span>, sample_size <span class="op">=</span> <span class="fl">40L</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    doi <span class="op">=</span> <span class="st">"10.1000/example.1"</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>    measurement_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dp1"</span>, <span class="st">"dp2"</span><span class="op">)</span>, method_id <span class="op">=</span> <span class="st">"m1"</span>, group_id <span class="op">=</span> <span class="st">"g1"</span>,</span>
@@ -109,14 +150,20 @@ before extracting data. The default is generic.</p>
 <span>    timepoint <span class="op">=</span> <span class="st">"Day 1"</span>, sample_size <span class="op">=</span> <span class="fl">40</span>, statistic_type <span class="op">=</span> <span class="st">"mean_sd"</span>,</span>
 <span>    value1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">35.2</span>, <span class="fl">0.72</span><span class="op">)</span>, value2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6.1</span>, <span class="fl">0.06</span><span class="op">)</span>, source <span class="op">=</span> <span class="st">"Table 2"</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Problems are reported all at once. For example, using a group that is
-not defined:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/add_study_data.html">add_study_data</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"bad"</span>, metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span>,</span>
-<span>               data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>group_id <span class="op">=</span> <span class="st">"g9"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Submitted smith2021 (20261113T070553-ahj-extraction): 2 data point(s).</span></span>
+<span><span class="fu"><a href="../reference/list_submissions.html">list_submissions</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"study_id"</span>, <span class="st">"extraction_id"</span>, <span class="st">"status"</span>, <span class="st">"n_warnings"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 4</span></span></span>
+<span><span class="co">#&gt;   study_id  extraction_id                  status  n_warnings</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> smith2021 20261113T070553-ahj-extraction pending          0</span></span></code></pre></div>
+<p>Problems are reported all at once and nothing is written. For
+example, using a group that is not defined:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/submit_study.html">submit_study</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"bad2021"</span>, metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span>,</span>
+<span>             data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>group_id <span class="op">=</span> <span class="st">"g9"</span><span class="op">)</span>, person <span class="op">=</span> <span class="st">"ahj"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `.abort_validation()`:</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Validation failed for study 'bad' (15 problem(s)):</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Validation failed for study 'bad2021' (15 problem(s)):</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> metadata.authors: required value is missing.</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> metadata.year: required value is missing.</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> metadata.country: required value is missing.</span></span>
@@ -132,24 +179,51 @@ not defined:</p>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> data_points[1].value1: required value is missing.</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> data_points[1].source: required value is missing.</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> data_points.group_id: value(s) 'g9' not defined in metadata.groups[].group_id (none defined)</span></span></code></pre></div>
+<p>Accepting the submission writes <code>data/smith2021/</code> with
+provenance and file hashes, and links the record with the same DOI to
+the study:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/accept_submission.html">accept_submission</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"smith2021"</span>, <span class="va">id</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Accepted 20261113T070553-ahj-extraction into data/smith2021.</span></span>
+<span><span class="fu"><a href="../reference/read_study.html">read_study</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"smith2021"</span><span class="op">)</span><span class="op">$</span><span class="va">provenance</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"measurement_id"</span>, <span class="st">"person"</span>, <span class="st">"channel"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 3</span></span></span>
+<span><span class="co">#&gt;   measurement_id person channel</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> _metadata      ahj    script </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> dp1            ahj    script </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> dp2            ahj    script</span></span>
+<span><span class="fu"><a href="../reference/read_records.html">read_records</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"record_id"</span>, <span class="st">"study_id"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 2</span></span></span>
+<span><span class="co">#&gt;   record_id         study_id   </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 10.1000/example.1 <span style="color: #949494;">"</span>smith2021<span style="color: #949494;">"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 10.1000/example.2 <span style="color: #949494;">""</span></span></span></code></pre></div>
+<p>With dual extraction, two people submit the same study;
+<code><a href="../reference/compare_extractions.html">compare_extractions()</a></code> lists the disagreements and
+<code><a href="../reference/reconcile.html">reconcile()</a></code> resolves them, recording who agreed with each
+accepted value.</p>
+<p>To enter data without R, write blank files with
+<code>submission_template(path, "entry")</code>, fill them in with any
+editor, and submit them with
+<code>submit_study(path, "smith2021", "entry/metadata.yml", "entry/data.csv", person = "kb", channel = "csv_import")</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="load-the-data">Load the data<a class="anchor" aria-label="anchor" href="#load-the-data"></a>
 </h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">world</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_metawoRld.html">load_metawoRld</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loaded 1 studies and 2 data points.</span></span>
 <span><span class="va">world</span><span class="op">$</span><span class="va">studies</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 7</span></span></span>
-<span><span class="co">#&gt;   study_id          title          authors year  country study_design population</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 10.1000/example.1 Cerebral bloo… Smith … 2021  Norway  Prospective… Healthy t…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 8</span></span></span>
+<span><span class="co">#&gt;   study_id  title            authors year  country study_design population doi  </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> smith2021 Cerebral blood … Smith … 2021  Norway  Prospective… Healthy t… 10.1…</span></span>
 <span><span class="va">world</span><span class="op">$</span><span class="va">studies_data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"study_id"</span>, <span class="st">"variable_name"</span>, <span class="st">"value1"</span>, <span class="st">"value2"</span>, <span class="st">"method_unit"</span>, <span class="st">"group_name"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 6</span></span></span>
-<span><span class="co">#&gt;   study_id          variable_name          value1 value2 method_unit group_name </span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 10.1000/example.1 Peak systolic velocity  35.2    6.1  cm/s        Term neona…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 10.1000/example.1 Resistance index         0.72   0.06 cm/s        Term neona…</span></span></code></pre></div>
+<span><span class="co">#&gt;   study_id  variable_name          value1 value2 method_unit group_name   </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> smith2021 Peak systolic velocity  35.2    6.1  cm/s        Term neonates</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> smith2021 Resistance index         0.72   0.06 cm/s        Term neonates</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="review-values-against-the-papers">Review values against the papers<a class="anchor" aria-label="anchor" href="#review-values-against-the-papers"></a>
@@ -158,7 +232,7 @@ not defined:</p>
 be checked against the paper. <code><a href="../reference/check_values.html">check_values()</a></code> flags values
 that are internally inconsistent or implausible, using built-in checks
 and the optional vocabulary in <code>_rules.yml</code>:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/check_values.html">check_values</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 0 × 5</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 variables: study_id &lt;chr&gt;, measurement_id &lt;chr&gt;, check &lt;chr&gt;,</span></span></span>
@@ -169,41 +243,69 @@ in plain language next to its flags, source quote and the full text
 reject values with the buttons or the keys <code>V</code>,
 <code>R</code>, <code>N</code> and <code>P</code>. Every decision is
 stored with reviewer and time in
-<code>data/&lt;study&gt;/verification.csv</code>, and corrections are
+<code>data/&lt;study_id&gt;/verification.csv</code>, and corrections are
 logged:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/set_verification.html">set_verification</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"10.1000/example.1"</span>, <span class="st">"dp1"</span>, <span class="st">"verified"</span>, reviewer <span class="op">=</span> <span class="st">"AHJ"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/update_data_point.html">update_data_point</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"10.1000/example.1"</span>, <span class="st">"dp2"</span>, value2 <span class="op">=</span> <span class="fl">0.07</span>, reviewer <span class="op">=</span> <span class="st">"AHJ"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/set_verification.html">set_verification</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"smith2021"</span>, <span class="st">"dp1"</span>, <span class="st">"verified"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/update_data_point.html">update_data_point</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"smith2021"</span>, <span class="st">"dp2"</span>, value2 <span class="op">=</span> <span class="fl">0.07</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/verification_status.html">verification_status</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 6</span></span></span>
-<span><span class="co">#&gt;   study_id          measurement_id status   reviewer timestamp             note </span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 10.1000/example.1 dp1            verified AHJ      2026-11-12T23:38:23+… <span style="color: #949494;">""</span>   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 10.1000/example.1 dp2            verified AHJ      2026-11-12T23:38:23+… <span style="color: #949494;">"</span>Cor…</span></span></code></pre></div>
+<span><span class="co">#&gt;   study_id  measurement_id status   reviewer timestamp            note          </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> smith2021 dp1            verified ahj      2026-11-13T07:05:53Z <span style="color: #949494;">""</span>            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> smith2021 dp2            verified ahj      2026-11-13T07:05:53Z <span style="color: #949494;">"</span>Corrected: v…</span></span></code></pre></div>
 <p>If a value changes after review (for example after re-extraction) its
 status becomes <code>"changed"</code> and it returns to the review
 queue. <code><a href="../reference/load_metawoRld.html">load_metawoRld()</a></code> leaves out rejected values and can
 keep verified values only (<code>verified_only = TRUE</code>).</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/review_values.html">review_values</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="check-the-project">Check the project<a class="anchor" aria-label="anchor" href="#check-the-project"></a>
+</h2>
+<p><code><a href="../reference/check_project.html">check_project()</a></code> is the one check to run before
+committing and in CI. It validates every study, recomputes the file
+hashes in <code>datapackage.json</code> (catching data edited outside
+metawoRld), and reports missing provenance, unknown people and pending
+submissions:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/check_project.html">check_project</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
+<span><span class="co">#&gt; check_project(): 1 study(ies), 0 error(s), 0 warning(s).</span></span>
+<span><span class="fu"><a href="../reference/prisma_counts.html">prisma_counts</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 9 × 2</span></span></span>
+<span><span class="co">#&gt;   stage                                  n</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                              <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Records identified                     2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Duplicates removed                     0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Records screened (title/abstract)      2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Records excluded (title/abstract)      1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Awaiting decision (title/abstract)     0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Reports assessed (full text)           0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> Reports excluded (full text)           0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> Studies included                       1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">9</span> Reports of included studies            1</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/use_github_action_check.html">use_github_action_check</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>     <span class="co"># run check_project() on every push and pull request</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="screening-and-extraction-with-datafindr">Screening and extraction with DataFindR<a class="anchor" aria-label="anchor" href="#screening-and-extraction-with-datafindr"></a>
 </h2>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">DataFindR</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>DATAFINDR_EMAIL <span class="op">=</span> <span class="st">"you@example.org"</span><span class="op">)</span>   <span class="co"># polite use of NCBI/Crossref</span></span>
 <span></span>
-<span><span class="co"># 1. Records</span></span>
+<span><span class="co"># 1. Records: logged with add_search() and add_records()</span></span>
 <span><span class="va">hits</span> <span class="op">&lt;-</span> <span class="fu">df_search_pubmed</span><span class="op">(</span></span>
 <span>  <span class="st">'("Infant, Newborn"[Mesh] OR neonat*) AND Doppler AND (cerebral OR brain)'</span>,</span>
-<span>  <span class="va">path</span></span>
+<span>  <span class="va">path</span>, person <span class="op">=</span> <span class="st">"ahj"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 2. Screening (parallel; use mode = "batch" for half price with OpenAI/Anthropic/Gemini)</span></span>
+<span><span class="co"># 2. Screening: the LLM's decisions go to screening.csv as the "datafindr" tool</span></span>
+<span><span class="co">#    (local models work too, e.g. ellmer::chat_ollama())</span></span>
 <span><span class="va">chat_screen</span> <span class="op">&lt;-</span> <span class="fu">ellmer</span><span class="fu">::</span><span class="fu">chat_openai</span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gpt-4.1-mini"</span><span class="op">)</span></span>
 <span><span class="va">screen</span> <span class="op">&lt;-</span> <span class="fu">df_assess_batch</span><span class="op">(</span><span class="va">chat_screen</span>, <span class="va">hits</span><span class="op">$</span><span class="va">identifier</span>, <span class="va">path</span><span class="op">)</span></span>
-<span><span class="fu">df_shiny_assess</span><span class="op">(</span><span class="va">path</span>, <span class="va">chat_screen</span><span class="op">)</span>          <span class="co"># review "Needs manual review"</span></span>
+<span><span class="fu">df_shiny_assess</span><span class="op">(</span><span class="va">path</span>, <span class="va">chat_screen</span><span class="op">)</span>          <span class="co"># human decisions for "Needs manual review"</span></span>
 <span></span>
 <span><span class="co"># 3. Extraction from full texts saved as fulltext/&lt;df_fulltext_filename(id)&gt;</span></span>
 <span><span class="fu">df_pending_extraction</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
@@ -211,10 +313,10 @@ keep verified values only (<code>verified_only = TRUE</code>).</p>
 <span><span class="fu">df_extract_batch</span><span class="op">(</span><span class="va">chat_extract</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"fulltext"</span><span class="op">)</span>, <span class="va">path</span><span class="op">)</span></span>
 <span><span class="fu">df_shiny_extract</span><span class="op">(</span><span class="va">path</span>, <span class="va">chat_extract</span>, fulltext_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"fulltext"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 4. Import and check</span></span>
-<span><span class="fu">df_import_batch</span><span class="op">(</span>metawoRld_path <span class="op">=</span> <span class="va">path</span><span class="op">)</span></span>
-<span><span class="fu">df_status</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
-<span><span class="fu">df_prisma_counts</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># 4. Submit through the one door, then accept after review</span></span>
+<span><span class="fu">df_import_batch</span><span class="op">(</span>metawoRld_path <span class="op">=</span> <span class="va">path</span><span class="op">)</span>      <span class="co"># submit_study() per extraction</span></span>
+<span><span class="fu"><a href="../reference/list_submissions.html">list_submissions</a></span><span class="op">(</span><span class="va">path</span>, status <span class="op">=</span> <span class="st">"pending"</span><span class="op">)</span></span>
+<span><span class="fu">df_status</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="living-meta-analysis">Living meta-analysis<a class="anchor" aria-label="anchor" href="#living-meta-analysis"></a>
@@ -223,12 +325,12 @@ keep verified values only (<code>verified_only = TRUE</code>).</p>
 (e.g. cases and controls) and variable names come from
 <code>_rules.yml</code>; DataFindR passes both to the LLM so extracted
 names follow this vocabulary.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">analyses</span><span class="kw">:</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Peak systolic velocity in preterm vs term neonates</span></span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="at">    </span><span class="fu">variable</span><span class="kw">:</span><span class="at"> Peak systolic velocity</span></span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="at">    </span><span class="fu">measure</span><span class="kw">:</span><span class="at"> SMD</span></span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="at">    </span><span class="fu">compare</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Preterm</span><span class="kw">,</span><span class="at"> Term</span><span class="kw">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">analyses</span><span class="kw">:</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Peak systolic velocity in preterm vs term neonates</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="at">    </span><span class="fu">variable</span><span class="kw">:</span><span class="at"> Peak systolic velocity</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="at">    </span><span class="fu">measure</span><span class="kw">:</span><span class="at"> SMD</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="at">    </span><span class="fu">compare</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Preterm</span><span class="kw">,</span><span class="at"> Term</span><span class="kw">]</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_meta_analysis.html">run_meta_analysis</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"Peak systolic velocity in preterm vs term neonates"</span><span class="op">)</span></span>
 <span><span class="va">ma</span></span>
 <span><span class="fu"><a href="../reference/plot_forest.html">plot_forest</a></span><span class="op">(</span><span class="va">ma</span><span class="op">)</span></span>
@@ -241,7 +343,7 @@ cannot be used are listed with the reason.</p>
 <div class="section level2">
 <h2 id="publish">Publish<a class="anchor" aria-label="anchor" href="#publish"></a>
 </h2>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/generate_website.html">generate_website</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>            <span class="co"># dashboard: overview, meta-analyses, results, studies, data</span></span>
 <span><span class="fu"><a href="../reference/use_github_action_quarto.html">use_github_action_quarto</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>    <span class="co"># rebuild on GitHub at every push</span></span></code></pre></div>
 </div>

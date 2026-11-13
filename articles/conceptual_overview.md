@@ -1,104 +1,124 @@
 # Conceptual overview: the living review pipeline
 
 Systematic reviews go out of date quickly. A *living* review is updated
-as new evidence appears. Two R packages work together to make that
-practical:
+as new evidence appears. metawoRld keeps the review’s data in plain,
+validated, traceable files; tools put data in through one door.
 
-- **metawoRld** owns the review: settings, screening criteria, the
-  schema describing what is extracted, the validated study data, and the
-  website. It has no AI dependencies and can be used on its own with
-  manual data entry.
-- **DataFindR** uses large language models (through `ellmer`) to screen
-  studies and extract data *into* a metawoRld project.
+- **metawoRld** owns the review: settings, forms describing what is
+  extracted, the search and screening log, accepted study data with
+  provenance and verification, analyses and the website. It has no AI
+  dependencies.
+- **Channels** put data in. Each channel produces *submissions* that
+  pass the same intake gate
+  ([`submit_study()`](https://andjar.github.io/metawoRld/reference/submit_study.md)):
+  the entry form, CSV files filled in with any editor, scripts, or
+  **DataFindR**, which uses large language models to screen records and
+  extract data. DataFindR depends on metawoRld, never the other way
+  around.
 
-DataFindR depends on metawoRld, never the other way around.
+The full format is defined in `SPEC.md` in the package repository.
 
 ## The project
 
 [`create_metawoRld()`](https://andjar.github.io/metawoRld/reference/create_metawoRld.md)
 creates a folder (by default a Git repository):
 
-    my_review/
-    ├── _metawoRld.yml           # name, description, inclusion/exclusion criteria
-    ├── _extraction_schema.yml   # what is extracted from each study
-    ├── _assessment_schema.yml   # what a screening decision looks like
-    ├── _extraction_prompt.txt   # LLM instructions (used by DataFindR)
-    ├── _assessment_prompt.txt
-    ├── data/
-    │   └── <study id>/
-    │       ├── metadata.yml     # design, population, methods, groups
-    │       └── data.csv         # one row per reported statistic
-    ├── .metawoRld_cache/        # DataFindR's cached LLM results (shareable)
-    └── index.qmd, studies.qmd, data.qmd, _quarto.yml, ...   # website
+    my-review/
+    ├── _metawoRld.yml       # settings, criteria, spec_version, license
+    ├── _rules.yml           # variable vocabulary and value checks
+    ├── _analyses.yml        # planned meta-analyses
+    ├── people.yml           # people (with roles) and tools
+    ├── searches.yml         # every search that was run
+    ├── records.csv          # one row per unique record (search hit)
+    ├── screening.csv        # screening decisions, append-only
+    ├── forms/
+    │   ├── extraction.yml   # what is extracted from each study
+    │   └── screening.yml    # what a screening decision looks like
+    ├── prompts/             # LLM instructions (used by DataFindR)
+    ├── submissions/         # extractions waiting to be accepted
+    │   └── <study_id>/<extraction_id>/
+    ├── data/                # accepted data
+    │   └── <study_id>/
+    │       ├── study.yml         # identity, reports (DOIs/PMIDs), form version
+    │       ├── metadata.yml      # design, population, methods, groups
+    │       ├── data.csv          # one row per reported statistic
+    │       ├── provenance.csv    # who/what produced each value, from which source
+    │       ├── verification.csv  # reviewers' decisions per value
+    │       └── datapackage.json  # Frictionless descriptor with file hashes
+    └── index.qmd, _quarto.yml, ...   # website
 
-Studies are stored under their DOI or PMID (normalized, and encoded for
-the file system with
-[`sanitize_id()`](https://andjar.github.io/metawoRld/reference/sanitize_id.md)),
-so cached screening/extraction results and stored data always refer to
-the same paper.
+A **study** (one cohort or trial, id like `hansen2019`) can have several
+**reports** (publications, identified by DOI or PMID). **Records** are
+search hits; an included record is linked to its study.
 
-## The schema
+## Forms
 
-The templates are generic: studies have `methods` and `groups`, and
-every reported statistic is a data point with a `method_id`, `group_id`,
-`variable_name`, `timepoint`, `sample_size`, `statistic_type` and up to
-three values. Edit `_extraction_schema.yml` to fit your review: add
-fields, tighten descriptions, or turn free-text fields into enums.
-
-A schema node looks like this:
+The default extraction form is generic: studies have `methods` and
+`groups`, and every reported statistic is a data point with a
+`method_id`, `group_id`, `variable_name`, `timepoint`, `sample_size`,
+`statistic_type` and up to three values. Edit `forms/extraction.yml` to
+fit your review: add fields, tighten descriptions, or turn free-text
+fields into enums. Bump the form’s `version` when you change it.
 
 ``` yaml
+_form:
+  name: extraction
+  kind: extraction
+  version: 1.0.0
+...
 group_id:
   _type: string                 # object, array, string, integer, number, boolean, enum
-  _description: "Shown to the LLM."
+  _description: "Shown to the LLM and in the entry form."
   _required: true               # default
   _ref: groups.group_id         # must match an id in metadata$groups
 ```
 
-`_ref` links are checked by
-[`validate_links()`](https://andjar.github.io/metawoRld/reference/validate_links.md)
-and used by
-[`load_metawoRld()`](https://andjar.github.io/metawoRld/reference/load_metawoRld.md)
-to join, for example, `group_name` and `method_unit` onto the data.
+[`export_schemas()`](https://andjar.github.io/metawoRld/reference/export_schemas.md)
+writes JSON Schemas and Frictionless Table Schemas, so channels written
+in other languages can validate their output.
 
-## Pipeline
+## One door, then review
 
-1.  **Set up** the project with
-    [`create_metawoRld()`](https://andjar.github.io/metawoRld/reference/create_metawoRld.md)
-    and adjust the schema and criteria.
-2.  **Identify** records: `DataFindR::df_search_pubmed()` (repeat it to
-    pick up new publications), or `df_fetch_metadata()` /
-    `df_add_metadata()`.
-3.  **Screen** titles and abstracts: `DataFindR::df_assess_batch()` in
-    parallel or with discounted batch APIs; review and override in
-    `df_shiny_assess()`.
-4.  **Extract** data from full texts of included studies:
-    `DataFindR::df_extract_batch()`; check and correct in
-    `df_shiny_extract()`.
-5.  **Import**: `DataFindR::df_import_batch()` validates each study with
-    [`add_study_data()`](https://andjar.github.io/metawoRld/reference/add_study_data.md)
-    and stores it.
-6.  **Check** with
-    [`validate_world()`](https://andjar.github.io/metawoRld/reference/validate_world.md),
-    follow progress with `DataFindR::df_status()` and
-    `df_prisma_counts()`.
-7.  **Publish** with
+1.  **Set up** with
+    [`create_metawoRld()`](https://andjar.github.io/metawoRld/reference/create_metawoRld.md),
+    [`add_person()`](https://andjar.github.io/metawoRld/reference/read_people.md),
+    and adjust the forms and criteria.
+2.  **Identify** records:
+    [`add_search()`](https://andjar.github.io/metawoRld/reference/add_search.md)
+    and
+    [`add_records()`](https://andjar.github.io/metawoRld/reference/read_records.md)
+    (DataFindR’s `df_search_pubmed()` does both).
+3.  **Screen**:
+    [`add_screening()`](https://andjar.github.io/metawoRld/reference/add_screening.md)
+    stores each person’s (or tool’s) decision;
+    [`screening_status()`](https://andjar.github.io/metawoRld/reference/add_screening.md)
+    shows conflicts;
+    [`prisma_counts()`](https://andjar.github.io/metawoRld/reference/prisma_counts.md)
+    feeds the PRISMA diagram.
+4.  **Extract**: any channel calls
+    [`submit_study()`](https://andjar.github.io/metawoRld/reference/submit_study.md).
+    Invalid data are refused with every problem listed; plausibility
+    checks from `_rules.yml` are recorded as warnings.
+5.  **Accept**:
+    [`accept_submission()`](https://andjar.github.io/metawoRld/reference/accept_submission.md)
+    for single extraction, or
+    [`compare_extractions()`](https://andjar.github.io/metawoRld/reference/compare_extractions.md)
+    and
+    [`reconcile()`](https://andjar.github.io/metawoRld/reference/reconcile.md)
+    for dual extraction. `provenance.csv` records which extraction each
+    value came from and which others agreed.
+6.  **Verify** values against the papers with
+    [`review_values()`](https://andjar.github.io/metawoRld/reference/review_values.md).
+    Decisions are tied to a hash of the values, so a changed value
+    returns to the queue.
+7.  **Check** with
+    [`check_project()`](https://andjar.github.io/metawoRld/reference/check_project.md),
+    locally and in CI
+    ([`use_github_action_check()`](https://andjar.github.io/metawoRld/reference/use_github_action_check.md)).
+    It recomputes the file hashes in `datapackage.json`, so data edited
+    outside metawoRld are caught.
+8.  **Analyse and publish** with
+    [`run_all_meta_analyses()`](https://andjar.github.io/metawoRld/reference/run_all_meta_analyses.md)
+    and
     [`generate_website()`](https://andjar.github.io/metawoRld/reference/generate_website.md);
-    [`use_github_action_quarto()`](https://andjar.github.io/metawoRld/reference/use_github_action_quarto.md)
-    makes GitHub rebuild the site on every push.
-8.  **Analyse** with
-    [`load_metawoRld()`](https://andjar.github.io/metawoRld/reference/load_metawoRld.md).
-
-Every LLM result is cached in the project together with the model, token
-use, cost and a fingerprint of the prompt, schema and criteria.
-Re-running a step only processes new studies or studies whose results
-were produced with an outdated setup. Manual decisions and corrections
-are never overwritten.
-
-## Without AI
-
-All metawoRld functions work without DataFindR.
-[`add_study_template()`](https://andjar.github.io/metawoRld/reference/add_study_template.md)
-writes placeholder files for manual entry and
-[`validate_study()`](https://andjar.github.io/metawoRld/reference/validate_study.md)
-checks them.
+    release versions as signed Git tags archived on Zenodo.

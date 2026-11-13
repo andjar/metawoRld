@@ -22,8 +22,8 @@ generate_website(path = ".", render = TRUE, update_templates = FALSE)
 
 - render:
 
-  Render with Quarto? Requires the `quarto` R package and the
-  Quarto CLI. Defaults to `TRUE`.
+  Render with Quarto? Requires the Quarto CLI (<https://quarto.org>);
+  the `quarto` R package is used when installed. Defaults to `TRUE`.
 
 - update_templates:
 

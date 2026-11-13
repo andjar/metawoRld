@@ -16,10 +16,9 @@ read_study(path = ".", study_id)
 
 - study_id:
 
-  Study identifier (as given to
-  [`add_study_data()`](https://andjar.github.io/metawoRld/reference/add_study_data.md)).
+  Study id.
 
 ## Value
 
-A list with `metadata` (list) and `data` (tibble). `data.csv` is read
-with column types taken from the schema.
+A list with `study` (contents of `study.yml`), `metadata` (list), `data`
+(tibble; column types from the form) and `provenance` (tibble).
