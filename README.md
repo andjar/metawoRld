@@ -1,19 +1,27 @@
 # metawoRld
 
-Structured, validated, version-controlled data for living systematic reviews.
+Structured, validated, traceable data for living systematic reviews.
 
-A metawoRld project is a folder (usually a Git repository) holding:
+A metawoRld project is a folder (usually a Git repository) of plain YAML,
+CSV and JSON files, laid out as defined in [SPEC.md](SPEC.md):
 
-* the review's settings and screening criteria (`_metawoRld.yml`),
-* a schema describing what is extracted from each study (`_extraction_schema.yml`),
-* one folder per study with `metadata.yml` and `data.csv`,
-* meta-analyses defined in `_analyses.yml`, re-run whenever data change,
-* a Quarto dashboard website (summary of findings, forest plots, cumulative
-  meta-analyses, results per variable) that can be published automatically.
+* settings, criteria and **forms** describing what is extracted
+  (`_metawoRld.yml`, `forms/extraction.yml`),
+* the **search and screening log** (`searches.yml`, `records.csv`,
+  `screening.csv`), from which PRISMA counts are computed,
+* **one door for data**: every input channel (an entry form, CSV files, the
+  LLM pipeline [DataFindR](https://github.com/andjar/DataFindR), scripts)
+  calls `submit_study()`, which validates the extraction and stages it in
+  `submissions/`,
+* **accepted studies** in `data/<study_id>/`, with `provenance.csv` (who or
+  what produced each value, from which source), `verification.csv` (human
+  checks, tied to a hash of the values) and `datapackage.json` (a
+  Frictionless Data Package with file hashes),
+* meta-analyses defined in `_analyses.yml` and a Quarto **dashboard**
+  website, rebuilt whenever data change.
 
-It works on its own with manual data entry, and with
-[DataFindR](https://github.com/andjar/DataFindR), which uses LLMs to screen
-studies and extract data into the project.
+`check_project()` checks all of it, locally or in CI, and catches data edited
+outside metawoRld.
 
 See `vignette("getting_started")` and `vignette("conceptual_overview")`.
 
@@ -31,29 +39,35 @@ remotes::install_github("andjar/DataFindR")   # optional, for LLM screening/extr
 library(metawoRld)
 
 create_metawoRld(
-  "my_review",
+  "my-review",
   project_name = "Biomarker X in pregnancy",
   project_description = "Living review of maternal serum levels of X.",
   inclusion_criteria = c("Human pregnancy", "Serum or plasma X reported"),
   exclusion_criteria = c("Animal study", "Review or case report")
 )
+add_person("my-review", "ahj", "Anders Hagen Jarmund", roles = c("admin", "extractor", "verifier"))
 
-add_study_data("my_review", "10.1000/abc", metadata = list(...), data = my_data_frame)
-validate_world("my_review")
-world <- load_metawoRld("my_review")
-generate_website("my_review")
+id <- submit_study("my-review", "hansen2019", metadata = list(...), data = my_data_frame,
+                   person = "ahj", channel = "script")
+accept_submission("my-review", "hansen2019", id, person = "ahj")
+review_values("my-review")          # verify values against the papers
+check_project("my-review")          # schemas, hashes, provenance, people
+generate_website("my-review")       # living meta-analysis dashboard
 ```
 
 ## Main functions
 
 | Task | Function |
 |---|---|
-| Create a project / refresh templates | `create_metawoRld()`, `use_templates()` |
-| Add data | `add_study_data()`, `add_study_template()` |
-| Validate | `validate_study()`, `validate_world()`, `validate_against_schema()`, `validate_links()` |
+| Create a project | `create_metawoRld()`, `use_templates()`, `add_person()`, `read_people()` |
+| Forms | `get_schema()`, `list_forms()`, `export_schemas()`, `table_schema()` |
+| Search and screening log | `add_search()`, `add_records()`, `read_records()`, `link_record()`, `add_screening()`, `screening_status()`, `prisma_counts()` |
+| Submit (the one door) | `submit_study()`, `submission_template()`, `check_submission()`, `list_submissions()`, `read_submission()` |
+| Accept | `accept_submission()`, `reject_submission()`, `compare_extractions()`, `reconcile()` |
+| Study ids | `suggest_study_id()`, `check_study_id()`, `is_study_id()` |
 | Load | `load_metawoRld()`, `read_study()`, `list_studies()` |
-| Review values against the papers | `review_values()`, `check_values()`, `verification_status()`, `set_verification()`, `update_data_point()` |
+| Verify values against the papers | `review_values()`, `check_values()`, `verification_status()`, `set_verification()`, `update_data_point()` |
+| Integrity | `check_project()`, `use_github_action_check()`, `hash_file()`, `validate_study()`, `validate_world()` |
 | Value rules (`_rules.yml`) | `read_rules()`, `add_variable_synonym()`, `canonical_variable()` |
 | Living meta-analysis (`_analyses.yml`) | `read_analyses()`, `run_meta_analysis()`, `run_all_meta_analyses()`, `summary_of_findings()`, `plot_forest()`, `plot_cumulative()`, `plot_variable()`, `to_mean_sd()` |
 | Website dashboard | `generate_website()`, `generate_dashboard()`, `use_github_action_quarto()` |
-| Identifiers | `normalize_identifier()`, `sanitize_id()`, `desanitize_id()` |
